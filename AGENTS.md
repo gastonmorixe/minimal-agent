@@ -152,7 +152,10 @@ commits, it also commits monorepo submodule pin bumps.
 | monorepo | `ci.yml` (submodules + both checks), `release.yml` (stable `v*` + pin notes) |
 
 Private submodule clones in monorepo CI use `actions/checkout` with
-`submodules: recursive` and `GITHUB_TOKEN` (same-owner private remotes).
+`submodules: recursive` and `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT
+with `repo` that can read core + plugins). Default `GITHUB_TOKEN` cannot
+clone other private repos. CI pins public Bun **1.3.14** (`engines.bun`
+`>=1.3.14`); local canary/patched Bun is not what workflows download.
 
 ## Related remotes
 

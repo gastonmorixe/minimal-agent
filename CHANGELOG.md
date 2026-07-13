@@ -41,7 +41,10 @@ Longer monorepo write-ups, if needed later, can live under `docs/changes/`.
 
 ## [Unreleased]
 
-_(empty)_
+- **CI**: pin public Bun **1.3.14** (not unreleased local 1.4.x); monorepo
+  submodule checkout uses `SUBMODULES_PAT` (GITHUB_TOKEN cannot clone sibling
+  private remotes); monorepo release skips submodule init (gitlinks only);
+  `engines.bun` → `>=1.3.14` on monorepo/core/plugins.
 
 ## [0.1.0] — 2026-07-12
 
