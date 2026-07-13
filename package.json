@@ -1,0 +1,21 @@
+{
+  "name": "minimal-agent-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Umbrella monorepo: git submodules for minimal-agent + minimal-agent-plugins.",
+  "type": "module",
+  "scripts": {
+    "postinstall": "git submodule update --init --recursive || true",
+    "install:all": "bun install --cwd minimal-agent && bun install --cwd minimal-agent-plugins",
+    "start": "bun run --cwd minimal-agent start",
+    "test": "bun run --cwd minimal-agent test && bun run --cwd minimal-agent-plugins test",
+    "check": "bun run --cwd minimal-agent check && bun run --cwd minimal-agent-plugins check",
+    "typecheck": "bun run --cwd minimal-agent typecheck && bun run --cwd minimal-agent-plugins typecheck",
+    "link:plugins": "bun run scripts/link-plugins.ts",
+    "submodules:status": "git submodule status",
+    "submodules:update": "git submodule update --remote --merge"
+  },
+  "engines": {
+    "bun": ">=1.3.14"
+  }
+}

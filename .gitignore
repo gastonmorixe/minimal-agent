@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Tooling noise (submodules keep their own ignores)
+.net-dbg/
+.node-net-dbg/
+node_modules/
+
+# Local scratch
+tmp/
+.logs/
