@@ -112,6 +112,46 @@ personal worktree rewire notes.
 - Don’t rewrite submodule history from the monorepo; work in the child repo.
 - Don’t “fix” independent core/plugins CI by only running root scripts.
 
+## Versioning and releases
+
+**Scheme**
+
+| Kind | Where | Form |
+|------|--------|------|
+| package.json | monorepo, core (+ plugin-api, tools/docs), plugins root + every `ma-*-plugin` | `0.1.0` (semver) |
+| Stable git tag | each of the three remotes | `v0.1.0` (must match that repo’s package.json) |
+| Core nightlies | core CI only (`release.yml` on push to `main`) | `v0.1.0-nightly.<UTC-stamp>` |
+
+Keep the three remotes on the **same** stable version when cutting a coordinated
+release. Nightlies only advance the core pre-release stream; they do not bump
+package.json.
+
+**Tooling** (from monorepo root):
+
+```bash
+bun run version:status                 # drift + tags at a glance
+bun run version -- set 0.2.0           # write package.json everywhere
+bun run version -- set 0.2.0 --tag     # + annotated tags
+bun run version -- set 0.2.0 --tag --push
+bun run version -- set 0.2.0 --targets core --tag --push
+bun run version -- tag 0.2.0 --push    # tag only (package.json already set)
+```
+
+`scripts/version.ts` stages only the package.json files it rewrites. Unrelated
+WIP blocks the commit unless you pass `--allow-dirty`. After core/plugins
+commits, it also commits monorepo submodule pin bumps.
+
+**CI (GitHub Actions)**
+
+| Repo | Workflows |
+|------|-----------|
+| core | `ci.yml` (main/PR gate), `release.yml` (nightly on main + stable on `v*`, tag must match package.json) |
+| plugins | `ci.yml` (main/PR gate), `release.yml` (stable `v*` only) |
+| monorepo | `ci.yml` (submodules + both checks), `release.yml` (stable `v*` + pin notes) |
+
+Private submodule clones in monorepo CI use `actions/checkout` with
+`submodules: recursive` and `GITHUB_TOKEN` (same-owner private remotes).
+
 ## Related remotes
 
 | Role | GitHub |

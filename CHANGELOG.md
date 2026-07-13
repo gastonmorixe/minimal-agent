@@ -6,19 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-07-12T21:29:45-0400"
+updated-at: "2026-07-12T21:45:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
-latest-unreleased:
-  - id: "2026-07-12-monorepo-scaffold-and-rewire"
-    type: feat
-    status: shipped
-    commits: ["98d04b8", "6c1ab09", "0f46485", "4e5c203", "2e2937c", "92b8d2e", "733c5e4", "14600e9", "abf86c5", "44af6fb"]
-  - id: "2026-07-12-bun-catalogs-and-filter"
-    type: chore
-    status: shipped
-    commits: ["44af6fb"]
-    core: ["c192c02"]
-    plugins: ["06c6421"]
+latest-unreleased: []
+latest-release:
+  version: "0.1.0"
+  tag: "v0.1.0"
+  id: "2026-07-12-v0.1.0"
 related:
   - "README.md"
   - "AGENTS.md"
@@ -45,6 +39,42 @@ changelogs:
 Longer monorepo write-ups, if needed later, can live under `docs/changes/`.
 
 ## [Unreleased]
+
+_(empty)_
+
+## [0.1.0] — 2026-07-12
+
+---
+id: "2026-07-12-v0.1.0"
+type: release
+status: shipped
+created-at: "2026-07-12T21:40:00-0400"
+updated-at: "2026-07-12T21:45:00-0400"
+version: "0.1.0"
+tags:
+  monorepo: "v0.1.0"
+  core: "v0.1.0"
+  plugins: "v0.1.0"
+commits:
+  monorepo: ["b780883", "6a33ed3", "f3604b3", "aafae99"]
+  core: ["8342670"]
+  plugins: ["d5fb80f", "281f6d6"]
+tooling: "scripts/version.ts"
+ci:
+  - "core: main-only CI/release, Bun 1.4, stable tag==package.json guard"
+  - "plugins: new CI + stable release workflows"
+  - "monorepo: submodule CI gate + release with pin notes"
+---
+
+First coordinated stable release across monorepo, core, and plugins.
+
+- **package.json** `0.1.0` everywhere (monorepo root, core + plugin-api +
+  tools/docs, plugins root + all `ma-*-plugin`; ask-mode was `0.3.0` → aligned).
+- **git tags** `v0.1.0` on all three remotes.
+- **version tool** `bun run version` / `scripts/version.ts` for future bumps.
+- **CI** on all three remotes; core keeps nightlies from `package.json` version.
+
+Includes prior Unreleased monorepo work (scaffold, rewire, renames, catalogs).
 
 ### Feat: monorepo scaffold, one-tree rewire, remote renames, public docs
 
@@ -165,16 +195,7 @@ Per-submodule Bun improvements without a mega-root install graph:
 
 Verified: `bun run test:plugins` in plugins exits 0 after the filter hardening.
 
-## [0.0.0] — 2026-07-12
+## Scaffold history (pre-0.1.0)
 
----
-id: "2026-07-12-initial"
-type: feat
-status: shipped
-created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-07-12T20:53:58-0400"
-commits: ["98d04b8"]
----
-
-Initial monorepo commit: submodule pins + root orchestration only. No product
-versioning scheme yet; pins move independently of this label.
+Initial monorepo commit `98d04b8` and subsequent pin/docs/catalog work landed
+before the coordinated `0.1.0` tag; see entries above under **0.1.0**.
