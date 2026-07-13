@@ -1,4 +1,16 @@
-# minimal-agent
+<p>
+   <h1 align="center">
+      <img  height="200" alt="minimal-agent" src="https://github.com/user-attachments/assets/b3b96374-88d2-4a92-9a13-d21ebe127732" /> <br> minimal-agent <br> <br>
+   </h1>
+</p>
+
+
+[![CI](https://github.com/gastonmorixe/minimal-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/gastonmorixe/minimal-agent/actions/workflows/ci.yml)
+[![Release](https://github.com/gastonmorixe/minimal-agent/actions/workflows/release.yml/badge.svg)](https://github.com/gastonmorixe/minimal-agent/actions/workflows/release.yml)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-lightgrey)
+
+---
 
 Umbrella repository that pins two first-party trees together with **git submodules**:
 
