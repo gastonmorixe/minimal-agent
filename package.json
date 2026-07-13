@@ -2,26 +2,27 @@
   "name": "minimal-agent",
   "private": true,
   "version": "0.0.0",
+  "license": "UNLICENSED",
   "description": "Umbrella monorepo: git submodules for minimal-agent-core + minimal-agent-plugins.",
   "type": "module",
-  "scripts": {
-    "postinstall": "git submodule update --init --recursive || true",
-    "install:all": "bun install --cwd minimal-agent-core && bun install --cwd minimal-agent-plugins",
-    "start": "bun run --cwd minimal-agent-core start",
-    "test": "bun run --cwd minimal-agent-core test && bun run --cwd minimal-agent-plugins test",
-    "check": "bun run --cwd minimal-agent-core check && bun run --cwd minimal-agent-plugins check",
-    "typecheck": "bun run --cwd minimal-agent-core typecheck && bun run --cwd minimal-agent-plugins typecheck",
-    "link:plugins": "bun run scripts/link-plugins.ts",
-    "submodules:status": "git submodule status",
-    "submodules:update": "git submodule update --remote --merge"
-  },
-  "engines": {
-    "bun": ">=1.3.14"
-  },
-  "license": "UNLICENSED",
   "homepage": "https://github.com/gastonmorixe/minimal-agent",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gastonmorixe/minimal-agent.git"
+  },
+  "scripts": {
+    "install:all": "bun install --cwd minimal-agent-core && bun install --cwd minimal-agent-plugins",
+    "start": "bun run --cwd minimal-agent-core start",
+    "test": "bun run --cwd minimal-agent-core test && bun run --cwd minimal-agent-plugins test",
+    "test:plugins": "bun run --cwd minimal-agent-plugins test:plugins",
+    "check": "bun run --cwd minimal-agent-core check && bun run --cwd minimal-agent-plugins check",
+    "typecheck": "bun run --cwd minimal-agent-core typecheck && bun run --cwd minimal-agent-plugins typecheck",
+    "link:plugins": "bun run scripts/link-plugins.ts",
+    "submodules:status": "git submodule status",
+    "submodules:update": "git submodule update --remote --merge",
+    "submodules:init": "git submodule update --init --recursive"
+  },
+  "engines": {
+    "bun": ">=1.3.14"
   }
 }
