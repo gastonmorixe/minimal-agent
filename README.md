@@ -84,6 +84,27 @@ git commit -m "chore: bump submodule pins"
 
 To pin a specific commit, `cd` into the submodule, check out that commit, then commit the pin from the monorepo root.
 
+
+## Local layout on this machine
+
+The submodule working trees **are** the day-to-day checkouts. Sibling paths are
+symlinks so old tools/cwd keep working:
+
+```
+Projects/minimal-agent              → symlink → minimal-agent-monorepo/minimal-agent
+Projects/minimal-agent-plugins      → symlink → minimal-agent-monorepo/minimal-agent-plugins
+```
+
+Each submodule keeps a **nested** `.git/` directory (not absorbed into
+`.git/modules/`) so existing `git worktree` checkouts under
+`Projects/minimal-agent_WT-*` continue to resolve their gitdir paths through the
+symlink. Local-only trees (`private/`, `node_modules/`, `.logs/`, dirty WIP)
+live only under the monorepo paths and are shared via those links.
+
+`git submodule update` is **dangerous** here: it can try to reset the working
+tree to the pin and is not how you develop. Bump pins with normal commits
+inside each submodule, then `git add <submodule>` at the monorepo root.
+
 ## Why submodules (not one giant workspace)
 
 - Core and plugins already ship as independent repos with their own workspaces, locks, and CI.
