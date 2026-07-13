@@ -30,8 +30,7 @@ Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 `AGENTS.md`. Read those before changing product code:
 
 - [`minimal-agent-core/AGENTS.md`](minimal-agent-core/AGENTS.md)
-- [`minimal-agent-plugins/README.md`](minimal-agent-plugins/README.md) (plugins
-  orientation; no separate AGENTS.md yet)
+- [`minimal-agent-plugins/AGENTS.md`](minimal-agent-plugins/AGENTS.md)
 
 ## Build, test, lint (monorepo)
 
@@ -103,6 +102,28 @@ rights reserved (`LICENSE`, `package.json` → `"license": "UNLICENSED"`). Do no
 add MIT/Apache badges or “open source” language. READMEs are written as if the
 repos may be public someday: no machine-local paths (`~/Projects/...`), no
 personal worktree rewire notes.
+
+## Git commits (co-author trailer)
+
+Every commit made by an agent must include a `Co-authored-by` trailer for the
+**current session** (name + short session id):
+
+```
+Co-authored-by: {Name} <{short-sid}@minimal-agent>
+```
+
+- `{Name}` — session name (from `SessionInfo` / the TUI, e.g. `Veronica`)
+- `{short-sid}` — first 8 hex characters of the session id (e.g. `a26a1e75`
+  from `a26a1e75-…`)
+
+Example:
+
+```
+Co-authored-by: Veronica <a26a1e75@minimal-agent>
+```
+
+Put the trailer on its own line at the end of the commit message (blank line
+before it, HEREDOC so the trailer is preserved).
 
 ## What not to do here
 
