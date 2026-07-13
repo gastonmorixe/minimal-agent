@@ -20,9 +20,11 @@
     "link:plugins": "bun run scripts/link-plugins.ts",
     "submodules:status": "git submodule status",
     "submodules:update": "git submodule update --remote --merge",
-    "submodules:init": "git submodule update --init --recursive"
+    "submodules:init": "git submodule update --init --recursive",
+    "version": "bun run scripts/version.ts",
+    "version:status": "bun run scripts/version.ts status"
   },
   "engines": {
-    "bun": ">=1.3.14"
+    "bun": ">=1.4.0"
   }
 }

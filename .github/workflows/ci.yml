@@ -1,0 +1,63 @@
+name: CI
+
+# Umbrella gate: init submodules, install both trees, run both checks.
+# Private submodule remotes are fetched with the default GITHUB_TOKEN via
+# actions/checkout recurse-submodules (same-org private repos).
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - "**"
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: core + plugins check
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          # Needed so private submodule clones authenticate as this repo's token.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.0"
+
+      - name: Install ripgrep
+        run: brew install ripgrep
+
+      - name: Install core
+        working-directory: minimal-agent-core
+        run: bun install --frozen-lockfile
+
+      - name: Install plugins
+        working-directory: minimal-agent-plugins
+        # plugins bun.lock is gitignored; install resolves from package.json/catalog
+        run: bun install
+
+      - name: Check core
+        working-directory: minimal-agent-core
+        run: bun run check
+
+      - name: Check plugins
+        working-directory: minimal-agent-plugins
+        run: bun run check
+
+      - name: Version status (informational)
+        run: bun run scripts/version.ts status
