@@ -1,0 +1,80 @@
+name: Release
+
+# Stable monorepo releases: push `v*` (e.g. v0.1.0) matching package.json.
+# Records the submodule pins at that commit; no product tarball (core release
+# owns the agent tarball).
+#
+#   bun run version -- set 0.1.0 --targets all --tag --push
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish monorepo release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Validate tag and collect pins
+        id: meta
+        run: |
+          set -euo pipefail
+          VERSION="$(jq -r '.version' package.json)"
+          TAG="${GITHUB_REF#refs/tags/}"
+          LABEL="${TAG#v}"
+          if [[ -z "${VERSION}" || "${VERSION}" == "null" ]]; then
+            echo "could not read version from package.json" >&2
+            exit 1
+          fi
+          if [[ "${LABEL}" == *"-nightly."* ]]; then
+            echo "monorepo does not publish nightlies; refusing ${TAG}" >&2
+            exit 1
+          fi
+          if [[ "${LABEL}" != "${VERSION}" ]]; then
+            echo "stable tag ${TAG} does not match package.json version ${VERSION}" >&2
+            exit 1
+          fi
+          CORE_SHA="$(git rev-parse HEAD:minimal-agent-core)"
+          PLUG_SHA="$(git rev-parse HEAD:minimal-agent-plugins)"
+          {
+            echo "tag=${TAG}"
+            echo "name=minimal-agent monorepo ${TAG}"
+            echo "core_sha=${CORE_SHA}"
+            echo "plugins_sha=${PLUG_SHA}"
+          } >> "${GITHUB_OUTPUT}"
+          {
+            echo "## Pins"
+            echo ""
+            echo "| Submodule | SHA |"
+            echo "|-----------|-----|"
+            echo "| minimal-agent-core | \`${CORE_SHA}\` |"
+            echo "| minimal-agent-plugins | \`${PLUG_SHA}\` |"
+            echo ""
+            echo "Core: https://github.com/gastonmorixe/minimal-agent-core/commit/${CORE_SHA}"
+            echo ""
+            echo "Plugins: https://github.com/gastonmorixe/minimal-agent-plugins/commit/${PLUG_SHA}"
+          } > /tmp/release-body.md
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.name }}
+          body_path: /tmp/release-body.md
+          generate_release_notes: true
+          prerelease: false
