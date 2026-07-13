@@ -1,22 +1,22 @@
 # minimal-agent
 
-Umbrella monorepo that pins the two first-party trees together via **git submodules**:
+Umbrella repository that pins two first-party trees together with **git submodules**:
 
-| Path | Remote | Branch |
-|------|--------|--------|
-| [`minimal-agent-core/`](./minimal-agent-core) | `gastonmorixe/minimal-agent-core` | `main` |
-| [`minimal-agent-plugins/`](./minimal-agent-plugins) | `gastonmorixe/minimal-agent-plugins` | `main` |
+| Path | Repository | Branch |
+|------|------------|--------|
+| [`minimal-agent-core/`](./minimal-agent-core) | [`gastonmorixe/minimal-agent-core`](https://github.com/gastonmorixe/minimal-agent-core) | `main` |
+| [`minimal-agent-plugins/`](./minimal-agent-plugins) | [`gastonmorixe/minimal-agent-plugins`](https://github.com/gastonmorixe/minimal-agent-plugins) | `main` |
 
-Each submodule stays its own git history and publish surface. This repo only records which commits of each belong together.
+Each submodule keeps its own history, CI, and release surface. This repository only records which commits of each belong together.
 
 ## Clone
 
 ```bash
-git clone --recurse-submodules git@github.com:gastonmorixe/minimal-agent.git
+git clone --recurse-submodules https://github.com/gastonmorixe/minimal-agent.git
 cd minimal-agent
 ```
 
-If you already cloned without submodules:
+If you cloned without submodules:
 
 ```bash
 git submodule update --init --recursive
@@ -26,15 +26,15 @@ git submodule update --init --recursive
 
 ```
 minimal-agent/                   # this monorepo
-├── minimal-agent-core/          # core harness (submodule)
-├── minimal-agent-plugins/       # external plugins (submodule)
-├── package.json                 # convenience scripts only (no shared node_modules)
+├── minimal-agent-core/          # harness (submodule)
+├── minimal-agent-plugins/       # first-party plugins (submodule)
+├── package.json                 # convenience scripts only
 └── README.md
 ```
 
-## Day-to-day
+## Develop
 
-Work inside each submodule as usual (they are full checkouts):
+Work inside each submodule as a normal checkout:
 
 ```bash
 cd minimal-agent-core && bun install && bun run check
@@ -46,22 +46,24 @@ Or from the monorepo root:
 ```bash
 bun run install:all
 bun run check
+bun run start
 ```
 
 ### Plugin discovery
 
-The agent loads plugins from (precedence: closer-to-user wins):
+The agent loads plugins from these roots (closer-to-user wins):
 
 1. `<cwd>/.agents/plugins/`
 2. `~/.agents/plugins/`
-3. `<agent-install>/plugins/`
+3. `~/.minimal-agent/plugins/` (first-run clone of the plugins repo)
+4. A sibling `minimal-agent-plugins/` directory next to a source checkout (dev)
 
-Symlink plugins you care about into the home root:
+To wire a plugins checkout into the home root while developing:
 
 ```bash
 mkdir -p ~/.agents/plugins
 ln -sfn "$PWD/minimal-agent-plugins/ma-fetch-plugin" ~/.agents/plugins/ma-fetch-plugin
-# …repeat per plugin, or:
+# or:
 bun run link:plugins
 ```
 
@@ -75,40 +77,31 @@ bun run start
 
 ## Updating submodule pins
 
+Develop and commit inside each submodule first, then bump the pin here:
+
 ```bash
-# advance both to latest tracked branch tips
-git submodule update --remote --merge
 git add minimal-agent-core minimal-agent-plugins
 git commit -m "chore: bump submodule pins"
 ```
 
-To pin a specific commit, `cd` into the submodule, check out that commit, then commit the pin from the monorepo root.
+`git submodule update --remote` advances both to the tip of the tracked branch, then stage and commit as above. Prefer explicit pins for reproducible checkouts.
 
-## Local layout on this machine
+## Why submodules
 
-The submodule working trees **are** the day-to-day checkouts. Sibling paths are
-symlinks so old tools/cwd keep working:
+- Core and plugins already ship as independent repositories with their own workspaces, locks, and CI.
+- A single nested Bun workspace across both trees fights Bun's single-root install model.
+- Submodules keep PR surfaces separate while still giving one checkout that knows a compatible pair of commits.
 
-```
-Projects/minimal-agent              → symlink → minimal-agent-monorepo/minimal-agent-core
-Projects/minimal-agent-plugins      → symlink → minimal-agent-monorepo/minimal-agent-plugins
-```
+## Related
 
-(On disk the monorepo folder is still named `minimal-agent-monorepo/` locally;
-GitHub hosts it as `gastonmorixe/minimal-agent`.)
+- Core harness: [minimal-agent-core](https://github.com/gastonmorixe/minimal-agent-core)
+- Plugins: [minimal-agent-plugins](https://github.com/gastonmorixe/minimal-agent-plugins)
 
-Each submodule keeps a **nested** `.git/` directory (not absorbed into
-`.git/modules/`) so existing `git worktree` checkouts under
-`Projects/minimal-agent_WT-*` continue to resolve their gitdir paths through the
-symlink. Local-only trees (`private/`, `node_modules/`, `.logs/`, dirty WIP)
-live only under the monorepo paths and are shared via those links.
+## License
 
-`git submodule update` is **dangerous** here: it can try to reset the working
-tree to the pin and is not how you develop. Bump pins with normal commits
-inside each submodule, then `git add <submodule>` at the monorepo root.
+Copyright (c) 2025–2026 Gaston Morixe. All rights reserved.
 
-## Why submodules (not one giant workspace)
-
-- Core and plugins already ship as independent repos with their own workspaces, locks, and CI.
-- Nested `workspaces` across both trees would fight Bun's single-root install model.
-- Submodules keep history, remotes, and PR surfaces separate while still giving one checkout that "knows" a compatible pair of commits.
+This software is proprietary and confidential. No license is granted to use,
+copy, modify, merge, publish, distribute, sublicense, or sell copies of the
+software except as expressly authorized in writing by the copyright holder.
+See [LICENSE](./LICENSE).
