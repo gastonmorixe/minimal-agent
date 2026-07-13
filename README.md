@@ -34,20 +34,33 @@ minimal-agent/                   # this monorepo
 
 ## Develop
 
-Work inside each submodule as a normal checkout:
+Each submodule is its own Bun workspace (with a shared **catalog** for toolchain
+versions). Work inside them as normal checkouts:
 
 ```bash
 cd minimal-agent-core && bun install && bun run check
 cd ../minimal-agent-plugins && bun install && bun run check
 ```
 
-Or from the monorepo root:
+Or from the monorepo root (orchestrates both; does **not** merge them into one
+install graph):
 
 ```bash
 bun run install:all
 bun run check
 bun run start
 ```
+
+Inside the plugins workspace, run each package’s `test` script in parallel:
+
+```bash
+cd minimal-agent-plugins
+bun run test:plugins          # bun --filter 'ma-*' test
+```
+
+Toolchain versions (`typescript`, `oxlint`, `biome`, `bun-types`, …) are declared
+once per repo under `workspaces.catalog` and referenced as `"catalog:"` from
+`devDependencies`. Bump a version in the catalog, then `bun install`.
 
 ### Plugin discovery
 
