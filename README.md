@@ -4,7 +4,7 @@ Umbrella repo that pins the two first-party trees together via **git submodules*
 
 | Path | Remote | Branch |
 |------|--------|--------|
-| [`minimal-agent/`](./minimal-agent) | `gastonmorixe/minimal-agent-dev-private` | `dev-private` |
+| [`minimal-agent/`](./minimal-agent) | `gastonmorixe/minimal-agent-main` | `main` |
 | [`minimal-agent-plugins/`](./minimal-agent-plugins) | `gastonmorixe/minimal-agent-plugins` | `main` |
 
 Each submodule stays its own git history and publish surface. This repo only records which commits of each belong together.
