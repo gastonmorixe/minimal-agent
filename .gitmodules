@@ -1,6 +1,6 @@
 [submodule "minimal-agent-core"]
 	path = minimal-agent-core
-	url = https://github.com/gastonmorixe/minimal-agent-dev-private.git
+	url = https://github.com/gastonmorixe/minimal-agent-core.git
 	branch = main
 [submodule "minimal-agent-plugins"]
 	path = minimal-agent-plugins
