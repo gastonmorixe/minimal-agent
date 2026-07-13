@@ -23,11 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout (with submodules)
+      # Pin SHAs come from gitlinks in the tree — no submodule content needed.
+      - name: Checkout
         uses: actions/checkout@v6
         with:
-          submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Validate tag and collect pins

@@ -133,11 +133,15 @@ bun run version -- set 0.2.0 --allow-dirty   # if unrelated WIP exists
 
 **CI details**
 
-- Bun **1.4.0** in all workflows; package `engines.bun` is `>=1.4.0`.
+- Bun **1.3.14** in all workflows (latest public release). Package
+  `engines.bun` is `>=1.3.14`. Local canary/patched Bun (e.g. 1.4.x) is fine
+  but is not what CI downloads.
 - Core dropped obsolete `dev-private` branch triggers (default branch is `main`).
-- Monorepo private submodule fetch uses `actions/checkout` with
-  `submodules: recursive` and `token: ${{ secrets.GITHUB_TOKEN }}` (same-owner
-  private remotes).
+- Monorepo CI private submodule fetch uses `actions/checkout` with
+  `submodules: recursive` and `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT
+  with `repo` that can read `minimal-agent-core` + `minimal-agent-plugins`).
+  Default `GITHUB_TOKEN` cannot clone other private repos. Monorepo release
+  only reads gitlink SHAs and does not init submodules.
 
 ## Day-to-day recipes
 
