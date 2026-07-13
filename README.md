@@ -120,7 +120,7 @@ bun run version:status
 bun run version -- set 0.2.0 --tag --push
 ```
 
-See [`AGENTS.md`](./AGENTS.md) for the full scheme (nightlies, CI, targets).
+See [`docs/versioning-and-releases.md`](./docs/versioning-and-releases.md) and [`AGENTS.md`](./AGENTS.md) for the full scheme (nightlies, CI, targets).
 
 ## For agents
 

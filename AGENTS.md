@@ -114,6 +114,8 @@ personal worktree rewire notes.
 
 ## Versioning and releases
 
+Full process doc: [`docs/versioning-and-releases.md`](docs/versioning-and-releases.md).
+
 **Scheme**
 
 | Kind | Where | Form |

@@ -16,6 +16,7 @@ latest-release:
 related:
   - "README.md"
   - "AGENTS.md"
+  - "docs/versioning-and-releases.md"
   - "minimal-agent-core/docs/CHANGELOG.md"
   - "minimal-agent-plugins/CHANGELOG.md"
 remotes:
