@@ -110,6 +110,12 @@ git commit -m "chore: bump submodule pins"
 - Core harness: [minimal-agent-core](https://github.com/gastonmorixe/minimal-agent-core)
 - Plugins: [minimal-agent-plugins](https://github.com/gastonmorixe/minimal-agent-plugins)
 
+## For agents
+
+Orientation for automated assistants working in this tree:
+[`AGENTS.md`](./AGENTS.md). Monorepo change history:
+[`CHANGELOG.md`](./CHANGELOG.md).
+
 ## License
 
 Copyright (c) 2025–2026 Gaston Morixe. All rights reserved.
