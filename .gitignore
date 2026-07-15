@@ -16,3 +16,4 @@ tmp/
 # rewire scratch
 .rewire-*
 bun.lock
+PROGRESS.md
