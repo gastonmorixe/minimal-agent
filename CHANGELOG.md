@@ -33,6 +33,10 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+- 2026-07-24 (this session): Bump **plugins** pin through `ea943b5` —
+  `ma-env-info-plugin` host snapshot uses `placement: "afterInstructions"` so
+  `cwd=` / env facts survive `--no-system-session-context`.
+
 - 2026-07-24 (this session): Bump submodule pins for Cursor provider NetworkClient
   integration + live net-dbg proof:
   - **plugins** `228673c` — `ma-llm-cursor-plugin` AgentService/Run posts via host
