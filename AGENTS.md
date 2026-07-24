@@ -6,10 +6,26 @@ This tree is **not** the agent harness source. It pins two first-party
 submodules and provides thin orchestration scripts. Almost all product code,
 tests, and gates live **inside** the submodules.
 
+## Working directory (read this first)
+
+- Your session **cwd is this monorepo root** (the directory that contains
+  `minimal-agent-core/` and `minimal-agent-plugins/`). Prefer **relative**
+  paths from that cwd: `minimal-agent-core/...`, `minimal-agent-plugins/...`.
+- Product code is **not** at a sibling `src/` under the monorepo root. Do not
+  search or edit `src/...` at the monorepo root.
+- Do **not** invent absolute paths like `~/Projects/minimal-agent` or
+  `/Users/.../Projects/minimal-agent`. On some machines that name is only a
+  convenience symlink into `minimal-agent-core` and will mislead Grep/Read
+  into the wrong tree. Trust `SessionInfo` / env snapshot `cwd=` when you
+  need an absolute path.
+- GitHub remote name for this umbrella may still be `minimal-agent`; that is
+  the **remote**, not the on-disk monorepo folder name and not a path prefix
+  for tools.
+
 ## Layout
 
 ```
-minimal-agent/                      # this repo (gastonmorixe/minimal-agent)
+.                                   # monorepo root (session cwd)
 ├── minimal-agent-core/             # submodule → gastonmorixe/minimal-agent-core
 ├── minimal-agent-plugins/          # submodule → gastonmorixe/minimal-agent-plugins
 ├── package.json                    # install/check/start orchestration only
@@ -24,7 +40,7 @@ minimal-agent/                      # this repo (gastonmorixe/minimal-agent)
 |------|------------|----------------|
 | `minimal-agent-core/` | Harness, plugin-api, agent loop, TUI | Core PRs / `bun run check` **here** |
 | `minimal-agent-plugins/` | First-party plugins (`ma-*-plugin`) | Plugin PRs / `bun run check` **here** |
-| monorepo root | Submodule **pins** + convenience scripts | Pin bumps only |
+| monorepo root (`.`) | Submodule **pins** + convenience scripts | Pin bumps only |
 
 Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 `AGENTS.md`. Read those before changing product code:
