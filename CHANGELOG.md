@@ -30,6 +30,31 @@ remotes:
 All notable changes to the **minimal-agent monorepo** (umbrella pins +
 orchestration) are documented here.
 
+## [Unreleased]
+
+### Fixed
+- 2026-07-24 (this session): Bump submodule pins for Cursor provider NetworkClient
+  integration + live net-dbg proof:
+  - **plugins** `751fd3f` — `ma-llm-cursor-plugin` AgentService/Run posts via host
+    `NetworkClient` with `protocol: "h2"` (base64 req capture; raw http2/curl
+    are explicit fallbacks only).
+  - **core** includes `ff4a1ab` (always-register h2 transport when fetch is
+    primary) and `7c91bc7` (status-line Sending request activity).
+  Live proof: Julia session `6e61a7ae` wrote
+  `net-dbg/*-minimal-agent-6e61a7ae-*` with Connect+proto to
+  `agentn.api5.cursor.sh` over transport `http2`/`h2`.
+  Research: `private/20260723-163123-cursor-provider-taskforce/PROGRESS.md`
+  + `reports/14-networkclient-netdbg-live-proof.md` (gitignored private/).
+
+- 2026-07-24 (this session): `AGENTS.md` no longer presents the monorepo layout
+  under a top-level `minimal-agent/` folder name. That label matched the GitHub
+  remote and a local convenience symlink (`~/Projects/minimal-agent` →
+  `…/minimal-agent-core`) and caused agents (e.g. Leon) to Grep/Read absolute
+  `…/Projects/minimal-agent/src/...` instead of `./minimal-agent-core/src/...`.
+  Added a **Working directory** section: prefer relative `minimal-agent-core/`
+  / `minimal-agent-plugins/` paths from monorepo cwd; do not invent sibling
+  absolute project roots. Layout diagram now starts at `.` (session cwd).
+
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 Product-level changes to the harness or plugins belong in the submodule
 changelogs:
