@@ -41,11 +41,11 @@ This document is monorepo-level process only.
 
 ## Scheme
 
-| Kind | Where | Form |
-|------|--------|------|
-| `package.json` `version` | monorepo root; core root + `plugin-api` + `tools/docs`; plugins root + every `ma-*-plugin` | Semver, e.g. `0.1.0` |
-| Stable git tag | each of the three remotes | `v0.1.0` — must match that repo’s root `package.json` version |
-| Core nightlies | core only (`release.yml` on push to `main`) | `v0.1.0-nightly.<UTC-stamp>` derived from package.json + timestamp |
+| Kind                     | Where                                                                                      | Form                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `package.json` `version` | monorepo root; core root + `plugin-api` + `tools/docs`; plugins root + every `ma-*-plugin` | Semver, e.g. `0.1.0`                                               |
+| Stable git tag           | each of the three remotes                                                                  | `v0.1.0` — must match that repo’s root `package.json` version      |
+| Core nightlies           | core only (`release.yml` on push to `main`)                                                | `v0.1.0-nightly.<UTC-stamp>` derived from package.json + timestamp |
 
 **Rules**
 
@@ -77,11 +77,11 @@ bun run version -- tag 0.2.0 --push          # tag only; package.json already se
 bun run version -- set 0.2.0 --allow-dirty   # if unrelated WIP exists
 ```
 
-| Command | Effect |
-|---------|--------|
-| `status` | Per-target package.json versions, drift, HEAD, stable tags |
+| Command        | Effect                                                                    |
+| -------------- | ------------------------------------------------------------------------- |
+| `status`       | Per-target package.json versions, drift, HEAD, stable tags                |
 | `set <semver>` | Rewrite all package.json under selected targets; optional commit/tag/push |
-| `tag <semver>` | Annotated tags only (fails if package.json ≠ version) |
+| `tag <semver>` | Annotated tags only (fails if package.json ≠ version)                     |
 
 **Targets:** `all` (default) · `monorepo` · `core` · `plugins` · comma lists.
 
@@ -122,14 +122,14 @@ bun run version -- set 0.2.0 --allow-dirty   # if unrelated WIP exists
 
 ## CI and release workflows
 
-| Repo | Workflow | Trigger | Job |
-|------|----------|---------|-----|
-| core | `ci.yml` | push/PR `main` (not tags) | `bun install --frozen-lockfile` + `bun run check` |
-| core | `release.yml` | push `main` (nightly) or tag `v*` (stable) | check → tarball → `gh release`; stable requires tag ≡ package.json |
-| plugins | `ci.yml` | push/PR `main` | `bun install` + `bun run check` (lockfile gitignored) |
-| plugins | `release.yml` | tag `v*` | tag ≡ package.json → GitHub release |
-| monorepo | `ci.yml` | push/PR `main` | checkout recursive submodules → install both → both checks → `version status` |
-| monorepo | `release.yml` | tag `v*` | tag ≡ package.json → release body with pin SHAs |
+| Repo     | Workflow      | Trigger                                    | Job                                                                           |
+| -------- | ------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| core     | `ci.yml`      | push/PR `main` (not tags)                  | `bun install --frozen-lockfile` + `bun run check`                             |
+| core     | `release.yml` | push `main` (nightly) or tag `v*` (stable) | check → tarball → `gh release`; stable requires tag ≡ package.json            |
+| plugins  | `ci.yml`      | push/PR `main`                             | `bun install` + `bun run check` (lockfile gitignored)                         |
+| plugins  | `release.yml` | tag `v*`                                   | tag ≡ package.json → GitHub release                                           |
+| monorepo | `ci.yml`      | push/PR `main`                             | checkout recursive submodules → install both → both checks → `version status` |
+| monorepo | `release.yml` | tag `v*`                                   | tag ≡ package.json → release body with pin SHAs                               |
 
 **CI details**
 
@@ -187,17 +187,18 @@ bun run version:status
 ## First coordinated release (audit)
 
 ---
+
 id: "2026-07-12-v0.1.0-cut"
 type: release
 status: shipped
 version: "0.1.0"
 ---
 
-| Remote | package.json | Tag | Notes |
-|--------|--------------|-----|--------|
-| monorepo | `0.1.0` | `v0.1.0` | pin commit includes core + plugins |
-| core | `0.1.0` (already) | `v0.1.0` | first **stable** tag; nightlies existed earlier |
-| plugins | `0.1.0` (was `0.0.0` / mixed) | `v0.1.0` | all plugins aligned |
+| Remote   | package.json                  | Tag      | Notes                                           |
+| -------- | ----------------------------- | -------- | ----------------------------------------------- |
+| monorepo | `0.1.0`                       | `v0.1.0` | pin commit includes core + plugins              |
+| core     | `0.1.0` (already)             | `v0.1.0` | first **stable** tag; nightlies existed earlier |
+| plugins  | `0.1.0` (was `0.0.0` / mixed) | `v0.1.0` | all plugins aligned                             |
 
 Also landed with the cut:
 
