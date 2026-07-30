@@ -33,6 +33,7 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
 - 2026-07-24 (this session): Bump **plugins** pin through `39b5388` —
   `ma-env-info-plugin` host snapshot uses `placement: "afterInstructions"` so
   `cwd=` / env facts survive `--no-system-session-context`.
@@ -44,11 +45,11 @@ orchestration) are documented here.
     are explicit fallbacks only).
   - **core** includes `ff4a1ab` (always-register h2 transport when fetch is
     primary) and `7c91bc7` (status-line Sending request activity).
-  Live proof: Julia session `6e61a7ae` wrote
-  `net-dbg/*-minimal-agent-6e61a7ae-*` with Connect+proto to
-  `agentn.api5.cursor.sh` over transport `http2`/`h2`.
-  Research: `private/20260723-163123-cursor-provider-taskforce/PROGRESS.md`
-  + `reports/14-networkclient-netdbg-live-proof.md` (gitignored private/).
+    Live proof: Julia session `6e61a7ae` wrote
+    `net-dbg/*-minimal-agent-6e61a7ae-*` with Connect+proto to
+    `agentn.api5.cursor.sh` over transport `http2`/`h2`.
+    Research: `private/20260723-163123-cursor-provider-taskforce/PROGRESS.md`
+  * `reports/14-networkclient-netdbg-live-proof.md` (gitignored private/).
 
 - 2026-07-24 (this session): `AGENTS.md` no longer presents the monorepo layout
   under a top-level `minimal-agent/` folder name. That label matched the GitHub
@@ -78,6 +79,7 @@ Longer monorepo write-ups, if needed later, can live under `docs/changes/`.
 ## [0.1.0] — 2026-07-12
 
 ---
+
 id: "2026-07-12-v0.1.0"
 type: release
 status: shipped
@@ -85,18 +87,20 @@ created-at: "2026-07-12T21:40:00-0400"
 updated-at: "2026-07-12T21:45:00-0400"
 version: "0.1.0"
 tags:
-  monorepo: "v0.1.0"
-  core: "v0.1.0"
-  plugins: "v0.1.0"
+monorepo: "v0.1.0"
+core: "v0.1.0"
+plugins: "v0.1.0"
 commits:
-  monorepo: ["b780883", "6a33ed3", "f3604b3", "aafae99"]
-  core: ["8342670"]
-  plugins: ["d5fb80f", "281f6d6"]
+monorepo: ["b780883", "6a33ed3", "f3604b3", "aafae99"]
+core: ["8342670"]
+plugins: ["d5fb80f", "281f6d6"]
 tooling: "scripts/version.ts"
 ci:
-  - "core: main-only CI/release, Bun 1.4, stable tag==package.json guard"
-  - "plugins: new CI + stable release workflows"
-  - "monorepo: submodule CI gate + release with pin notes"
+
+- "core: main-only CI/release, Bun 1.4, stable tag==package.json guard"
+- "plugins: new CI + stable release workflows"
+- "monorepo: submodule CI gate + release with pin notes"
+
 ---
 
 First coordinated stable release across monorepo, core, and plugins.
@@ -112,48 +116,51 @@ Includes prior Unreleased monorepo work (scaffold, rewire, renames, catalogs).
 ### Feat: monorepo scaffold, one-tree rewire, remote renames, public docs
 
 ---
+
 id: "2026-07-12-monorepo-scaffold-and-rewire"
 type: feat
 status: shipped
 created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-07-12T21:21:29-0400"
 commits:
-  - id: "98d04b8"
-    summary: "scaffold monorepo with core + plugins submodules"
-  - id: "6c1ab09"
-    summary: "document one-tree rewire (nested .git, sibling symlinks)"
-  - id: "0f46485"
-    summary: "track core submodule branch main (was dev-private)"
-  - id: "4e5c203"
-    summary: "fix README remote name after branch rename"
-  - id: "2e2937c"
-    summary: "rename core submodule path to minimal-agent-core"
-  - id: "92b8d2e"
-    summary: "point core submodule URL at gastonmorixe/minimal-agent-core"
-  - id: "733c5e4"
-    summary: "public monorepo README + proprietary LICENSE"
-  - id: "14600e9"
-    summary: "bump plugins pin (README monorepo link fix)"
-  - id: "abf86c5"
-    summary: "bump plugins pin (portable README paths)"
-remotes:
-  - action: "create"
-    name: "gastonmorixe/minimal-agent"
-    role: "monorepo (this repo)"
-    private: true
-  - action: "rename"
-    from: "gastonmorixe/minimal-agent-dev-private"
-    to: "gastonmorixe/minimal-agent-core"
-    role: "core harness (same GitHub repo id)"
-    note: "historically also named minimal-agent before dev-private"
-  - action: "unchanged"
-    name: "gastonmorixe/minimal-agent-plugins"
-    role: "first-party plugins"
-local:
-  - "Submodule checkouts are the day-to-day working trees (rich trees with private/)."
-  - "Sibling path Projects/minimal-agent → symlink → monorepo/minimal-agent-core (name kept for tools/cwd)."
-  - "Nested submodule .git dirs (not absorbgitdirs) preserve existing git worktree gitdir paths."
-  - "Do not casually run git submodule update on a machine that develops inside the submodules."
+
+- id: "98d04b8"
+  summary: "scaffold monorepo with core + plugins submodules"
+- id: "6c1ab09"
+  summary: "document one-tree rewire (nested .git, sibling symlinks)"
+- id: "0f46485"
+  summary: "track core submodule branch main (was dev-private)"
+- id: "4e5c203"
+  summary: "fix README remote name after branch rename"
+- id: "2e2937c"
+  summary: "rename core submodule path to minimal-agent-core"
+- id: "92b8d2e"
+  summary: "point core submodule URL at gastonmorixe/minimal-agent-core"
+- id: "733c5e4"
+  summary: "public monorepo README + proprietary LICENSE"
+- id: "14600e9"
+  summary: "bump plugins pin (README monorepo link fix)"
+- id: "abf86c5"
+  summary: "bump plugins pin (portable README paths)"
+  remotes:
+- action: "create"
+  name: "gastonmorixe/minimal-agent"
+  role: "monorepo (this repo)"
+  private: true
+- action: "rename"
+  from: "gastonmorixe/minimal-agent-dev-private"
+  to: "gastonmorixe/minimal-agent-core"
+  role: "core harness (same GitHub repo id)"
+  note: "historically also named minimal-agent before dev-private"
+- action: "unchanged"
+  name: "gastonmorixe/minimal-agent-plugins"
+  role: "first-party plugins"
+  local:
+- "Submodule checkouts are the day-to-day working trees (rich trees with private/)."
+- "Sibling path Projects/minimal-agent → symlink → monorepo/minimal-agent-core (name kept for tools/cwd)."
+- "Nested submodule .git dirs (not absorbgitdirs) preserve existing git worktree gitdir paths."
+- "Do not casually run git submodule update on a machine that develops inside the submodules."
+
 ---
 
 Stood up `gastonmorixe/minimal-agent` as a private umbrella that pins
@@ -197,24 +204,27 @@ Stood up `gastonmorixe/minimal-agent` as a private umbrella that pins
 ### Chore: Bun catalogs + filter orchestration
 
 ---
+
 id: "2026-07-12-bun-catalogs-and-filter"
 type: chore
 status: shipped
 created-at: "2026-07-12T21:27:00-0400"
 updated-at: "2026-07-12T21:29:45-0400"
 commits:
-  - id: "44af6fb"
-    summary: "monorepo: catalog docs, drop postinstall submodule update, test:plugins + submodules:init"
-submodule-commits:
+
+- id: "44af6fb"
+  summary: "monorepo: catalog docs, drop postinstall submodule update, test:plugins + submodules:init"
+  submodule-commits:
   core:
-    - id: "c192c02"
-      summary: "workspaces.catalog for toolchain; tools/docs keeps TS6 for typedoc"
-  plugins:
-    - id: "06c6421"
-      summary: "catalog + test:plugins (--filter parallel) + pass-with-no-tests"
-decision:
-  - "No monorepo-root Bun workspaces merging core+plugins (dual remotes, self-contained plugins)."
-  - "Catalogs and --filter improve each submodule; root stays pin + orchestration."
+  - id: "c192c02"
+    summary: "workspaces.catalog for toolchain; tools/docs keeps TS6 for typedoc"
+    plugins:
+  - id: "06c6421"
+    summary: "catalog + test:plugins (--filter parallel) + pass-with-no-tests"
+    decision:
+- "No monorepo-root Bun workspaces merging core+plugins (dual remotes, self-contained plugins)."
+- "Catalogs and --filter improve each submodule; root stays pin + orchestration."
+
 ---
 
 Per-submodule Bun improvements without a mega-root install graph:

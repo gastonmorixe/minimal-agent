@@ -17,9 +17,9 @@
 
 Umbrella repository that pins two first-party trees together with **git submodules**:
 
-| Path | Repository | Branch |
-|------|------------|--------|
-| [`minimal-agent-core/`](./minimal-agent-core) | [`gastonmorixe/minimal-agent-core`](https://github.com/gastonmorixe/minimal-agent-core) | `main` |
+| Path                                                | Repository                                                                                    | Branch |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------ |
+| [`minimal-agent-core/`](./minimal-agent-core)       | [`gastonmorixe/minimal-agent-core`](https://github.com/gastonmorixe/minimal-agent-core)       | `main` |
 | [`minimal-agent-plugins/`](./minimal-agent-plugins) | [`gastonmorixe/minimal-agent-plugins`](https://github.com/gastonmorixe/minimal-agent-plugins) | `main` |
 
 Each submodule keeps its own history, CI, and release surface. This repository only records which commits of each belong together.

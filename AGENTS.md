@@ -36,11 +36,11 @@ tests, and gates live **inside** the submodules.
 └── README.md
 ```
 
-| Path | What it is | Where to work |
-|------|------------|----------------|
-| `minimal-agent-core/` | Harness, plugin-api, agent loop, TUI | Core PRs / `bun run check` **here** |
-| `minimal-agent-plugins/` | First-party plugins (`ma-*-plugin`) | Plugin PRs / `bun run check` **here** |
-| monorepo root (`.`) | Submodule **pins** + convenience scripts | Pin bumps only |
+| Path                     | What it is                               | Where to work                         |
+| ------------------------ | ---------------------------------------- | ------------------------------------- |
+| `minimal-agent-core/`    | Harness, plugin-api, agent loop, TUI     | Core PRs / `bun run check` **here**   |
+| `minimal-agent-plugins/` | First-party plugins (`ma-*-plugin`)      | Plugin PRs / `bun run check` **here** |
+| monorepo root (`.`)      | Submodule **pins** + convenience scripts | Pin bumps only                        |
 
 Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 `AGENTS.md`. Read those before changing product code:
@@ -155,11 +155,11 @@ Full process doc: [`docs/versioning-and-releases.md`](docs/versioning-and-releas
 
 **Scheme**
 
-| Kind | Where | Form |
-|------|--------|------|
-| package.json | monorepo, core (+ plugin-api, tools/docs), plugins root + every `ma-*-plugin` | `0.1.0` (semver) |
-| Stable git tag | each of the three remotes | `v0.1.0` (must match that repo’s package.json) |
-| Core nightlies | core CI only (`release.yml` on push to `main`) | `v0.1.0-nightly.<UTC-stamp>` |
+| Kind           | Where                                                                         | Form                                           |
+| -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
+| package.json   | monorepo, core (+ plugin-api, tools/docs), plugins root + every `ma-*-plugin` | `0.1.0` (semver)                               |
+| Stable git tag | each of the three remotes                                                     | `v0.1.0` (must match that repo’s package.json) |
+| Core nightlies | core CI only (`release.yml` on push to `main`)                                | `v0.1.0-nightly.<UTC-stamp>`                   |
 
 Keep the three remotes on the **same** stable version when cutting a coordinated
 release. Nightlies only advance the core pre-release stream; they do not bump
@@ -182,11 +182,11 @@ commits, it also commits monorepo submodule pin bumps.
 
 **CI (GitHub Actions)**
 
-| Repo | Workflows |
-|------|-----------|
-| core | `ci.yml` (main/PR gate), `release.yml` (nightly on main + stable on `v*`, tag must match package.json) |
-| plugins | `ci.yml` (main/PR gate), `release.yml` (stable `v*` only) |
-| monorepo | `ci.yml` (submodules + both checks), `release.yml` (stable `v*` + pin notes) |
+| Repo     | Workflows                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------------ |
+| core     | `ci.yml` (main/PR gate), `release.yml` (nightly on main + stable on `v*`, tag must match package.json) |
+| plugins  | `ci.yml` (main/PR gate), `release.yml` (stable `v*` only)                                              |
+| monorepo | `ci.yml` (submodules + both checks), `release.yml` (stable `v*` + pin notes)                           |
 
 Private submodule clones in monorepo CI use `actions/checkout` with
 `submodules: recursive` and `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT
@@ -196,8 +196,8 @@ clone other private repos. CI pins public Bun **1.3.14** (`engines.bun`
 
 ## Related remotes
 
-| Role | GitHub |
-|------|--------|
-| This monorepo | https://github.com/gastonmorixe/minimal-agent |
-| Core harness | https://github.com/gastonmorixe/minimal-agent-core |
-| Plugins | https://github.com/gastonmorixe/minimal-agent-plugins |
+| Role          | GitHub                                                |
+| ------------- | ----------------------------------------------------- |
+| This monorepo | https://github.com/gastonmorixe/minimal-agent         |
+| Core harness  | https://github.com/gastonmorixe/minimal-agent-core    |
+| Plugins       | https://github.com/gastonmorixe/minimal-agent-plugins |
