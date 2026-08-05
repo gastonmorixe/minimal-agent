@@ -80,9 +80,14 @@ run in that remote’s tree.
 ## Submodules (read this before `git submodule update`)
 
 - The monorepo records a **gitlink** (mode `160000`) commit SHA for each child.
-- Develop **inside** the submodule: commit and push to that repo’s remote first,
-  then from the monorepo root:
+- Develop **inside** the submodule: commit and **push to that repo’s remote
+  first**, then from the monorepo root bump the gitlink and push. Monorepo CI
+  clones by SHA; a pin bump that lands before the sibling commit is reachable
+  fails with `not our ref` / `upload-pack` (workflows retry briefly, but do not
+  race the push order):
   ```bash
+  git -C minimal-agent-core push origin HEAD
+  # and/or: git -C minimal-agent-plugins push origin HEAD
   git add minimal-agent-core   # and/or minimal-agent-plugins
   git commit -m "chore: bump … pin"
   git push
@@ -119,18 +124,32 @@ add MIT/Apache badges or “open source” language. READMEs are written as if t
 repos may be public someday: no machine-local paths (`~/Projects/...`), no
 personal worktree rewire notes.
 
-## Git commits (co-author trailer)
+## Git commits (Conventional Commits)
+
+Commit subjects follow [Conventional Commits](https://www.conventionalcommits.org/)
+(`feat:`, `fix:`, `chore:`, …). Husky + Commitlint enforce this on `commit-msg`
+in this repo and in both submodules (`commitlint.config.js`, `.husky/commit-msg`).
+`bun install` / `bun run install:all` runs `prepare` → `husky` so hooks wire up.
+CI also runs a `commitlint` job (`bun run commitlint:last` on push; range lint
+on PRs). Local check: `echo 'feat: ok' | bun run commitlint`.
+
+## Git commits (agent Co-authored-by trailer)
 
 Every commit made by an agent must include a `Co-authored-by` trailer for the
-**current session** (name + short session id):
+**current session** (name + short session id). This is a **local audit trail**
+("which agent session authored this commit"). It is **not** a GitHub co-author,
+not a second GitHub user, and not GitHub contributor attribution.
+
+Format:
 
 ```
 Co-authored-by: {Name} <{short-sid}@minimal-agent>
 ```
 
-- `{Name}` — session name (from `SessionInfo` / the TUI, e.g. `Veronica`)
-- `{short-sid}` — first 8 hex characters of the session id (e.g. `a26a1e75`
-  from `a26a1e75-…`)
+- `{Name}` — session name (`MINIMAL_AGENT_AGENT_NAME` / `SessionInfo` / TUI),
+  e.g. `Veronica`
+- `{short-sid}` — first 8 hex characters of `MINIMAL_AGENT_SESSION_ID`, e.g.
+  `a26a1e75` from `a26a1e75-…`
 
 Example:
 
@@ -138,8 +157,29 @@ Example:
 Co-authored-by: Veronica <a26a1e75@minimal-agent>
 ```
 
-Put the trailer on its own line at the end of the commit message (blank line
-before it, HEREDOC so the trailer is preserved).
+Put the trailer on its own line at the end of the commit message with a blank
+line before it. Prefer a HEREDOC so git keeps the trailer:
+
+```bash
+git commit -m "$(cat <<'EOF'
+fix: explain the change briefly.
+
+Co-authored-by: Veronica <a26a1e75@minimal-agent>
+EOF
+)"
+```
+
+Or append with Git's native flag:
+
+```bash
+git commit -m "fix: explain the change briefly." \
+  --trailer "Co-authored-by: Veronica <a26a1e75@minimal-agent>"
+```
+
+**Enforcement:** when `MINIMAL_AGENT_SESSION_ID` is set, `.husky/commit-msg`
+runs `scripts/check-agent-coauthor.sh` after Commitlint. Missing or wrong
+trailers (sid / name) fail the commit. Human commits (env unset) are not gated.
+Agents must not bypass with `--no-verify`.
 
 ## What not to do here
 
@@ -182,17 +222,19 @@ commits, it also commits monorepo submodule pin bumps.
 
 **CI (GitHub Actions)**
 
-| Repo     | Workflows                                                                                              |
-| -------- | ------------------------------------------------------------------------------------------------------ |
-| core     | `ci.yml` (main/PR gate), `release.yml` (nightly on main + stable on `v*`, tag must match package.json) |
-| plugins  | `ci.yml` (main/PR gate), `release.yml` (stable `v*` only)                                              |
-| monorepo | `ci.yml` (submodules + both checks), `release.yml` (stable `v*` + pin notes)                           |
+| Repo     | Workflows                                                                                                              |
+| -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| core     | `ci.yml` (commitlint + check), `release.yml` (nightly on main + stable on `v*`, tag must match package.json)           |
+| plugins  | `ci.yml` (commitlint + check), `release.yml` (stable `v*` only)                                                        |
+| monorepo | `ci.yml` (commitlint + submodule retry + both checks), `release.yml` (stable `v*` + pin notes)                         |
 
-Private submodule clones in monorepo CI use `actions/checkout` with
-`submodules: recursive` and `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT
-with `repo` that can read core + plugins). Default `GITHUB_TOKEN` cannot
-clone other private repos. CI pins public Bun **1.3.14** (`engines.bun`
-`>=1.3.14`); local canary/patched Bun is not what workflows download.
+Private submodule clones in monorepo CI use `actions/checkout@v7` with
+`token: ${{ secrets.SUBMODULES_PAT }}` (a PAT with `repo` that can read core +
+plugins), then `git submodule update --init --recursive` with retries. Default
+`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.3.14**
+(`engines.bun` `>=1.3.14`); local canary/patched Bun is not what workflows
+download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
+`actions/upload-artifact@v7` (core release), `softprops/action-gh-release@v3`.
 
 ## Related remotes
 
