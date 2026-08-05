@@ -6,7 +6,7 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-07-12T21:45:00-0400"
+updated-at: "2026-08-05T11:30:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased: []
 latest-release:
@@ -31,6 +31,23 @@ All notable changes to the **minimal-agent monorepo** (umbrella pins +
 orchestration) are documented here.
 
 ## [Unreleased]
+
+### Added
+
+- 2026-08-05 (this session): Husky + Commitlint (Conventional Commits) at the
+  monorepo root (`commitlint.config.js`, `.husky/commit-msg`, `prepare` →
+  `husky`). CI gains a `commitlint` job; `bun run commitlint:last` for pushes.
+  Agent-gated `scripts/check-agent-coauthor.sh` on `commit-msg` when
+  `MINIMAL_AGENT_SESSION_ID` is set (humans unaffected).
+
+### Changed
+
+- 2026-08-05 (this session): GitHub Actions bump — `actions/checkout@v7` (was
+  v6); monorepo CI inits submodules with retries so pin bumps that briefly race
+  a sibling push do not hard-fail on `not our ref`. Install steps set `HUSKY=0`.
+  Root + plugins installs stay non-frozen (`bun.lock` gitignored); core keeps
+  `--frozen-lockfile`. `install:all` runs root `bun install` first so umbrella
+  hooks install too. Check job also installs root deps for orchestration scripts.
 
 ### Fixed
 
