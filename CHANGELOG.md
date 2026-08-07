@@ -6,7 +6,7 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-08-05T11:30:00-0400"
+updated-at: "2026-08-07T13:45:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased: []
 latest-release:
@@ -19,10 +19,12 @@ related:
   - "docs/versioning-and-releases.md"
   - "minimal-agent-core/docs/CHANGELOG.md"
   - "minimal-agent-plugins/CHANGELOG.md"
+  - "minimal-agent-cli/CHANGELOG.md"
 remotes:
   monorepo: "https://github.com/gastonmorixe/minimal-agent"
   core: "https://github.com/gastonmorixe/minimal-agent-core"
   plugins: "https://github.com/gastonmorixe/minimal-agent-plugins"
+  cli: "https://github.com/gastonmorixe/minimal-agent-cli"
 ---
 
 # Changelog
@@ -34,6 +36,16 @@ orchestration) are documented here.
 
 ### Added
 
+- 2026-08-07 (MA-394837 delivery): **`minimal-agent-cli`** first-party private
+  repository added as a third umbrella submodule
+  ([`gastonmorixe/minimal-agent-cli`](https://github.com/gastonmorixe/minimal-agent-cli)).
+  Program 3A scaffold: standalone Bun package with package/tooling/CI/release
+  workflows, commit hooks, injected I/O smoke tests, and AST-enforced core
+  import ratchets backed by a genuine-Node preflight for the TypeScript 7
+  `typescript/unstable/*` API (exact-pinned 7.0.2, `engines.node >=22.18.0`).
+  The terminal client is being moved here; the executable remains transitional
+  in core until the Program 3B cutover.
+
 - 2026-08-05 (this session): Husky + Commitlint (Conventional Commits) at the
   monorepo root (`commitlint.config.js`, `.husky/commit-msg`, `prepare` →
   `husky`). CI gains a `commitlint` job; `bun run commitlint:last` for pushes.
@@ -41,6 +53,12 @@ orchestration) are documented here.
   `MINIMAL_AGENT_SESSION_ID` is set (humans unaffected).
 
 ### Changed
+
+- 2026-08-07 (MA-394837 delivery): **core pin** bumped `8da7bc4` →
+  `0bf68cc` (agent-loop SDK refactor enabling wave + README reframing).
+  Umbrella README updated to three submodules and the future-state
+  "terminal client being moved to minimal-agent-cli" framing. Plugins pin
+  unchanged (`d4dab2b`).
 
 - 2026-08-05 (this session): GitHub Actions bump — `actions/checkout@v7` (was
   v6); monorepo CI inits submodules with retries so pin bumps that briefly race
