@@ -15,12 +15,13 @@
 
 ---
 
-Umbrella repository that pins two first-party trees together with **git submodules**:
+Umbrella repository that pins three first-party trees together with **git submodules**:
 
 | Path                                                | Repository                                                                                    | Branch |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------ |
 | [`minimal-agent-core/`](./minimal-agent-core)       | [`gastonmorixe/minimal-agent-core`](https://github.com/gastonmorixe/minimal-agent-core)       | `main` |
 | [`minimal-agent-plugins/`](./minimal-agent-plugins) | [`gastonmorixe/minimal-agent-plugins`](https://github.com/gastonmorixe/minimal-agent-plugins) | `main` |
+| [`minimal-agent-cli/`](./minimal-agent-cli)         | [`gastonmorixe/minimal-agent-cli`](https://github.com/gastonmorixe/minimal-agent-cli)         | `main` |
 
 Each submodule keeps its own history, CI, and release surface. This repository only records which commits of each belong together.
 
@@ -41,11 +42,18 @@ git submodule update --init --recursive
 
 ```
 minimal-agent/                   # this monorepo
-├── minimal-agent-core/          # harness (submodule)
+├── minimal-agent-core/          # presentation-free SDK + conversation engine (submodule)
 ├── minimal-agent-plugins/       # first-party plugins (submodule)
+├── minimal-agent-cli/           # terminal client (submodule, Program 3A scaffold)
 ├── package.json                 # convenience scripts only
 └── README.md
 ```
+
+> **Terminal client is being moved to `minimal-agent-cli`.** The target
+> architecture puts all terminal/UI/presentation code in the CLI repository.
+> Until the Program 3B cutover lands, the executable still runs from
+> `minimal-agent-core` (transitional). Terminal users will invoke
+> `minimal-agent-cli` once cutover lands.
 
 ## Develop
 
@@ -55,9 +63,10 @@ versions). Work inside them as normal checkouts:
 ```bash
 cd minimal-agent-core && bun install && bun run check
 cd ../minimal-agent-plugins && bun install && bun run check
+cd ../minimal-agent-cli && bun install && bun run check
 ```
 
-Or from the monorepo root (orchestrates both; does **not** merge them into one
+Or from the monorepo root (orchestrates all three; does **not** merge them into one
 install graph):
 
 ```bash
@@ -95,13 +104,17 @@ ln -sfn "$PWD/minimal-agent-plugins/ma-fetch-plugin" ~/.agents/plugins/ma-fetch-
 bun run link:plugins
 ```
 
-Run the agent from source:
+Run the agent from source (transitional until Program 3B cutover; the terminal
+client is being moved to `minimal-agent-cli`):
 
 ```bash
 ./minimal-agent-core/minimal-agent
 # or
 bun run start
 ```
+
+Once the Program 3B cutover lands, terminal users will invoke
+`minimal-agent-cli` instead.
 
 ## Updating submodule pins
 

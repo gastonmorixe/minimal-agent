@@ -6,3 +6,6 @@
 	path = minimal-agent-plugins
 	url = https://github.com/gastonmorixe/minimal-agent-plugins.git
 	branch = main
+[submodule "minimal-agent-cli"]
+	path = minimal-agent-cli
+	url = https://github.com/gastonmorixe/minimal-agent-cli.git
