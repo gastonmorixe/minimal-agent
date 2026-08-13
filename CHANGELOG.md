@@ -34,6 +34,13 @@ orchestration) are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- 2026-08-13 (this session): Core and plugins submodule working trees were
+  brought back to green: all typecheck, lint, formatting, docs, architecture,
+  and test gates pass with no warnings or failures. The umbrella pins now track
+  the verified submodule commits.
+
 ### Added
 
 - 2026-08-07 (MA-394837 delivery): **`minimal-agent-cli`** first-party private
