@@ -36,10 +36,10 @@ orchestration) are documented here.
 
 ### Fixed
 
-- 2026-08-13 (this session): Core and plugins submodule working trees were
-  brought back to green: all typecheck, lint, formatting, docs, architecture,
-  and test gates pass with no warnings or failures. The umbrella pins now track
-  the verified submodule commits.
+- 2026-08-13: Umbrella pins advanced after submodule landings that closed the
+  dirty check gates: core `71ee4fd` (editor history / session write
+  capabilities + picker marker coverage) and plugins `1f55da0` (quota-status
+  bare model label when effort is unset). Gates green under those SHAs.
 
 ### Added
 
