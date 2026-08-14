@@ -36,6 +36,10 @@ orchestration) are documented here.
 
 ### Fixed
 
+- 2026-08-14: Plugins pin advanced to `37bda5c` — full offline Cursor
+  AvailableModels catalog (236 host ids, `cursor-auto` default, non-fast Grok
+  SKUs) plus Grok 4.6 dual-surface registration. Core remains at `4199dbc`.
+
 - 2026-08-13: Umbrella pins advanced after submodule landings that closed the
   dirty check gates: core `4199dbc` (editor history / session write
   capabilities + picker marker coverage) and plugins `e81c90a` (quota-status
