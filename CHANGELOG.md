@@ -6,7 +6,7 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-08-07T13:45:00-0400"
+updated-at: "2026-08-17T23:59:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased: []
 latest-release:
@@ -35,6 +35,12 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-08-17: Umbrella pins advanced after submodule landings that closed
+  Cursor chat and CLI flag gates: core `c1b7946` (`--effort` no longer
+  swallows `--fast`) and plugins `ef50dd4` (Cursor AgentService/Run CLI
+  headers, exploded SKU encode, bidi KV acks + heartbeats so the TUI idles
+  after a turn).
 
 - 2026-08-14: Plugins pin advanced to `a88f4d7` — full offline Cursor
   AvailableModels catalog (236 host ids, `cursor-auto` default, non-fast Grok
