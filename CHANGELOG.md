@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-08-17T23:59:00-0400"
+updated-at: "2026-09-02T19:20:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
-latest-unreleased: []
+latest-unreleased:
+  - id: "2026-09-02-write-contents-alias-pin"
+    type: chore
+    status: landed
+    detail: "Bump core pin for Write contents Cursor alias"
 latest-release:
   version: "0.1.0"
   tag: "v0.1.0"
@@ -35,6 +39,10 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-09-02: Core pin advanced to `7544071` — Write accepts Cursor-shaped
+  `contents` alias for `content` and returns a field error instead of
+  `Bun.write(...): expects a Blob-y thing to write`. Plugins pin unchanged.
 
 - 2026-08-17: Umbrella pins advanced after submodule landings that closed
   Cursor chat and CLI flag gates: core `c1b7946` (`--effort` no longer
