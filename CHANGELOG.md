@@ -42,8 +42,9 @@ orchestration) are documented here.
 
 - 2026-09-10: Core pin advanced to `86e5421` — multi-mode /compact landing
   (remote|tail|local|fork modes, blocking local summary, structured 7-heading
-  template). Plugins pin advanced to `528a099` — generic json mock type
-  fix in opencode test (`b4d1f1c`) plus lint fix.
+  template). Plugins pin advanced to `9d11aab` — format fix on top of
+  generic json mock type fix in opencode test (`b4d1f1c`) plus lint fix
+  (`528a099`).
 
 - 2026-09-02: Core pin advanced to `6573ec1` — Write accepts Cursor-shaped
   `contents` alias for `content` and returns a field error instead of
