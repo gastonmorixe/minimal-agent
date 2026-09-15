@@ -40,6 +40,13 @@ orchestration) are documented here.
 
 ### Fixed
 
+- 2026-09-15: Core pin advanced to `5bd46e1` — provider-scoped
+  system-prompt resolution. Bare ids claimed by several providers
+  (e.g. `claude-opus-5`) no longer resolve through the global
+  last-write-wins map for the prompt preamble, so the Anthropic billing
+  block ships and plan OAuth stops getting bare 429. Includes `7dfe9ee`.
+  Plugins pin unchanged.
+
 - 2026-09-10: Core pin advanced to `f8a7ad0` — multi-mode /compact landing
   (remote|tail|local|fork modes, blocking local summary, structured 7-heading
   template). Plugins pin advanced to `2e0c318` — format fix on top of
