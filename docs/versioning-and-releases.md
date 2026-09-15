@@ -133,8 +133,8 @@ bun run version -- set 0.2.0 --allow-dirty   # if unrelated WIP exists
 
 **CI details**
 
-- Bun **1.3.14** in all workflows (latest public release). Package
-  `engines.bun` is `>=1.3.14`. Local canary/patched Bun (e.g. 1.4.x) is fine
+- Bun **1.4.2** in all workflows (latest public release). Package
+  `engines.bun` is `>=1.4.2`. Local canary/patched Bun (e.g. 1.4.x) is fine
   but is not what CI downloads.
 - Core dropped obsolete `dev-private` branch triggers (default branch is `main`).
 - Monorepo CI private submodule fetch uses `actions/checkout` with
