@@ -231,8 +231,8 @@ commits, it also commits monorepo submodule pin bumps.
 Private submodule clones in monorepo CI use `actions/checkout@v7` with
 `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT with `repo` that can read core +
 plugins), then `git submodule update --init --recursive` with retries. Default
-`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.3.14**
-(`engines.bun` `>=1.3.14`); local canary/patched Bun is not what workflows
+`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.4.2**
+(`engines.bun` `>=1.4.2`); local canary/patched Bun is not what workflows
 download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
 `actions/upload-artifact@v7` (core release), `softprops/action-gh-release@v3`.
 
