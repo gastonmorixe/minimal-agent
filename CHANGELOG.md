@@ -6,13 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-09-28T22:10:00-0400"
+updated-at: "2026-09-28T23:55:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
-  - id: "2026-09-28-cursor-provider-stall-pin"
+  - id: "2026-09-28-cursor-allowlist-toolless-models-pin"
     type: fix
     status: landed
-    detail: "Bump plugins pin for Cursor provider stall and tool-leak fixes"
+    detail: "Bump plugins pin for Cursor tool allowlist, tool-less hang fix, model refresh"
 latest-release:
   version: "0.1.0"
   tag: "v0.1.0"
@@ -39,6 +39,24 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-09-28 (later): Plugins pin advanced to `ec8ed1a` (`7948f57`..`ec8ed1a`,
+  14 commits). Details are in `minimal-agent-plugins/CHANGELOG.md`.
+  - Cursor models now see only minimal-agent tools. With MA tools on, the plugin
+    sends `x-cursor-agent-allowed-tools: mcp_tool_call,get_mcp_tools_tool_call`.
+    If the server demands another tool, the plugin retries once with it allowed.
+    `MA_CURSOR_TOOL_FILTER=exclude` restores the old exclude list.
+  - Cursor requests without tools (context compaction, titles, summaries) no
+    longer hang: they now use the bidi wire. A unique session key per tool-less
+    Run and cleanup on early return prevent collisions and leaked wires.
+  - Cursor model catalog refreshed to CLI 2026.09.28: 471 registered ids, and all
+    246 CLI ids resolve.
+  - Checks: plugins `bun run check` passes in a clean worktree (4263 pass, 0 fail,
+    oxlint 1.73.0). Live: e2e suite 5 of 5, a live model and mode matrix, and a
+    real `/compact`.
+  - Known issues are in the plugins CHANGELOG: Cursor debug mode, no Cursor
+    `conversation_state`, and no per-provider auto-compaction switch.
+  - Core pin unchanged.
 
 - 2026-09-28: Plugins pin advanced to `7948f57`. The Cursor provider
   no longer gets stuck after one or two prompts, and the model sees and calls
