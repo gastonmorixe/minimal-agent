@@ -6,13 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-09-02T19:20:00-0400"
+updated-at: "2026-09-28T22:10:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
-  - id: "2026-09-02-write-contents-alias-pin"
-    type: chore
+  - id: "2026-09-28-cursor-provider-stall-pin"
+    type: fix
     status: landed
-    detail: "Bump core pin for Write contents Cursor alias"
+    detail: "Bump plugins pin for Cursor provider stall and tool-leak fixes"
 latest-release:
   version: "0.1.0"
   tag: "v0.1.0"
@@ -39,6 +39,29 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-09-28: Plugins pin advanced to `7948f57`. The Cursor provider
+  no longer gets stuck after one or two prompts, and the model sees and calls
+  MA tools again. There are 10 plugin commits (`7c37cc7`..`7948f57`).
+  - Main fix: answer the server's new `mcp_state_exec_args` (#36) request
+    with the MA MCP tool list.
+  - snake_case exclude-tools header.
+  - Refreshed native-tool catalog (69 oneofs).
+  - A reply for unsupported execs and `interaction_query`.
+  - An error for empty streams.
+  - A 30 s continuation no-progress guard.
+  - Retry history keeps tool pairs.
+  - Checks: plugins `bun run check` 4237 pass, 0 fail. Core check green.
+  - Live: e2e tool round trip, a 3-prompt TUI session, and a forced retry.
+  - Open items and Assumed behavior are listed in
+    `minimal-agent-plugins/CHANGELOG.md`.
+  - Known issue, not from these commits: plugins CI has been red since at
+    least 2026-09-16. `bun.lock` is gitignored in the plugins repo, so a
+    fresh install resolves `oxlint` `^1.73.0` to 1.86.0. With
+    `oxlint-tsgolint` 0.24.0, that version panics ("unknown rule
+    no-generated-empty-object-type"). A clean worktree at `7948f57` with
+    oxlint 1.73.0 passes (4232 pass, 0 fail).
+  - Core pin unchanged.
 
 - 2026-09-15: Core pin advanced to `5bd46e1` — provider-scoped
   system-prompt resolution. Bare ids claimed by several providers
