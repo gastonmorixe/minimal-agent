@@ -40,8 +40,8 @@ orchestration) are documented here.
 
 ### Fixed
 
-- 2026-09-28 (later): Plugins pin advanced to `ec8ed1a` (`7948f57`..`ec8ed1a`,
-  14 commits). Details are in `minimal-agent-plugins/CHANGELOG.md`.
+- 2026-09-28 (later): Plugins pin advanced to `e4d3b85` (`7948f57`..`e4d3b85`,
+  15 commits, the last one a changelog layout fix). Details are in `minimal-agent-plugins/CHANGELOG.md`.
   - Cursor models now see only minimal-agent tools. With MA tools on, the plugin
     sends `x-cursor-agent-allowed-tools: mcp_tool_call,get_mcp_tools_tool_call`.
     If the server demands another tool, the plugin retries once with it allowed.
