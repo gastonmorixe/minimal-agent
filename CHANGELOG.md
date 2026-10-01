@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-09-28T23:55:00-0400"
+updated-at: "2026-10-01T16:00:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-10-01-cursor-carry-mcp-guard-compact-pins"
+    type: fix
+    status: landed
+    detail: "Bump core (compact preamble + retry cap) and plugins (Cursor conversation carry, MCP bridge guard) pins"
   - id: "2026-09-28-cursor-allowlist-toolless-models-pin"
     type: fix
     status: landed
@@ -39,6 +43,27 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-10-01: Core pin advanced to `59619f6` (`36fd166`..`59619f6`) and plugins
+  pin to `bd43658` (`b41d8c4`..`bd43658`, 3 commits, the last one a changelog
+  fix). Pin commit `54d9730` carried the first plugins step (`95db02f`). Details are in
+  `minimal-agent-core/docs/CHANGELOG.md` and `minimal-agent-plugins/CHANGELOG.md`.
+  - Cursor no longer writes fake tool calls as text on long sessions. Each new
+    prompt used to fold the whole transcript (about 500k characters, about 160
+    past tool calls) into one user text, and the model copied those records
+    instead of calling tools. The plugin now keeps the server's own checkpoint
+    and KV blobs and sends them back on the next fresh Run with only the new
+    user text, as the official CLI does. Kill switch `MA_CURSOR_CARRY=0`.
+  - Cursor calls to the GetDynamicTools bridge get the real tool list on the
+    wire instead of "Unknown tool".
+  - `/compact` no longer hangs on plan (OAuth) auth. Compaction now sends the
+    provider's system preamble and caps transport retries at 3.
+  - Checks: core `bun run check` exit 0 (arch 131 pass). Plugins
+    `bun run check` exit 0 (4298 pass, 0 fail). Live: Cursor e2e 6 of 6,
+    including a new carry test that makes a real tool call and recalls an
+    earlier tool result from a fresh Run.
+  - Known issue resolved: the plugins entry from 2026-09-28 listed "no Cursor
+    `conversation_state`". That is now carried.
 
 - 2026-09-28 (later): Plugins pin advanced to `e4d3b85` (`7948f57`..`e4d3b85`,
   15 commits, the last one a changelog layout fix). Details are in `minimal-agent-plugins/CHANGELOG.md`.
