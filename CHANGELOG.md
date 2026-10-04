@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-10-01T16:00:00-0400"
+updated-at: "2026-10-04T14:40:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-10-04-meta-fleet-quota-pins"
+    type: fix
+    status: landed
+    detail: "Bump core (Cursor path aliases) and plugins (Meta Responses, fleet contextSize, quota footer, prompt-cache docs) pins"
   - id: "2026-10-01-cursor-carry-mcp-guard-compact-pins"
     type: fix
     status: landed
@@ -43,6 +47,21 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Fixed
+
+- 2026-10-04: Core pin advanced to `e161ce1` (`59619f6`..`e161ce1`) and plugins
+  pin to `c1943bb` (`1ec5339`..`c1943bb`). Prior pin commit `8f7dfe7` already
+  carried Meta Responses-primary to `1ec5339` (`b1d05d1`). Details are in
+  `minimal-agent-core/docs/CHANGELOG.md` and `minimal-agent-plugins/CHANGELOG.md`.
+  - Meta Muse Spark is Responses-primary (`store:false` + encrypted reasoning),
+    with `muse-spark-1.3` catalog default and `prompt_cache_key` from vendor/
+    metadata then `ctx.sessionId`.
+  - Sub-agent fleet tokens use last-turn contextSize (`input+cacheRead+cacheCreate`)
+    instead of summing billed `input+output` per turn.
+  - Quota footer keeps session id and name while shrinking bars 8→4 before
+    dropping identity.
+  - Prompt-cache behavior documented for Meta, OpenAI, Cursor, and Grok.
+  - Built-in tools accept Cursor-shaped `path` (Read/Write/Edit) and reject
+    missing or mistyped required fields before filesystem work runs.
 
 - 2026-10-01: Core pin advanced to `59619f6` (`36fd166`..`59619f6`) and plugins
   pin to `bd43658` (`b41d8c4`..`bd43658`, 3 commits, the last one a changelog
