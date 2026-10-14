@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-10-04T14:40:00-0400"
+updated-at: "2026-10-14T15:10:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-10-14-writing-style-opencode-pins"
+    type: chore
+    status: landed
+    detail: "Bump core (prompt writing-style audit) and plugins (writing-style, OpenCode catalog refresh) pins"
   - id: "2026-10-04-meta-fleet-quota-pins"
     type: fix
     status: landed
@@ -45,6 +49,18 @@ All notable changes to the **minimal-agent monorepo** (umbrella pins +
 orchestration) are documented here.
 
 ## [Unreleased]
+
+### Changed
+
+- 2026-10-14: Core pin advanced to `5bfac53` (`b17bf7c`..`5bfac53`) and plugins
+  pin to `6750375` (`e1a80e4`..`6750375`). Details are in
+  `minimal-agent-core/docs/CHANGELOG.md` and `minimal-agent-plugins/CHANGELOG.md`.
+  - Model-facing prose in core and plugins follows the writing-style rules.
+    Prompt-audit tests in both repos now enforce no semicolons, no emoji, no
+    sycophancy or signposting, and no `---` before a heading.
+  - OpenCode Go and Zen catalogs are refreshed from live `/v1/models`. Some
+    retired ids no longer resolve.
+  - Both gates are green: core 0 lint warnings, plugins 4375 pass, 0 warnings.
 
 ### Fixed
 
