@@ -2,15 +2,16 @@ Orientation for agents working in this **umbrella** repository. User-facing
 overview lives in [`README.md`](README.md); the audit trail of monorepo-level
 changes lives in [`CHANGELOG.md`](CHANGELOG.md).
 
-This tree is **not** the agent harness source. It pins two first-party
-submodules and provides thin orchestration scripts. Almost all product code,
+This tree is **not** the agent harness source. It pins three first-party
+submodules (core, plugins, cli) and provides thin orchestration scripts. Almost all product code,
 tests, and gates live **inside** the submodules.
 
 ## Working directory (read this first)
 
 - Your session **cwd is this monorepo root** (the directory that contains
-  `minimal-agent-core/` and `minimal-agent-plugins/`). Prefer **relative**
-  paths from that cwd: `minimal-agent-core/...`, `minimal-agent-plugins/...`.
+  `minimal-agent-core/`, `minimal-agent-plugins/`, and `minimal-agent-cli/`).
+  Prefer **relative** paths from that cwd: `minimal-agent-core/...`,
+  `minimal-agent-plugins/...`, `minimal-agent-cli/...`.
 - Product code is **not** at a sibling `src/` under the monorepo root. Do not
   search or edit `src/...` at the monorepo root.
 - Do **not** invent absolute paths like `~/Projects/minimal-agent` or
@@ -28,8 +29,10 @@ tests, and gates live **inside** the submodules.
 .                                   # monorepo root (session cwd)
 ├── minimal-agent-core/             # submodule → gastonmorixe/minimal-agent-core
 ├── minimal-agent-plugins/          # submodule → gastonmorixe/minimal-agent-plugins
+├── minimal-agent-cli/              # submodule → gastonmorixe/minimal-agent-cli
 ├── package.json                    # install/check/start orchestration only
 ├── scripts/link-plugins.ts         # symlink ma-*-plugin → ~/.agents/plugins
+├── scripts/link-dev.ts             # link local core into consumers (link:dev)
 ├── AGENTS.md                       # you are here
 ├── CHANGELOG.md
 ├── LICENSE                         # proprietary, all rights reserved
@@ -40,6 +43,7 @@ tests, and gates live **inside** the submodules.
 | ------------------------ | ---------------------------------------- | ------------------------------------- |
 | `minimal-agent-core/`    | Harness, plugin-api, agent loop, TUI     | Core PRs / `bun run check` **here**   |
 | `minimal-agent-plugins/` | First-party plugins (`ma-*-plugin`)      | Plugin PRs / `bun run check` **here** |
+| `minimal-agent-cli/`     | Terminal host; TUI moves here at cutover | CLI PRs / `bun run check` **here**    |
 | monorepo root (`.`)      | Submodule **pins** + convenience scripts | Pin bumps only                        |
 
 Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
@@ -47,19 +51,23 @@ Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 
 - [`minimal-agent-core/AGENTS.md`](minimal-agent-core/AGENTS.md)
 - [`minimal-agent-plugins/AGENTS.md`](minimal-agent-plugins/AGENTS.md)
+- [`minimal-agent-cli/AGENTS.md`](minimal-agent-cli/AGENTS.md)
 
 ## Build, test, lint (monorepo)
 
-There is **no** root Bun workspace that merges core + plugins. Root scripts only
+There is **no** root Bun workspace that merges the submodules. Root scripts only
 `cd` into each tree:
 
 ```bash
-bun run install:all      # bun install in core, then plugins
-bun run check            # core check && plugins check
-bun run test             # core test && plugins test
+bun run install:all      # bun install in core, then plugins, then cli
+bun run check            # core check && plugins check && cli check
+bun run test             # core test && plugins test && cli test
 bun run test:plugins     # plugins only: parallel per-package via --filter
 bun run start            # core entrypoint
 bun run link:plugins     # symlink plugins into ~/.agents/plugins
+bun run link:dev         # point consumers' @minimal-agent/core at ./minimal-agent-core
+bun run link:reset       # restore each consumer's pinned core from bun.lock
+bun run link:status      # linked or pinned, per consumer
 bun run submodules:status
 bun run submodules:init  # git submodule update --init --recursive
 ```
@@ -73,6 +81,8 @@ inside each submodule (or use `install:all`).
   (typecheck, oxlint, format, biome, docs, arch tests, full suite)
 - **Plugins:** `cd minimal-agent-plugins && bun run check`  
   (typecheck, oxlint, format, biome, tests)
+- **CLI:** `cd minimal-agent-cli && bun run check`  
+  (typecheck, oxlint, format, biome, architecture preflight, tests)
 
 Root `bun run check` is a convenience wrapper; CI for each remote should still
 run in that remote’s tree.
@@ -102,7 +112,9 @@ run in that remote’s tree.
 
 ## Bun workspaces (per submodule, not root)
 
-- **Core** workspaces: `plugin-api`, `tools/docs`.  
+- **Core** workspaces: `tools/docs`. `plugin-api/` is a folder inside the
+  `@minimal-agent/core` package (exported as `@minimal-agent/core/plugin-api/*`),
+  not a workspace package.  
   Toolchain versions live under `workspaces.catalog` and are referenced as
   `"catalog:"` from root `devDependencies`. `tools/docs` keeps TypeScript 6 for
   typedoc; only `bun-types` is catalogued there.
@@ -110,15 +122,18 @@ run in that remote’s tree.
   `bun run test:plugins` runs `bun --filter 'ma-*' test` in parallel. Per-package
   `test` scripts use `bun test --pass-with-no-tests` so empty packages do not
   fail the fan-out.
-- **Do not** add a monorepo-root `workspaces` field that globs both submodules
+- **CLI** has no workspaces. It installs `@minimal-agent/core` from a git URL
+  pinned to a commit or tag. Use `bun run link:dev` for live core edits, and
+  `bun run link:reset` before you commit, so tests run against the pin.
+- **Do not** add a monorepo-root `workspaces` field that globs the submodules
   unless product policy explicitly merges the two remotes into one install
   graph. Plugins are designed to clone and run without a core workspace link
   (types often vendored from plugin-api).
 
 ## License and public docs
 
-All three remotes (`minimal-agent`, `minimal-agent-core`,
-`minimal-agent-plugins`) are **proprietary**: Copyright Gaston Morixe, all
+All remotes (`minimal-agent`, `minimal-agent-core`, `minimal-agent-plugins`,
+`minimal-agent-cli`) are **proprietary**: Copyright Gaston Morixe, all
 rights reserved (`LICENSE`, `package.json` → `"license": "UNLICENSED"`). Do not
 add MIT/Apache badges or “open source” language. READMEs are written as if the
 repos may be public someday: no machine-local paths (`~/Projects/...`), no
@@ -197,11 +212,11 @@ Full process doc: [`docs/versioning-and-releases.md`](docs/versioning-and-releas
 
 | Kind           | Where                                                                         | Form                                           |
 | -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
-| package.json   | monorepo, core (+ plugin-api, tools/docs), plugins root + every `ma-*-plugin` | `0.1.0` (semver)                               |
-| Stable git tag | each of the three remotes                                                     | `v0.1.0` (must match that repo’s package.json) |
+| package.json   | monorepo, core (+ tools/docs), plugins root + every `ma-*-plugin`, cli        | `0.1.0` (semver)                               |
+| Stable git tag | each of the four remotes                                                      | `v0.1.0` (must match that repo’s package.json) |
 | Core nightlies | core CI only (`release.yml` on push to `main`)                                | `v0.1.0-nightly.<UTC-stamp>`                   |
 
-Keep the three remotes on the **same** stable version when cutting a coordinated
+Keep the four remotes on the **same** stable version when cutting a coordinated
 release. Nightlies only advance the core pre-release stream; they do not bump
 package.json.
 
@@ -226,7 +241,8 @@ commits, it also commits monorepo submodule pin bumps.
 | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | core     | `ci.yml` (commitlint + check), `release.yml` (nightly on main + stable on `v*`, tag must match package.json)           |
 | plugins  | `ci.yml` (commitlint + check), `release.yml` (stable `v*` only)                                                        |
-| monorepo | `ci.yml` (commitlint + submodule retry + both checks), `release.yml` (stable `v*` + pin notes)                         |
+| cli      | `ci.yml` (commitlint + check, reads private core via `SUBMODULES_PAT`), `release.yml` (stable `v*`)                   |
+| monorepo | `ci.yml` (commitlint + submodule retry + core, plugins, cli checks), `release.yml` (stable `v*` + pin notes)           |
 
 Private submodule clones in monorepo CI use `actions/checkout@v7` with
 `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT with `repo` that can read core +
@@ -243,3 +259,4 @@ download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
 | This monorepo | https://github.com/gastonmorixe/minimal-agent         |
 | Core harness  | https://github.com/gastonmorixe/minimal-agent-core    |
 | Plugins       | https://github.com/gastonmorixe/minimal-agent-plugins |
+| CLI           | https://github.com/gastonmorixe/minimal-agent-cli     |

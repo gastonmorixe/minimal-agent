@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-10-14T15:10:00-0400"
+updated-at: "2026-10-31T00:00:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-10-31-cli-in-umbrella-link-dev"
+    type: feat
+    status: landed
+    detail: "Root scripts, CI, and version tool cover minimal-agent-cli; link:dev links local core into consumers"
   - id: "2026-10-14-writing-style-opencode-pins"
     type: chore
     status: landed
@@ -49,6 +53,18 @@ All notable changes to the **minimal-agent monorepo** (umbrella pins +
 orchestration) are documented here.
 
 ## [Unreleased]
+
+### Added
+
+- 2026-10-31: The umbrella covers `minimal-agent-cli` everywhere. `install:all`,
+  `check`, `test`, and `typecheck` run the CLI too, and CI installs and checks
+  it (with Node set up for its architecture checker). `scripts/version.ts` has
+  a `cli` target and tolerates the missing `plugin-api/package.json` after the
+  `@minimal-agent/core` rename. New `link:dev`, `link:reset`, and `link:status`
+  scripts (`scripts/link-dev.ts`) point each consumer's `@minimal-agent/core`
+  at the local core checkout, or restore the pinned copy, without editing
+  `package.json` or `bun.lock`. `.gitmodules` tracks `main` for the CLI. Docs
+  now say three submodules.
 
 ### Changed
 
