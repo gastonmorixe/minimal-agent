@@ -122,10 +122,17 @@ jobs:
         working-directory: minimal-agent-cli
         env:
           HUSKY: "0"
-          # The CLI installs @minimal-agent/core from git. Bun may fetch it as a
-          # GitHub tarball, which needs a token. The git rewrite above covers clones.
-          GITHUB_TOKEN: ${{ secrets.SUBMODULES_PAT }}
-        run: bun install --frozen-lockfile
+          TOKEN: ${{ secrets.SUBMODULES_PAT }}
+        # The CLI installs @minimal-agent/core from a git+ssh URL. Bun clones it
+        # with git as https://git@github.com/... first, then SSH. The rewrite in
+        # "Init submodules" covers only https://github.com/, so add the other forms.
+        run: |
+          set -euo pipefail
+          base="https://x-access-token:${TOKEN}@github.com/"
+          git config --global --add url."${base}".insteadOf "https://git@github.com/"
+          git config --global --add url."${base}".insteadOf "ssh://git@github.com/"
+          git config --global --add url."${base}".insteadOf "git@github.com:"
+          bun install --frozen-lockfile
 
       - name: Check core
         working-directory: minimal-agent-core
