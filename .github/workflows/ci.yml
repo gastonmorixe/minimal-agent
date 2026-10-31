@@ -71,7 +71,15 @@ jobs:
           TOKEN: ${{ secrets.SUBMODULES_PAT }}
         run: |
           set -euo pipefail
-          git config --global url."https://x-access-token:${TOKEN}@github.com/".insteadOf "https://github.com/"
+          base="https://x-access-token:${TOKEN}@github.com/"
+          git config --global url."${base}".insteadOf "https://github.com/"
+          # Both the cli and (since S42) plugins install @minimal-agent/core from
+          # a git+ssh URL. Bun clones it with git as https://git@github.com/...
+          # first, then SSH. Set these rewrites here, before any `bun install`
+          # that might need core, not just before the cli's.
+          git config --global --add url."${base}".insteadOf "https://git@github.com/"
+          git config --global --add url."${base}".insteadOf "ssh://git@github.com/"
+          git config --global --add url."${base}".insteadOf "git@github.com:"
           for attempt in 1 2 3 4 5 6; do
             if git submodule sync --recursive \
               && git submodule update --init --recursive; then
@@ -122,17 +130,10 @@ jobs:
         working-directory: minimal-agent-cli
         env:
           HUSKY: "0"
-          TOKEN: ${{ secrets.SUBMODULES_PAT }}
-        # The CLI installs @minimal-agent/core from a git+ssh URL. Bun clones it
-        # with git as https://git@github.com/... first, then SSH. The rewrite in
-        # "Init submodules" covers only https://github.com/, so add the other forms.
-        run: |
-          set -euo pipefail
-          base="https://x-access-token:${TOKEN}@github.com/"
-          git config --global --add url."${base}".insteadOf "https://git@github.com/"
-          git config --global --add url."${base}".insteadOf "ssh://git@github.com/"
-          git config --global --add url."${base}".insteadOf "git@github.com:"
-          bun install --frozen-lockfile
+        # The git+ssh rewrites for @minimal-agent/core live in "Init submodules",
+        # which runs before any install step so plugins' core dependency (S42)
+        # is covered too, not just the cli's.
+        run: bun install --frozen-lockfile
 
       - name: Check core
         working-directory: minimal-agent-core
