@@ -1,6 +1,6 @@
 name: CI
 
-# Umbrella gate: init submodules, install core, plugins, and cli, run all three checks.
+# Umbrella gate: init submodules, install core, plugins, cli, and web, run all four checks.
 # Private sibling submodules need a classic/fine-grained PAT with `repo`
 # (secret: SUBMODULES_PAT). GITHUB_TOKEN cannot clone other private repos.
 #
@@ -53,7 +53,7 @@ jobs:
         run: bunx --bun commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   check:
-    name: core + plugins check
+    name: core, plugins, cli, and web check
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
@@ -90,7 +90,7 @@ jobs:
           done
           echo "FATAL: submodule gitlink SHA(s) not reachable on remotes." >&2
           echo "Push submodule commits BEFORE bumping/pushing monorepo pins." >&2
-          git ls-tree HEAD minimal-agent-core minimal-agent-plugins minimal-agent-cli || true
+          git ls-tree HEAD minimal-agent-core minimal-agent-plugins minimal-agent-cli minimal-agent-web || true
           exit 1
 
       - name: Set up Bun
@@ -135,6 +135,12 @@ jobs:
         # is covered too, not just the cli's.
         run: bun install --frozen-lockfile
 
+      - name: Install web
+        working-directory: minimal-agent-web
+        env:
+          HUSKY: "0"
+        run: bun install --frozen-lockfile
+
       - name: Check core
         working-directory: minimal-agent-core
         run: bun run check
@@ -145,6 +151,10 @@ jobs:
 
       - name: Check cli
         working-directory: minimal-agent-cli
+        run: bun run check
+
+      - name: Check web
+        working-directory: minimal-agent-web
         run: bun run check
 
       - name: Version status (informational)

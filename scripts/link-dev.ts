@@ -2,8 +2,8 @@
 /**
  * Link the local core checkout into its consumers for live development.
  *
- * Consumers (minimal-agent-cli, and minimal-agent-web once it depends on core)
- * install `@minimal-agent/core` from a pinned git URL. That pin is right for CI
+ * Consumers (minimal-agent-cli and minimal-agent-web) install
+ * `@minimal-agent/core` from a pinned git URL. That pin is right for CI
  * and releases. During development you want edits in `minimal-agent-core/` to
  * reach the consumers without a commit and a re-pin.
  *

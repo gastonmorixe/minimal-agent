@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-10-31T00:00:00-0400"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-10-31-web-in-umbrella"
+    type: feat
+    status: landed
+    detail: "minimal-agent-web joins the umbrella as a fourth submodule; root scripts, CI, and version tool cover it (spec S59)"
   - id: "2026-10-31-cli-in-umbrella-link-dev"
     type: feat
     status: landed
@@ -40,11 +44,13 @@ related:
   - "minimal-agent-core/docs/CHANGELOG.md"
   - "minimal-agent-plugins/CHANGELOG.md"
   - "minimal-agent-cli/CHANGELOG.md"
+  - "minimal-agent-web/README.md"
 remotes:
   monorepo: "https://github.com/gastonmorixe/minimal-agent"
   core: "https://github.com/gastonmorixe/minimal-agent-core"
   plugins: "https://github.com/gastonmorixe/minimal-agent-plugins"
   cli: "https://github.com/gastonmorixe/minimal-agent-cli"
+  web: "https://github.com/gastonmorixe/minimal-agent-web"
 ---
 
 # Changelog
@@ -55,6 +61,18 @@ orchestration) are documented here.
 ## [Unreleased]
 
 ### Added
+
+- 2026-10-31: `minimal-agent-web` joins the umbrella as a fourth submodule
+  (spec S59). `install:all`, `check`, `test`, and `typecheck` run it too, and
+  CI installs and checks it in the same job as core/plugins/cli (its own
+  checkout needs no separate `CORE_DEPLOY_KEY`: the job's existing
+  `SUBMODULES_PAT` rewrite already covers web's `@minimal-agent/core` git+ssh
+  dependency, the same way it now covers plugins' since S42).
+  `scripts/version.ts` has a `web` target (root + `server/` + `app/`
+  `package.json`). `link:dev`/`link:reset`/`link:status`
+  (`scripts/link-dev.ts`) already listed web as a consumer; it now resolves
+  for real. `.gitmodules` tracks `main` for web. Docs now say four
+  submodules.
 
 - 2026-10-31: The umbrella covers `minimal-agent-cli` everywhere. `install:all`,
   `check`, `test`, and `typecheck` run the CLI too, and CI installs and checks
