@@ -16,12 +16,13 @@
  *               pins older than the @minimal-agent/core rename)
  *   plugins   → minimal-agent-plugins/package.json (+ every ma-*-plugin)
  *   cli       → minimal-agent-cli/package.json
- *   all       → monorepo + core + plugins + cli
+ *   web       → minimal-agent-web/package.json (+ server/ + app/)
+ *   all       → monorepo + core + plugins + cli + web
  *
  * Usage
  * -----
  *   bun run scripts/version.ts status
- *   bun run scripts/version.ts set 0.1.0 [--targets all|core|plugins|cli|monorepo]
+ *   bun run scripts/version.ts set 0.1.0 [--targets all|core|plugins|cli|web|monorepo]
  *   bun run scripts/version.ts set 0.1.0 --tag --message "release v0.1.0"
  *   bun run scripts/version.ts set 0.1.0 --tag --push
  *   bun run scripts/version.ts tag 0.1.0 [--targets all] [--push]
@@ -37,9 +38,9 @@ import { join, relative } from "node:path";
 
 const root = join(import.meta.dir, "..");
 
-type Target = "monorepo" | "core" | "plugins" | "cli";
+type Target = "monorepo" | "core" | "plugins" | "cli" | "web";
 
-const ALL_TARGETS: Target[] = ["monorepo", "core", "plugins", "cli"];
+const ALL_TARGETS: Target[] = ["monorepo", "core", "plugins", "cli", "web"];
 
 type PackageHit = {
   target: Target;
@@ -102,8 +103,9 @@ function parseTargets(raw: string): Target[] {
     .filter(Boolean);
   const out: Target[] = [];
   for (const p of parts) {
-    if (p === "monorepo" || p === "core" || p === "plugins" || p === "cli") out.push(p);
-    else die(`invalid target: ${p} (use monorepo|core|plugins|cli|all)`);
+    if (p === "monorepo" || p === "core" || p === "plugins" || p === "cli" || p === "web")
+      out.push(p);
+    else die(`invalid target: ${p} (use monorepo|core|plugins|cli|web|all)`);
   }
   if (out.length === 0) die("empty --targets");
   return out;
@@ -121,7 +123,7 @@ function printHelp() {
   bun run scripts/version.ts tag <semver> [options]
 
 Options:
-  --targets, -t all|monorepo|core|plugins|cli|a,b
+  --targets, -t all|monorepo|core|plugins|cli|web|a,b
   --tag                 create annotated git tags v<semver>
   --push                push commits + tags to origin (implies --tag for set)
   --no-commit           write package.json only
@@ -176,6 +178,12 @@ function collectPackages(targets: Target[]): PackageHit[] {
   if (targets.includes("cli")) {
     add("cli", join(root, "minimal-agent-cli", "package.json"));
   }
+  if (targets.includes("web")) {
+    const web = join(root, "minimal-agent-web");
+    add("web", join(web, "package.json"));
+    add("web", join(web, "server", "package.json"));
+    add("web", join(web, "app", "package.json"));
+  }
 
   return hits;
 }
@@ -196,6 +204,7 @@ function repoDirForTarget(target: Target): string {
   if (target === "monorepo") return root;
   if (target === "core") return join(root, "minimal-agent-core");
   if (target === "cli") return join(root, "minimal-agent-cli");
+  if (target === "web") return join(root, "minimal-agent-web");
   return join(root, "minimal-agent-plugins");
 }
 
@@ -346,12 +355,16 @@ function setVersion(
     }
   }
 
-  // monorepo pin bump when core/plugins/cli moved
-  if (opts.doCommit && targets.some((t) => t === "core" || t === "plugins" || t === "cli")) {
+  // monorepo pin bump when core/plugins/cli/web moved
+  if (
+    opts.doCommit &&
+    targets.some((t) => t === "core" || t === "plugins" || t === "cli" || t === "web")
+  ) {
     const mono = root;
     if (targets.includes("core")) git(mono, ["add", "minimal-agent-core"]);
     if (targets.includes("plugins")) git(mono, ["add", "minimal-agent-plugins"]);
     if (targets.includes("cli")) git(mono, ["add", "minimal-agent-cli"]);
+    if (targets.includes("web")) git(mono, ["add", "minimal-agent-web"]);
     if (targets.includes("monorepo")) {
       // monorepo package.json already committed above if monorepo was a target
     }

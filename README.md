@@ -15,13 +15,14 @@
 
 ---
 
-Umbrella repository that pins three first-party trees together with **git submodules**:
+Umbrella repository that pins four first-party trees together with **git submodules**:
 
 | Path                                                | Repository                                                                                    | Branch |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------ |
 | [`minimal-agent-core/`](./minimal-agent-core)       | [`gastonmorixe/minimal-agent-core`](https://github.com/gastonmorixe/minimal-agent-core)       | `main` |
 | [`minimal-agent-plugins/`](./minimal-agent-plugins) | [`gastonmorixe/minimal-agent-plugins`](https://github.com/gastonmorixe/minimal-agent-plugins) | `main` |
 | [`minimal-agent-cli/`](./minimal-agent-cli)         | [`gastonmorixe/minimal-agent-cli`](https://github.com/gastonmorixe/minimal-agent-cli)         | `main` |
+| [`minimal-agent-web/`](./minimal-agent-web)         | [`gastonmorixe/minimal-agent-web`](https://github.com/gastonmorixe/minimal-agent-web)         | `main` |
 
 Each submodule keeps its own history, CI, and release surface. This repository only records which commits of each belong together.
 
@@ -45,6 +46,7 @@ minimal-agent/                   # this monorepo
 ├── minimal-agent-core/          # presentation-free SDK + conversation engine (submodule)
 ├── minimal-agent-plugins/       # first-party plugins (submodule)
 ├── minimal-agent-cli/           # terminal client (submodule, Program 3A scaffold)
+├── minimal-agent-web/           # Bun server + Vite/React frontend over core (submodule)
 ├── package.json                 # convenience scripts only
 └── README.md
 ```
@@ -64,9 +66,10 @@ versions). Work inside them as normal checkouts:
 cd minimal-agent-core && bun install && bun run check
 cd ../minimal-agent-plugins && bun install && bun run check
 cd ../minimal-agent-cli && bun install && bun run check
+cd ../minimal-agent-web && bun install && bun run check
 ```
 
-Or from the monorepo root (orchestrates all three; does **not** merge them into one
+Or from the monorepo root (orchestrates all four; does **not** merge them into one
 install graph):
 
 ```bash
@@ -121,7 +124,7 @@ Once the Program 3B cutover lands, terminal users will invoke
 Develop and commit inside each submodule first, then bump the pin here:
 
 ```bash
-git add minimal-agent-core minimal-agent-plugins
+git add minimal-agent-core minimal-agent-plugins minimal-agent-cli minimal-agent-web
 git commit -m "chore: bump submodule pins"
 ```
 
@@ -138,6 +141,7 @@ git commit -m "chore: bump submodule pins"
 - Core harness: [minimal-agent-core](https://github.com/gastonmorixe/minimal-agent-core)
 - Plugins: [minimal-agent-plugins](https://github.com/gastonmorixe/minimal-agent-plugins)
 - Terminal host: [minimal-agent-cli](https://github.com/gastonmorixe/minimal-agent-cli)
+- Web app: [minimal-agent-web](https://github.com/gastonmorixe/minimal-agent-web)
 
 ## Versioning
 
