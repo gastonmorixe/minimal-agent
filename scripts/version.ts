@@ -12,14 +12,16 @@
  * Targets
  * -------
  *   monorepo  → ./package.json
- *   core      → minimal-agent-core/package.json (+ plugin-api, tools/docs)
+ *   core      → minimal-agent-core/package.json (+ tools/docs; + plugin-api on
+ *               pins older than the @minimal-agent/core rename)
  *   plugins   → minimal-agent-plugins/package.json (+ every ma-*-plugin)
- *   all       → monorepo + core + plugins
+ *   cli       → minimal-agent-cli/package.json
+ *   all       → monorepo + core + plugins + cli
  *
  * Usage
  * -----
  *   bun run scripts/version.ts status
- *   bun run scripts/version.ts set 0.1.0 [--targets all|core|plugins|monorepo]
+ *   bun run scripts/version.ts set 0.1.0 [--targets all|core|plugins|cli|monorepo]
  *   bun run scripts/version.ts set 0.1.0 --tag --message "release v0.1.0"
  *   bun run scripts/version.ts set 0.1.0 --tag --push
  *   bun run scripts/version.ts tag 0.1.0 [--targets all] [--push]
@@ -35,7 +37,9 @@ import { join, relative } from "node:path";
 
 const root = join(import.meta.dir, "..");
 
-type Target = "monorepo" | "core" | "plugins";
+type Target = "monorepo" | "core" | "plugins" | "cli";
+
+const ALL_TARGETS: Target[] = ["monorepo", "core", "plugins", "cli"];
 
 type PackageHit = {
   target: Target;
@@ -49,7 +53,7 @@ function parseArgs(argv: string[]) {
   const cmd = argv[0] ?? "status";
   const rest = argv.slice(1);
   let version: string | undefined;
-  let targets: Target[] = ["monorepo", "core", "plugins"];
+  let targets: Target[] = [...ALL_TARGETS];
   let doTag = false;
   let doPush = false;
   let doCommit = true;
@@ -91,15 +95,15 @@ function parseArgs(argv: string[]) {
 }
 
 function parseTargets(raw: string): Target[] {
-  if (raw === "all") return ["monorepo", "core", "plugins"];
+  if (raw === "all") return [...ALL_TARGETS];
   const parts = raw
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   const out: Target[] = [];
   for (const p of parts) {
-    if (p === "monorepo" || p === "core" || p === "plugins") out.push(p);
-    else die(`invalid target: ${p} (use monorepo|core|plugins|all)`);
+    if (p === "monorepo" || p === "core" || p === "plugins" || p === "cli") out.push(p);
+    else die(`invalid target: ${p} (use monorepo|core|plugins|cli|all)`);
   }
   if (out.length === 0) die("empty --targets");
   return out;
@@ -117,7 +121,7 @@ function printHelp() {
   bun run scripts/version.ts tag <semver> [options]
 
 Options:
-  --targets, -t all|monorepo|core|plugins|a,b
+  --targets, -t all|monorepo|core|plugins|cli|a,b
   --tag                 create annotated git tags v<semver>
   --push                push commits + tags to origin (implies --tag for set)
   --no-commit           write package.json only
@@ -155,7 +159,10 @@ function collectPackages(targets: Target[]): PackageHit[] {
   if (targets.includes("core")) {
     const core = join(root, "minimal-agent-core");
     add("core", join(core, "package.json"));
-    add("core", join(core, "plugin-api", "package.json"));
+    // plugin-api stopped being a separate package with the @minimal-agent/core
+    // rename. Older pins still carry its package.json, so version it when present.
+    const pluginApi = join(core, "plugin-api", "package.json");
+    if (existsSync(pluginApi)) add("core", pluginApi);
     add("core", join(core, "tools", "docs", "package.json"));
   }
   if (targets.includes("plugins")) {
@@ -165,6 +172,9 @@ function collectPackages(targets: Target[]): PackageHit[] {
       if (!/^ma-.+-plugin$/.test(name)) continue;
       add("plugins", join(plug, name, "package.json"));
     }
+  }
+  if (targets.includes("cli")) {
+    add("cli", join(root, "minimal-agent-cli", "package.json"));
   }
 
   return hits;
@@ -185,6 +195,7 @@ function tagName(version: string): string {
 function repoDirForTarget(target: Target): string {
   if (target === "monorepo") return root;
   if (target === "core") return join(root, "minimal-agent-core");
+  if (target === "cli") return join(root, "minimal-agent-cli");
   return join(root, "minimal-agent-plugins");
 }
 
@@ -207,7 +218,7 @@ function git(cwd: string, args: string[], opts?: { allowFail?: boolean }) {
 }
 
 function status() {
-  const hits = collectPackages(["monorepo", "core", "plugins"]);
+  const hits = collectPackages(ALL_TARGETS);
   const byTarget = new Map<Target, PackageHit[]>();
   for (const h of hits) {
     const list = byTarget.get(h.target) ?? [];
@@ -215,7 +226,7 @@ function status() {
     byTarget.set(h.target, list);
   }
 
-  for (const target of ["monorepo", "core", "plugins"] as Target[]) {
+  for (const target of ALL_TARGETS) {
     const list = byTarget.get(target) ?? [];
     const versions = [...new Set(list.map((h) => h.version))];
     const dir = repoDirForTarget(target);
@@ -335,11 +346,12 @@ function setVersion(
     }
   }
 
-  // monorepo pin bump when core/plugins moved
-  if (opts.doCommit && targets.some((t) => t === "core" || t === "plugins")) {
+  // monorepo pin bump when core/plugins/cli moved
+  if (opts.doCommit && targets.some((t) => t === "core" || t === "plugins" || t === "cli")) {
     const mono = root;
     if (targets.includes("core")) git(mono, ["add", "minimal-agent-core"]);
     if (targets.includes("plugins")) git(mono, ["add", "minimal-agent-plugins"]);
+    if (targets.includes("cli")) git(mono, ["add", "minimal-agent-cli"]);
     if (targets.includes("monorepo")) {
       // monorepo package.json already committed above if monorepo was a target
     }
