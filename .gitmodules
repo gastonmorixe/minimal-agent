@@ -9,3 +9,4 @@
 [submodule "minimal-agent-cli"]
 	path = minimal-agent-cli
 	url = https://github.com/gastonmorixe/minimal-agent-cli.git
+	branch = main

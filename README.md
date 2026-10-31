@@ -137,10 +137,11 @@ git commit -m "chore: bump submodule pins"
 
 - Core harness: [minimal-agent-core](https://github.com/gastonmorixe/minimal-agent-core)
 - Plugins: [minimal-agent-plugins](https://github.com/gastonmorixe/minimal-agent-plugins)
+- Terminal host: [minimal-agent-cli](https://github.com/gastonmorixe/minimal-agent-cli)
 
 ## Versioning
 
-All three remotes share a coordinated stable version (currently **0.1.0**, tag
+All four remotes share a coordinated stable version (currently **0.1.0**, tag
 `v0.1.0`). Bump with:
 
 ```bash
