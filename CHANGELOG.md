@@ -60,7 +60,26 @@ orchestration) are documented here.
 
 ## [Unreleased]
 
+### Pin approvals (S46)
+
+The lead approves each umbrella gitlink below (decision 20; D21, Q5, Q7).
+Each gitlink is the full 40-character SHA of that repo's `main`.
+`bun run pins:mains` rewrites only the SHAs on these lines.
+
+<!-- pin-approvals:start -->
+- Approved: `minimal-agent-core` at `0528dae3cdb0bf90c3ec3f65cb222b4b8910ff1c` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `e0df285b90536b270ae40c438e767f2f7565f388` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `17871d1f1fcc45b1da19320d6d8a57035319048f` (lead, decision 20).
+- Approved: `minimal-agent-web` at `f62aa9e94ebfe81575f3a3f6519e1105065b6c0a` (lead, decision 20).
+<!-- pin-approvals:end -->
+
 ### Added
+
+- 2026-11-01: `scripts/pin-mains.ts` (`bun run pins:mains`) sets every gitlink
+  to its submodule's `origin/main`. It prints `old -> new` and updates the pin
+  approval lines. `scripts/check-core-pins.ts` (`bun run pins:check`) fails if
+  a cli, plugins, or web core pin differs from the core gitlink. `bun run
+  check` runs it in report-only mode first.
 
 - 2026-10-31: `minimal-agent-web` joins the umbrella as a fourth submodule
   (spec S59). `install:all`, `check`, `test`, and `typecheck` run it too, and
@@ -85,6 +104,9 @@ orchestration) are documented here.
   now say three submodules.
 
 ### Changed
+
+- 2026-11-01: `bun run start` runs the CLI (`minimal-agent-cli`). Core is a
+  library and has no bin.
 
 - 2026-10-14: Core pin advanced to `5bfac53` (`b17bf7c`..`5bfac53`) and plugins
   pin to `6750375` (`e1a80e4`..`6750375`). Details are in
