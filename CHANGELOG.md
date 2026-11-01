@@ -69,7 +69,7 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 <!-- pin-approvals:start -->
 - Approved: `minimal-agent-core` at `b8c8c210030d19493bf21c884d0d25780505a7a5` (lead, decision 20).
 - Approved: `minimal-agent-plugins` at `2728cb31b781b58690be1787deed564677d0d7a3` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `76263567c7b1c7b8a70b7a442be2f261423d3c45` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `b3e32e2aaaaf2da1abaeafae215bcd670585c6ef` (lead, decision 20).
 - Approved: `minimal-agent-web` at `05569932ca853568df4e152581ca2bcebfc5dc7d` (lead, decision 20).
 <!-- pin-approvals:end -->
 
