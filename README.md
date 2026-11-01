@@ -45,17 +45,14 @@ git submodule update --init --recursive
 minimal-agent/                   # this monorepo
 ├── minimal-agent-core/          # presentation-free SDK + conversation engine (submodule)
 ├── minimal-agent-plugins/       # first-party plugins (submodule)
-├── minimal-agent-cli/           # terminal client (submodule, Program 3A scaffold)
+├── minimal-agent-cli/           # terminal client and `minimal-agent` bin (submodule)
 ├── minimal-agent-web/           # Bun server + Vite/React frontend over core (submodule)
 ├── package.json                 # convenience scripts only
 └── README.md
 ```
 
-> **Terminal client is being moved to `minimal-agent-cli`.** The target
-> architecture puts all terminal/UI/presentation code in the CLI repository.
-> Until the Program 3B cutover lands, the executable still runs from
-> `minimal-agent-core` (transitional). Terminal users will invoke
-> `minimal-agent-cli` once cutover lands.
+> **Core is a library.** It has no bin. The terminal client and the
+> `minimal-agent` executable live in `minimal-agent-cli`.
 
 ## Develop
 
@@ -107,17 +104,13 @@ ln -sfn "$PWD/minimal-agent-plugins/ma-fetch-plugin" ~/.agents/plugins/ma-fetch-
 bun run link:plugins
 ```
 
-Run the agent from source (transitional until Program 3B cutover; the terminal
-client is being moved to `minimal-agent-cli`):
+Run the agent from source. `bun run start` runs the CLI:
 
 ```bash
-./minimal-agent-core/minimal-agent
+bun run start -- --help
 # or
-bun run start
+cd minimal-agent-cli && bun run start
 ```
-
-Once the Program 3B cutover lands, terminal users will invoke
-`minimal-agent-cli` instead.
 
 ## Updating submodule pins
 
@@ -126,6 +119,14 @@ Develop and commit inside each submodule first, then bump the pin here:
 ```bash
 git add minimal-agent-core minimal-agent-plugins minimal-agent-cli minimal-agent-web
 git commit -m "chore: bump submodule pins"
+```
+
+Or pin every submodule to its `origin/main` in one command. It prints
+`old -> new` and updates the pin approval lines in `CHANGELOG.md`:
+
+```bash
+bun run pins:mains   # stage each gitlink at origin/main
+bun run pins:check   # fail if a cli, plugins, or web core pin differs from the core gitlink
 ```
 
 `git submodule update --remote` advances both to the tip of the tracked branch, then stage and commit as above. Prefer explicit pins for reproducible checkouts.

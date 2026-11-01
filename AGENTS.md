@@ -67,7 +67,9 @@ bun run install:all      # bun install in core, then plugins, then cli, then web
 bun run check            # core check && plugins check && cli check && web check
 bun run test             # core test && plugins test && cli test && web test
 bun run test:plugins     # plugins only: parallel per-package via --filter
-bun run start            # core entrypoint
+bun run start            # CLI entrypoint (core is a library, no bin)
+bun run pins:mains       # set every gitlink to origin/main, print old -> new
+bun run pins:check       # fail if a consumer core pin differs from the core gitlink
 bun run link:plugins     # symlink plugins into ~/.agents/plugins
 bun run link:dev         # point consumers' @minimal-agent/core at ./minimal-agent-core
 bun run link:reset       # restore each consumer's pinned core from bun.lock
