@@ -13,6 +13,8 @@
   "scripts": {
     "install:all": "bun install && bun install --cwd minimal-agent-core && bun install --cwd minimal-agent-plugins && bun install --cwd minimal-agent-cli && bun install --cwd minimal-agent-web",
     "start": "bun run --cwd minimal-agent-cli start",
+    "cli:compile:dev": "bun run --cwd minimal-agent-cli compile:dev",
+    "cli:compile:release": "bun run --cwd minimal-agent-cli compile:release",
     "test": "bun run --cwd minimal-agent-core test && bun run --cwd minimal-agent-plugins test && bun run --cwd minimal-agent-cli test && bun run --cwd minimal-agent-web test",
     "test:plugins": "bun run --cwd minimal-agent-plugins test:plugins",
     "check": "bun run scripts/check-core-pins.ts --report-only && bun run --cwd minimal-agent-core check && bun run --cwd minimal-agent-plugins check && bun run --cwd minimal-agent-cli check && bun run --cwd minimal-agent-web check",
