@@ -158,7 +158,7 @@ personal worktree rewire notes.
 
 Commit subjects follow [Conventional Commits](https://www.conventionalcommits.org/)
 (`feat:`, `fix:`, `chore:`, …). Husky + Commitlint enforce this on `commit-msg`
-in this repo and in both submodules (`commitlint.config.js`, `.husky/commit-msg`).
+in this repo and in each of the four submodules (`commitlint.config.js`, `.husky/commit-msg`).
 `bun install` / `bun run install:all` runs `prepare` → `husky` so hooks wire up.
 CI also runs a `commitlint` job (`bun run commitlint:last` on push; range lint
 on PRs). Local check: `echo 'feat: ok' | bun run commitlint`.
@@ -221,7 +221,8 @@ Agents must not bypass with `--no-verify`.
 
 ## Versioning and releases
 
-Full process doc: [`docs/versioning-and-releases.md`](docs/versioning-and-releases.md).
+This section is the tracked process summary. The longer process doc moved to
+the gitignored `research/` folder in `cc89102`.
 
 **Scheme**
 

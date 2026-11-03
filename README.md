@@ -151,12 +151,12 @@ bun run pins:mains   # stage each gitlink at origin/main
 bun run pins:check   # fail if a cli, plugins, or web core pin differs from the core gitlink
 ```
 
-`git submodule update --remote` advances both to the tip of the tracked branch, then stage and commit as above. Prefer explicit pins for reproducible checkouts.
+`git submodule update --remote` advances every submodule to the tip of its tracked branch, then stage and commit as above. Prefer explicit pins for reproducible checkouts.
 
 ## Why submodules
 
-- Core and plugins already ship as independent repositories with their own workspaces, locks, and CI.
-- A single nested Bun workspace across both trees fights Bun's single-root install model.
+- Core, plugins, cli, and web already ship as independent repositories with their own workspaces, locks, and CI.
+- A single nested Bun workspace across all four trees fights Bun's single-root install model.
 - Submodules keep PR surfaces separate while still giving one checkout that knows a compatible pair of commits.
 
 ## Related
@@ -176,7 +176,7 @@ bun run version:status
 bun run version -- set 0.2.0 --tag --push
 ```
 
-See [`docs/versioning-and-releases.md`](./docs/versioning-and-releases.md) and [`AGENTS.md`](./AGENTS.md) for the full scheme (nightlies, CI, targets).
+See "Versioning and releases" in [`AGENTS.md`](./AGENTS.md) for the full scheme (nightlies, CI, targets).
 
 ## For agents
 
