@@ -112,6 +112,28 @@ bun run start -- --help
 cd minimal-agent-cli && bun run start
 ```
 
+Build a standalone `minimal-agent` binary (Bun runtime included, no
+`bun` or `node_modules` needed to run it) into `minimal-agent-cli/dist/`:
+
+```bash
+bun run cli:compile:dev      # core = ./minimal-agent-core working tree, uncommitted edits included
+bun run cli:compile:release  # core = the commit pinned in minimal-agent-cli/package.json
+```
+
+Neither one runs `bun install` or touches `node_modules`, so a `link:dev`
+link stays in place. Each build checks the new binary the way a user runs
+it, before it replaces `dist/minimal-agent`: copied out of the repo, a
+fresh `HOME`, a project dir with a hostile `bunfig.toml` and `.env`, then
+`--help`, `plugins` with a test plugin on disk, a `-p` prompt, and the
+interactive REPL in tmux (`minimal-agent-cli/scripts/compile-e2e.sh`). A
+build that fails a check exits 1 and leaves the previous binary in place.
+Run the checks on any binary with
+`minimal-agent-cli/scripts/compile-e2e.sh PATH`.
+
+The binary holds the CLI and core only. Plugins, including every LLM
+provider, load from `~/.minimal-agent/plugins` at run time, the same as a
+run from source.
+
 ## Updating submodule pins
 
 Develop and commit inside each submodule first, then bump the pin here:

@@ -68,6 +68,8 @@ bun run check            # core check && plugins check && cli check && web check
 bun run test             # core test && plugins test && cli test && web test
 bun run test:plugins     # plugins only: parallel per-package via --filter
 bun run start            # CLI entrypoint (core is a library, no bin)
+bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-agent-cli/dist/
+bun run cli:compile:release  # standalone binary, the core commit the CLI pins
 bun run pins:mains       # set every gitlink to origin/main, print old -> new
 bun run pins:check       # fail if a consumer core pin differs from the core gitlink
 bun run link:plugins     # symlink plugins into ~/.agents/plugins
