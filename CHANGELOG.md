@@ -6,9 +6,17 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-10-31T00:00:00-0400"
+updated-at: "2026-11-03T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-03-cli-compile-scripts"
+    type: feat
+    status: landed
+    detail: "Root cli:compile:dev and cli:compile:release build a standalone CLI binary. Pins bumped for compiled-binary support and Anthropic account plan"
+  - id: "2026-11-01-pin-sweep-scripts"
+    type: feat
+    status: landed
+    detail: "pins:mains sets every gitlink to origin/main. pins:check fails on a consumer core pin that differs from the core gitlink"
   - id: "2026-10-31-web-in-umbrella"
     type: feat
     status: landed
@@ -40,7 +48,6 @@ latest-release:
 related:
   - "README.md"
   - "AGENTS.md"
-  - "docs/versioning-and-releases.md"
   - "minimal-agent-core/docs/CHANGELOG.md"
   - "minimal-agent-plugins/CHANGELOG.md"
   - "minimal-agent-cli/CHANGELOG.md"
@@ -67,13 +74,20 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `b8c8c210030d19493bf21c884d0d25780505a7a5` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `2728cb31b781b58690be1787deed564677d0d7a3` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `b3e32e2aaaaf2da1abaeafae215bcd670585c6ef` (lead, decision 20).
-- Approved: `minimal-agent-web` at `05569932ca853568df4e152581ca2bcebfc5dc7d` (lead, decision 20).
+- Approved: `minimal-agent-core` at `8fce891bb06ccf37f788cbf40409e87a28150572` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `b3046a8169719fd5025d13b92935191dd610aa79` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `7d83b7b266e5637989da367a5b9f6db046f3261a` (lead, decision 20).
+- Approved: `minimal-agent-web` at `81c7c3e0d05311835856fa897eb04caebd0edb9e` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
+
+- 2026-11-03: `bun run cli:compile:dev` and `bun run cli:compile:release`
+  build a standalone `minimal-agent` binary into `minimal-agent-cli/dist/`.
+  The dev build uses the `./minimal-agent-core` working tree. The release
+  build uses the core commit that `minimal-agent-cli/package.json` pins.
+  `minimal-agent-cli/scripts/compile-e2e.sh` checks each binary before it
+  replaces the old one. README and AGENTS.md list both scripts.
 
 - 2026-11-01: `scripts/pin-mains.ts` (`bun run pins:mains`) sets every gitlink
   to its submodule's `origin/main`. It prints `old -> new` and updates the pin
@@ -104,6 +118,11 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   now say three submodules.
 
 ### Changed
+
+- 2026-11-03: Pins advance to core `8fce891`, plugins `b3046a8`, cli
+  `7d83b7b`, and web `81c7c3e`. Each repo gets a docs pass: CHANGELOG,
+  README, and AGENTS.md now match the code. The CLI `--help` text is
+  fixed (help strings only). Details are in each repo's CHANGELOG.
 
 - 2026-11-01: `bun run start` runs the CLI (`minimal-agent-cli`). Core is a
   library and has no bin.
