@@ -21,3 +21,7 @@ research/
 .rewire-*
 bun.lock
 PROGRESS.md
+
+# Untracked local scratch that must not join the root Bun workspace
+minimal-agent-studio/
+minimal-agent-inspector/

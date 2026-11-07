@@ -14,3 +14,7 @@
 	path = minimal-agent-web
 	url = https://github.com/gastonmorixe/minimal-agent-web.git
 	branch = main
+[submodule "minimal-agent-config"]
+	path = minimal-agent-config
+	url = https://github.com/gastonmorixe/minimal-agent-config.git
+	branch = main

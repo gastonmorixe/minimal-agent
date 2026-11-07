@@ -121,7 +121,31 @@ run in that remote’s tree.
   `.git/modules/`) are intentional when local `git worktree` layouts need a
   stable absolute gitdir path through a sibling symlink.
 
-## Bun workspaces (per submodule, not root)
+## Bun workspaces
+
+The monorepo root `package.json` is a Bun workspace root. It runs one install
+graph over all four submodules.
+
+- **Root `workspaces` uses globs, never literal directory names.** A literal
+  entry for a missing directory fails the install with
+  `error: Workspace not found`, and the umbrella `commitlint` job runs
+  `bun install` at the root with no submodule checkout. Globs match nothing and
+  pass.
+- **Nested members must be listed too.** Listing `minimal-agent-plugins` is not
+  enough: `minimal-agent-plugins/ma-*-plugin` and `minimal-agent-*/ma-*-kit`
+  must also appear, or the plugin packages keep the pinned core.
+- **`overrides` carries `"@minimal-agent/core": "workspace:*"`.** Every consumer
+  that declares core then resolves it to the local checkout, with no commit and
+  no re-pin. A plain `bun install` inside a submodule keeps working and uses the
+  root lockfile.
+- **The root lockfile is gitignored.** A fresh resolve follows the catalog
+  ranges, so pin a tool exactly in the catalog when an upgrade must be
+  deliberate. `catalog` at the root is the single place that declares tool
+  versions; the per-submodule catalogs still exist and must match.
+- **`minimal-agent-studio/` and `minimal-agent-inspector/` are gitignored** so
+  the `minimal-agent-*` glob does not pull them into the workspace.
+
+Per submodule:
 
 - **Core** workspaces: `tools/docs`. `plugin-api/` is a folder inside the
   `@minimal-agent/core` package (exported as `@minimal-agent/core/plugin-api/*`),
@@ -133,17 +157,31 @@ run in that remote’s tree.
   `bun run test:plugins` runs `bun --filter 'ma-*' test` in parallel. Per-package
   `test` scripts use `bun test --pass-with-no-tests` so empty packages do not
   fail the fan-out.
-- **CLI** has no workspaces. It installs `@minimal-agent/core` from a git URL
-  pinned to a commit or tag. Use `bun run link:dev` for live core edits, and
-  `bun run link:reset` before you commit, so tests run against the pin.
-- **Web** workspaces: `server`, `app` (its own root `workspaces` field, not
-  the monorepo's). It installs `@minimal-agent/core` from a git URL the same
-  way the CLI does; `bun run link:dev` covers it too.
-- **Do not** add a monorepo-root `workspaces` field that globs the submodules
-  unless product policy explicitly merges the remotes into one install graph.
-  Plugins depend on `@minimal-agent/core` for the plugin-api contract (no
-  vendored copies since S42) but still clone and run with no core workspace
-  link; core resolves each plugin's import to its own copy at runtime.
+- **CLI** has no workspaces of its own. It declares `@minimal-agent/core` by a
+  git URL pin, which the root `overrides` replaces with the local workspace
+  during a root install. `bun run link:dev` is no longer needed for dev.
+- **Web** workspaces: `server`, `app`. It declares `@minimal-agent/core` by a
+  git URL the same way the CLI does.
+
+The committed pins stay. CI and a standalone clone of one repo still resolve a
+fixed core, because neither has the monorepo root above it.
+
+## Shared tool config
+
+`minimal-agent-config` publishes `@minimal-agent/config`. Core, cli and plugins
+extend it for Biome, oxlint and TypeScript, and keep only what is repo-specific:
+
+- **biome**: `$schema`, `files.includes`, and any local `assist` override in
+  OBJECT form. The shorthand `"organizeImports": "on"` does not override the
+  base groups.
+- **oxlint**: `categories`, `settings`, `jsPlugins`, `ignorePatterns`,
+  `overrides`, the jsdoc rules, `max-lines`, and every `tsdoc/*` rule. Only
+  `plugins`, `options` and `rules` are inherited, and jsPlugin specifiers
+  resolve from the repo root, not from the config package.
+- **tsconfig**: `include`, `exclude`, and any extra compiler flags. The base
+  holds `compilerOptions` only.
+
+See `minimal-agent-config/README.md` for the exact lines.
 
 ## License and public docs
 
