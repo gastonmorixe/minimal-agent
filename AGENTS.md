@@ -305,8 +305,8 @@ plugins, cli, and web), then `git submodule update --init --recursive` with
 retries; the same token also rewrites the `git+ssh` URL the cli, plugins, and
 web use to install `@minimal-agent/core`, so the monorepo job needs no
 separate `CORE_DEPLOY_KEY` the way each repo's own standalone CI does. Default
-`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.4.2**
-(`engines.bun` `>=1.4.2`); local canary/patched Bun is not what workflows
+`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.4.4**
+(`engines.bun` `>=1.4.4`); local canary/patched Bun is not what workflows
 download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
 `actions/upload-artifact@v7` (core release), `softprops/action-gh-release@v3`.
 
