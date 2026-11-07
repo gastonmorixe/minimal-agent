@@ -10,6 +10,25 @@
     "url": "git+https://github.com/gastonmorixe/minimal-agent.git"
   },
   "type": "module",
+  "workspaces": [
+    "minimal-agent-*",
+    "minimal-agent-*/tools/*",
+    "minimal-agent-*/ma-*-plugin",
+    "minimal-agent-*/ma-*-kit",
+    "minimal-agent-*/*"
+  ],
+  "overrides": {
+    "@minimal-agent/core": "workspace:*"
+  },
+  "catalog": {
+    "@biomejs/biome": "2.5.15",
+    "bun-types": "^1.4.3",
+    "eslint-plugin-jsdoc": "^63.3.3",
+    "eslint-plugin-tsdoc": "^0.5.4",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "typescript": "^7.0.2"
+  },
   "scripts": {
     "install:all": "bun install && bun install --cwd minimal-agent-core && bun install --cwd minimal-agent-plugins && bun install --cwd minimal-agent-cli && bun install --cwd minimal-agent-web",
     "start": "bun run --cwd minimal-agent-cli start",
