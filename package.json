@@ -18,7 +18,8 @@
     "minimal-agent-*/*"
   ],
   "overrides": {
-    "@minimal-agent/core": "workspace:*"
+    "@minimal-agent/core": "workspace:*",
+    "@types/node": "^26"
   },
   "catalog": {
     "@biomejs/biome": "2.5.15",
