@@ -36,7 +36,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.4.2"
+          bun-version: "1.4.4"
 
       - name: Install dependencies
         env:
@@ -96,7 +96,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.4.2"
+          bun-version: "1.4.4"
 
       # The CLI architecture checker runs under Node (>= 22.18).
       - name: Set up Node
