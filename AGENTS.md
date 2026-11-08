@@ -32,9 +32,10 @@ tests, and gates live **inside** the submodules.
 ├── minimal-agent-plugins/          # submodule → gastonmorixe/minimal-agent-plugins
 ├── minimal-agent-cli/              # submodule → gastonmorixe/minimal-agent-cli
 ├── minimal-agent-web/              # submodule → gastonmorixe/minimal-agent-web
-├── package.json                    # install/check/start orchestration only
+├── minimal-agent-config/           # submodule → gastonmorixe/minimal-agent-config
+├── package.json                    # workspace root, tool catalog, orchestration scripts
 ├── scripts/link-plugins.ts         # symlink ma-*-plugin → ~/.agents/plugins
-├── scripts/link-dev.ts             # link local core into consumers (link:dev)
+├── scripts/link-dev.ts             # legacy per-consumer link (deprecated for dev)
 ├── AGENTS.md                       # you are here
 ├── CHANGELOG.md
 ├── LICENSE                         # proprietary, all rights reserved
@@ -47,7 +48,8 @@ tests, and gates live **inside** the submodules.
 | `minimal-agent-plugins/` | First-party plugins (`ma-*-plugin`)      | Plugin PRs / `bun run check` **here** |
 | `minimal-agent-cli/`     | Terminal host; TUI moves here at cutover | CLI PRs / `bun run check` **here**    |
 | `minimal-agent-web/`     | Bun server + Vite/React frontend over core | Web PRs / `bun run check` **here**  |
-| monorepo root (`.`)      | Submodule **pins** + convenience scripts | Pin bumps only                        |
+| `minimal-agent-config/`  | Shared Biome, oxlint and tsconfig bases  | Config changes, then each consumer's `bun run check` |
+| monorepo root (`.`)      | Workspace root, tool catalog, submodule pins | Catalog bumps, pin bumps, scripts |
 
 Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 `AGENTS.md`. Read those before changing product code:
@@ -56,32 +58,37 @@ Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 - [`minimal-agent-plugins/AGENTS.md`](minimal-agent-plugins/AGENTS.md)
 - [`minimal-agent-cli/AGENTS.md`](minimal-agent-cli/AGENTS.md)
 - [`minimal-agent-web/AGENTS.md`](minimal-agent-web/AGENTS.md)
+- [`minimal-agent-config/README.md`](minimal-agent-config/README.md)
 
 ## Build, test, lint (monorepo)
 
-There is **no** root Bun workspace that merges the submodules. Root scripts only
-`cd` into each tree:
+The root is a Bun **workspace root**, so one install links every consumer to the
+local core. Root scripts still `cd` into each tree for the gates:
 
 ```bash
-bun run install:all      # bun install in core, then plugins, then cli, then web
+bun install              # workspace install: links local core into all consumers
 bun run check            # core check && plugins check && cli check && web check
 bun run test             # core test && plugins test && cli test && web test
 bun run test:plugins     # plugins only: parallel per-package via --filter
 bun run start            # CLI entrypoint (core is a library, no bin)
 bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-agent-cli/dist/
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
-bun run pins:mains       # set every gitlink to origin/main, print old -> new
+bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
 bun run pins:check       # fail if a consumer core pin differs from the core gitlink
 bun run link:plugins     # symlink plugins into ~/.agents/plugins
-bun run link:dev         # point consumers' @minimal-agent/core at ./minimal-agent-core
-bun run link:reset       # restore each consumer's pinned core from bun.lock
+bun run link:dev         # DEPRECATED: the workspace already links core for dev
+bun run link:reset       # force a consumer back to its committed git pin
 bun run link:status      # linked or pinned, per consumer
 bun run submodules:status
 bun run submodules:init  # git submodule update --init --recursive
 ```
 
-**Do not** treat root `bun install` as installing the product. Always install
-inside each submodule (or use `install:all`).
+**Daily loop:** `bun install` once at the root, then edit core and run
+`bun run start` again. No commit, no push, no pin bump. See "Bun workspaces"
+below for why, and for the glob rules the root `workspaces` list must keep.
+
+`bun run install:all` still exists and installs per submodule. You do not need
+it, and it does not change the outcome of a root install.
 
 ### Gates that must stay green
 
@@ -117,6 +124,8 @@ run in that remote’s tree.
   submodule working trees as the real checkouts: it can reset working trees to
   the pin and thrash local WIP / `private/` is gitignored but a hard reset of
   tracked files still hurts. Prefer explicit pin bumps after intentional pulls.
+- **`bun run pins:mains` also detaches HEAD** (`git checkout --detach
+  origin/main`) in all four submodules. Commit or stash before you run it.
 - Nested `.git/` directories inside submodules (not absorbed into
   `.git/modules/`) are intentional when local `git worktree` layouts need a
   stable absolute gitdir path through a sibling symlink.

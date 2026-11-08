@@ -2,10 +2,15 @@
 /**
  * Link the local core checkout into its consumers for live development.
  *
- * Consumers (minimal-agent-cli and minimal-agent-web) install
- * `@minimal-agent/core` from a pinned git URL. That pin is right for CI
- * and releases. During development you want edits in `minimal-agent-core/` to
- * reach the consumers without a commit and a re-pin.
+ * DEPRECATED for daily work. The monorepo root `package.json` is a Bun
+ * workspace root with `overrides["@minimal-agent/core"] = "workspace:*"`, so
+ * one `bun install` at the root links every consumer to the local checkout.
+ * Verified: a plain `bun install` inside a submodule keeps that link.
+ *
+ * Keep this script for the one case the workspace cannot cover: forcing a
+ * consumer back to its committed git pin without a root install. `reset`
+ * removes the workspace symlink and runs the consumer's own frozen install.
+ * That is a pin check, not a dev step.
  *
  * Usage
  * -----
@@ -85,9 +90,14 @@ function reset() {
 
 function status() {
   for (const dir of consumers()) {
-    const state = isLinked(dir) ? `linked -> ${relative(root, core)}` : "pinned";
+    const state = isLinked(dir)
+      ? `linked -> ${relative(root, core)} (Bun workspace override)`
+      : "pinned (git copy)";
     console.log(`${relative(root, dir)}: ${state} (${readManifest(dir)?.dependencies?.[CORE_NAME]})`);
   }
+  console.log(
+    "A workspace link and a `link:dev` link look the same on disk. Run the CLI to prove which core it loads.",
+  );
 }
 
 const cmd = process.argv[2] ?? "status";
