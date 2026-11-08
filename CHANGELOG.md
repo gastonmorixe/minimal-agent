@@ -74,10 +74,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `561cba19730c3e2b50d497aaa6017d933fba2ede` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `0fd96a90828116240905439b376f1e312697c9e1` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `193ad80bbde83daa5d025acedf98e312ec24d5b8` (lead, decision 20).
-- Approved: `minimal-agent-web` at `d000ac31bf8163c036c05b867090af4cc8a3e3f4` (lead, decision 20).
+- Approved: `minimal-agent-core` at `e8ddbcae37fc05aefe9a7fe84e17eba2eec7c140` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `6bd740abb778ab52dda55c0b539c3e14c743b87a` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `19ff2670ef706c1dde084f407f2b4fe01f8e0676` (lead, decision 20).
+- Approved: `minimal-agent-web` at `3d4427fe78356ec4031fb9343437657230c49ef1` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
