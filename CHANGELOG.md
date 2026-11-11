@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-11-03T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-11-plugin-roots-three-tiers"
+    type: refactor
+    status: landed
+    detail: "Plugin roots are project, user, embedded. Home tier ~/.agents/plugins removed. Dev mode skips the plugins clone. link:plugins removed"
   - id: "2026-11-03-cli-compile-scripts"
     type: feat
     status: landed
@@ -118,6 +122,16 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   now say three submodules.
 
 ### Changed
+
+- 2026-11-11: Plugin roots are now 3 tiers: project
+  (`<cwd>/.agents/minimal-agent/plugins`), user (`~/.minimal-agent/plugins`),
+  and embedded (`<cli>/plugins` plus the `minimal-agent-plugins` checkout).
+  The home tier `~/.agents/plugins` is removed, and the project path moves
+  from `<cwd>/.agents/plugins`. The CLI warns about plugin packages in an old
+  root and moves nothing. When a checkout holds plugin packages (dev mode),
+  the CLI does not clone the plugins repo. `bun run link:plugins` and
+  `scripts/link-plugins.ts` are removed. README and AGENTS.md describe the new
+  roots.
 
 - 2026-11-03: Pins advance to core `8fce891`, plugins `b3046a8`, cli
   `7d83b7b`, and web `81c7c3e`. Each repo gets a docs pass: CHANGELOG,
