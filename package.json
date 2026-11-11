@@ -39,7 +39,6 @@
     "test:plugins": "bun run --cwd minimal-agent-plugins test:plugins",
     "check": "bun run scripts/check-core-pins.ts --report-only && bun run --cwd minimal-agent-core check && bun run --cwd minimal-agent-plugins check && bun run --cwd minimal-agent-cli check && bun run --cwd minimal-agent-web check",
     "typecheck": "bun run --cwd minimal-agent-core typecheck && bun run --cwd minimal-agent-plugins typecheck && bun run --cwd minimal-agent-cli typecheck && bun run --cwd minimal-agent-web typecheck",
-    "link:plugins": "bun run scripts/link-plugins.ts",
     "link:dev": "bun run scripts/link-dev.ts link",
     "link:reset": "bun run scripts/link-dev.ts reset",
     "link:status": "bun run scripts/link-dev.ts status",

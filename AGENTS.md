@@ -34,7 +34,6 @@ tests, and gates live **inside** the submodules.
 ├── minimal-agent-web/              # submodule → gastonmorixe/minimal-agent-web
 ├── minimal-agent-config/           # submodule → gastonmorixe/minimal-agent-config
 ├── package.json                    # workspace root, tool catalog, orchestration scripts
-├── scripts/link-plugins.ts         # symlink ma-*-plugin → ~/.agents/plugins
 ├── scripts/link-dev.ts             # legacy per-consumer link (deprecated for dev)
 ├── AGENTS.md                       # you are here
 ├── CHANGELOG.md
@@ -75,7 +74,6 @@ bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-a
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
 bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
 bun run pins:check       # fail if a consumer core pin differs from the core gitlink
-bun run link:plugins     # symlink plugins into ~/.agents/plugins
 bun run link:dev         # DEPRECATED: the workspace already links core for dev
 bun run link:reset       # force a consumer back to its committed git pin
 bun run link:status      # linked or pinned, per consumer
@@ -89,6 +87,25 @@ below for why, and for the glob rules the root `workspaces` list must keep.
 
 `bun run install:all` still exists and installs per submodule. You do not need
 it, and it does not change the outcome of a root install.
+
+### Plugin roots (dev mode)
+
+- The CLI reads 3 plugin roots. Precedence: project, then user, then embedded.
+- Project: `<cwd>/.agents/minimal-agent/plugins`. User: `~/.minimal-agent/plugins`.
+  Embedded: `<cli>/plugins`, plus the `../minimal-agent-plugins` checkout next
+  to the CLI, or the dirs in `MINIMAL_AGENT_PLUGIN_SIBLINGS` (colon separated).
+- Dev mode: a checkout dir holds at least one plugin package (a subdir with
+  `manifest.json` or `provider.json`). Then the user tier is empty and the CLI
+  does not clone the plugins repo. Edit `minimal-agent-plugins/` and run
+  `bun run start` again. No symlink is necessary.
+- Install mode (no checkout, for example the compiled binary): the CLI clones
+  `minimal-agent-plugins` into `~/.minimal-agent/plugins` on the first
+  interactive start when that dir is empty. `MINIMAL_AGENT_NO_PLUGIN_SYNC=1`
+  stops the clone. The web server never clones.
+- The CLI does not read `~/.agents/plugins` or `<cwd>/.agents/plugins`. If one
+  holds plugin packages, the CLI prints an "ignored legacy plugin root"
+  warning. It moves nothing. Move the packages to
+  `<cwd>/.agents/minimal-agent/plugins` yourself.
 
 ### Gates that must stay green
 

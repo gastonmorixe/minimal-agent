@@ -148,21 +148,22 @@ bun run test:plugins          # bun --filter 'ma-*' test
 
 ### Plugin discovery
 
-The agent loads plugins from these roots (closer-to-user wins):
+The agent loads plugins from these roots (the first root wins):
 
-1. `<cwd>/.agents/plugins/`
-2. `~/.agents/plugins/`
-3. `~/.minimal-agent/plugins/` (first-run clone of the plugins repo)
-4. A sibling `minimal-agent-plugins/` directory next to a source checkout (dev)
+1. `<cwd>/.agents/minimal-agent/plugins/`: project
+2. `~/.minimal-agent/plugins/`: user (first-run clone of the plugins repo,
+   install mode only)
+3. Embedded: `<cli>/plugins/`, plus the `minimal-agent-plugins/` checkout next
+   to the CLI, or the dirs in `MINIMAL_AGENT_PLUGIN_SIBLINGS` (colon separated)
 
-To wire a plugins checkout into the home root while developing:
+In this monorepo the `minimal-agent-plugins/` checkout is the dev mode root.
+The CLI loads it with no symlink and does not clone the plugins repo. To add a
+plugin for one project only, put or symlink the package into
+`<cwd>/.agents/minimal-agent/plugins/`.
 
-```bash
-mkdir -p ~/.agents/plugins
-ln -sfn "$PWD/minimal-agent-plugins/ma-fetch-plugin" ~/.agents/plugins/ma-fetch-plugin
-# or:
-bun run link:plugins
-```
+The CLI does not read `~/.agents/plugins/` or `<cwd>/.agents/plugins/`. If one
+holds plugin packages, the CLI prints a warning. Move those packages to
+`<cwd>/.agents/minimal-agent/plugins/`.
 
 Run the agent from source. `bun run start` runs the CLI:
 
