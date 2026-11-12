@@ -319,19 +319,26 @@ commits, it also commits monorepo submodule pin bumps.
 
 | Repo     | Workflows                                                                                                              |
 | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| core     | `ci.yml` (commitlint + check), `release.yml` (nightly on main + stable on `v*`, tag must match package.json)           |
-| plugins  | `ci.yml` (commitlint + check), `release.yml` (stable `v*` only)                                                        |
-| cli      | `ci.yml` (commitlint + check, reads private core via `CORE_DEPLOY_KEY`), `release.yml` (stable `v*`)                  |
-| web      | `ci.yml` (commitlint + check, reads private core via `CORE_DEPLOY_KEY`)                                               |
+| core     | `ci.yml` (commitlint only), `release.yml` (nightly on main + stable on `v*`, tag must match package.json, no gate)     |
+| plugins  | `ci.yml` (commitlint only), `release.yml` (stable `v*` only)                                                           |
+| cli      | `ci.yml` (commitlint only), `release.yml` (stable `v*`, no gate)                                                       |
+| web      | `ci.yml` (commitlint only)                                                                                             |
 | monorepo | `ci.yml` (commitlint + submodule retry + core, plugins, cli, web checks), `release.yml` (stable `v*` + pin notes)     |
+
+**The monorepo CI is the only full gate.** Core, cli, plugins and web depend on
+private git repos (`@minimal-agent/core`, `@minimal-agent/config`), and each
+repo's own `GITHUB_TOKEN` cannot read another private repo. So their standalone
+workflows install only the pinned `@commitlint/*` packages (a `jq` filter of
+package.json) and lint the commit message. No deploy keys and no per-repo
+secrets. To gate a submodule change, push it, then bump its pin here: the
+monorepo `ci.yml` runs all four `bun run check` gates against that pin.
 
 Private submodule clones in monorepo CI use `actions/checkout@v7` with
 `token: ${{ secrets.SUBMODULES_PAT }}` (a PAT with `repo` that can read core,
 plugins, cli, and web), then `git submodule update --init --recursive` with
 retries; the same token also rewrites the `git+ssh` URL the cli, plugins, and
-web use to install `@minimal-agent/core`, so the monorepo job needs no
-separate `CORE_DEPLOY_KEY` the way each repo's own standalone CI does. Default
-`GITHUB_TOKEN` cannot clone other private repos. CI pins public Bun **1.4.4**
+web use to install `@minimal-agent/core`. Default `GITHUB_TOKEN` cannot clone
+other private repos, which is why only the monorepo runs the full gate. CI pins public Bun **1.4.4**
 (`engines.bun` `>=1.4.4`); local canary/patched Bun is not what workflows
 download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
 `actions/upload-artifact@v7` (core release), `softprops/action-gh-release@v3`.
