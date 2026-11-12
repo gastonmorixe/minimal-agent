@@ -333,11 +333,16 @@ package.json) and lint the commit message. No deploy keys and no per-repo
 secrets. To gate a submodule change, push it, then bump its pin here: the
 monorepo `ci.yml` runs all four `bun run check` gates against that pin.
 
-Private submodule clones in monorepo CI use `actions/checkout@v7` with
-`token: ${{ secrets.SUBMODULES_PAT }}` (a PAT with `repo` that can read core,
-plugins, cli, and web), then `git submodule update --init --recursive` with
-retries; the same token also rewrites the `git+ssh` URL the cli, plugins, and
-web use to install `@minimal-agent/core`. Default `GITHUB_TOKEN` cannot clone
+Private submodule clones in monorepo CI use the `minimal-agent-ci` GitHub App
+(contents:read + metadata:read, installed on all six repos). The `check` job
+runs `actions/create-github-app-token@v3` with `vars.MA_APP_ID` and
+`secrets.MA_APP_PRIVATE_KEY` to mint an installation token (1h lifetime)
+scoped to core, config, plugins, cli and web. `actions/checkout@v7` takes
+`token: ${{ steps.app-token.outputs.token }}`, then
+`git submodule update --init --recursive` runs with retries; the same token
+(as `https://x-access-token:<token>@github.com/`) also rewrites the `git+ssh`
+URLs the cli, plugins, and web use to install `@minimal-agent/core` and
+`@minimal-agent/config`. Default `GITHUB_TOKEN` cannot clone
 other private repos, which is why only the monorepo runs the full gate. CI pins public Bun **1.4.4**
 (`engines.bun` `>=1.4.4`); local canary/patched Bun is not what workflows
 download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
