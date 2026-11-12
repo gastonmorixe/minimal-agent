@@ -1,8 +1,10 @@
 name: CI
 
 # Umbrella gate: init submodules, install core, plugins, cli, and web, run all four checks.
-# Private sibling submodules need a classic/fine-grained PAT with `repo`
-# (secret: SUBMODULES_PAT). GITHUB_TOKEN cannot clone other private repos.
+# Private sibling submodules are read with the `minimal-agent-ci` GitHub App
+# (contents:read + metadata:read). The check job mints a short-lived (1h)
+# installation token from vars.MA_APP_ID + secrets.MA_APP_PRIVATE_KEY, scoped
+# to the private sibling repos. GITHUB_TOKEN cannot clone other private repos.
 #
 # Also lint commit messages (Conventional Commits) via Commitlint.
 on:
@@ -57,18 +59,29 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
+      # Installation token for the minimal-agent-ci App, scoped to the private
+      # siblings. Expires after 1h, which covers this job's 45 min timeout.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.MA_APP_ID }}
+          private-key: ${{ secrets.MA_APP_PRIVATE_KEY }}
+          owner: gastonmorixe
+          repositories: minimal-agent-core,minimal-agent-config,minimal-agent-plugins,minimal-agent-cli,minimal-agent-web
+
       # Checkout without submodules first, then init with retries. Pin bumps that
       # race a sibling push otherwise fail with "not our ref" / upload-pack.
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          token: ${{ secrets.SUBMODULES_PAT }}
+          token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
           submodules: false
 
       - name: Init submodules (retry)
         env:
-          TOKEN: ${{ secrets.SUBMODULES_PAT }}
+          TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           base="https://x-access-token:${TOKEN}@github.com/"
