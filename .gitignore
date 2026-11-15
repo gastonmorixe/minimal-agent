@@ -27,3 +27,6 @@ minimal-agent-studio/
 minimal-agent-inspector/
 # Home-lab container research (LAN details). Its own local git repo.
 minimal-agent-container/
+
+# Local scratch experiments
+experiments/
