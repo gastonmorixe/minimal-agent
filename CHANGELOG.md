@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-11-03T00:00:00-0500"
+updated-at: "2026-11-15T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-15-debug-dump-order-pin-sweep"
+    type: chore
+    status: landed
+    detail: "Bump all pins to core d0a6462 (debug dump: system before messages). Regenerate cli/web bun.lock. Add config pin approval line"
   - id: "2026-11-11-plugin-roots-three-tiers"
     type: refactor
     status: landed
@@ -62,6 +66,7 @@ remotes:
   plugins: "https://github.com/gastonmorixe/minimal-agent-plugins"
   cli: "https://github.com/gastonmorixe/minimal-agent-cli"
   web: "https://github.com/gastonmorixe/minimal-agent-web"
+  config: "https://github.com/gastonmorixe/minimal-agent-config"
 ---
 
 # Changelog
@@ -82,6 +87,7 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 - Approved: `minimal-agent-plugins` at `af8b38ff497bc6d61c5a0e8ddee3070bd4511e49` (lead, decision 20).
 - Approved: `minimal-agent-cli` at `ce8726d1b7d75d79a7ebca128ba618ef8c55da2b` (lead, decision 20).
 - Approved: `minimal-agent-web` at `26eea59eb5e88dfd86273f8f97b24fec8f9ac8aa` (lead, decision 20).
+- Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
@@ -122,6 +128,16 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   now say three submodules.
 
 ### Changed
+
+- 2026-11-15: Pins advance to core `d0a6462`, plugins `af8b38f`, cli
+  `ce8726d`, and web `26eea59`. In the `--debug` request dump, the system
+  block now sits directly before the messages (order: tools, system,
+  messages). Every cli, plugins, and web package now pins core `d0a6462`
+  (`pins:check` reports 0 stale). The cli and web `bun.lock` files were
+  out of sync with their `package.json` dev dependencies (biome, oxlint,
+  commitlint, config `55ba040`). Both are regenerated and pass
+  `bun install --frozen-lockfile`. The pin approval block gains a
+  `minimal-agent-config` line, so `pins:mains` covers all five submodules.
 
 - 2026-11-11: Plugin roots are now 3 tiers: project
   (`<cwd>/.agents/minimal-agent/plugins`), user (`~/.minimal-agent/plugins`),
