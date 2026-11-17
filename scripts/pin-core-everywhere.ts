@@ -23,6 +23,10 @@
  * `MINIMAL_AGENT_SESSION_ID` is set, each commit gets the agent
  * `Co-authored-by` trailer (AGENTS.md). It does not run the checks: run
  * `bun run check` (or each repo's `check`) before you push.
+ *
+ * Resumable: if a run stops after the consumer pushes (for example on a
+ * commit-msg hook), run it again. Consumers already on the SHA are skipped,
+ * and the umbrella commit names every staged consumer gitlink.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -50,8 +54,22 @@ function trailer(): string {
   return `\n\nCo-authored-by: ${name} <${sid.slice(0, 8)}@minimal-agent>`;
 }
 
+/** Wrap prose at `width` columns (commitlint body-max-line-length is 100). */
+function wrap(text: string, width = 72): string {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    if (line && line.length + 1 + word.length > width) {
+      lines.push(line);
+      line = word;
+    } else line = line ? `${line} ${word}` : word;
+  }
+  if (line) lines.push(line);
+  return lines.join("\n");
+}
+
 function commitAll(cwd: string, subject: string, body = ""): string {
-  const msg = `${subject}${body ? `\n\n${body}` : ""}${trailer()}`;
+  const msg = `${subject}${body ? `\n\n${wrap(body)}` : ""}${trailer()}`;
   git(["commit", "--quiet", "-m", msg], cwd);
   return git(["rev-parse", "HEAD"], cwd);
 }
@@ -60,8 +78,11 @@ function commitAll(cwd: string, subject: string, body = ""): string {
 if (commit && !dryRun) {
   const branch = git(["branch", "--show-current"]);
   if (branch !== "main") fail(`the umbrella is on "${branch || "detached HEAD"}", not main`);
-  const staged = git(["diff", "--cached", "--name-only"]);
-  if (staged !== "") fail(`the umbrella has staged changes; commit or unstage them first:\n${staged}`);
+  // Staged submodule gitlinks are fine: they are what a failed earlier run left.
+  const subs = new Set(submodulePaths());
+  const staged = git(["diff", "--cached", "--name-only"]).split("\n").filter(Boolean);
+  const other = staged.filter((f) => !subs.has(f));
+  if (other.length > 0) fail(`the umbrella has staged changes; commit or unstage them first:\n${other.join("\n")}`);
 }
 
 // 1. Resolve the target core SHA.
@@ -73,7 +94,8 @@ if (git(["branch", "-r", "--contains", sha], coreDir).trim() === "") {
   fail(`core ${sha.slice(0, 7)} is not on any origin branch; push it first (consumers clone by SHA)`);
 }
 const subject = git(["log", "-1", "--format=%s", sha], coreDir);
-const oldCore = gitlink(CORE);
+// The committed pin, not the staged one, so a resumed run still names the real "from".
+const oldCore = git(["rev-parse", `HEAD:${CORE}`]);
 console.log(`core: ${oldCore.slice(0, 7)} -> ${sha.slice(0, 7)}  ${subject}`);
 
 // 2. Rewrite the pins in each consumer.
@@ -157,7 +179,15 @@ if (!commit) {
 const check = Bun.spawnSync(["bun", "run", "scripts/check-core-pins.ts"], { cwd: root, stdout: "pipe" });
 const report = check.stdout.toString().trim().split("\n").at(-1) ?? "";
 if (check.exitCode !== 0) fail(`pins:check failed after the pin: ${report}`);
-const list = changed.map((p) => p.replace("minimal-agent-", "")).join(", ") || "no consumers";
+// Name every consumer whose gitlink moved, also those a failed earlier run pushed.
+const moved = git(["diff", "--cached", "--name-only"])
+  .split("\n")
+  .filter((p) => p && p !== CORE && submodulePaths().includes(p));
+if (moved.length === 0 && gitlink(CORE) === git(["rev-parse", `HEAD:${CORE}`])) {
+  console.log("umbrella: nothing to commit, every pin is already on the target.");
+  process.exit(0);
+}
+const list = moved.map((p) => p.replace("minimal-agent-", "")).join(", ") || "core only";
 const head = commitAll(
   root,
   `chore: bump ${list} for the core pin refresh (${oldCore.slice(0, 7)} to ${short})`,
