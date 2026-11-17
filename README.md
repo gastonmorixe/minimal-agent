@@ -194,48 +194,105 @@ The binary holds the CLI and core only. Plugins, including every LLM
 provider, load from `~/.minimal-agent/plugins` at run time, the same as a
 run from source.
 
-## Updating submodule pins
+## Pins
 
 Pins are a release concern, not a dev concern. Daily work never touches them,
-because the workspace `overrides` already point every consumer at the local
-core.
+because the root workspace `overrides` already point every consumer at the
+local `minimal-agent-core/` checkout. You move pins when a set of commits is
+ready to be the new "these work together" record, for CI, for a standalone
+clone, and for a release build.
 
-When you do cut a pin, the order matters. Push the sibling commits first, or
-the monorepo clone fails with `not our ref`:
+### Two kinds of pin
+
+| Pin | Where it lives | What reads it |
+| --- | --- | --- |
+| **Gitlink** | this repo, one commit SHA per submodule (`git ls-tree HEAD minimal-agent-core`) | `git clone --recurse-submodules`, monorepo CI |
+| **Core pin** | each consumer's `package.json` and `bun.lock`: `"@minimal-agent/core": "git+ssh://…/minimal-agent-core.git#<sha>"` | a standalone clone of plugins, cli or web, their own CI, `cli:compile:release` |
+
+Plugins, cli and web are the consumers. The plugins repo has one core pin in
+its root `package.json` and one per plugin package (21 in total). The cli and
+web each pin core in `package.json` and twice in `bun.lock`.
+
+**The rule:** every core pin must equal the core gitlink. `bun run pins:check`
+enforces it, and root `bun run check` and CI print the same report.
+
+### Commands
+
+| Command | What it does | Changes |
+| --- | --- | --- |
+| `bun run pins:check` | Compare every consumer core pin with the core gitlink. Exit 1 on any stale pin. | nothing |
+| `bun run pins:core [<sha>]` | Rewrite the core pin in every consumer to `<sha>` (default: core `origin/main`), check out core at it, stage the core gitlink. | consumer working trees, core checkout, umbrella index |
+| `bun run pins:core --dry-run` | Print the files and pins that would change. | nothing |
+| `bun run pins:core --commit` | As above, then commit in each changed consumer and in the umbrella (only if `pins:check` passes). | + commits |
+| `bun run pins:core --commit --push` | As above, then push each commit to `origin main`. | + pushes |
+| `bun run pins:mains` | Set **every** gitlink to its submodule's `origin/main`, stage them, and update the approval lines in `CHANGELOG.md`. | **detaches HEAD in every submodule**, umbrella index |
+| `bun run link:status` | Show per consumer whether `node_modules/@minimal-agent/core` is the local link or the pinned copy. | nothing |
+| `bun run link:reset` | Put each consumer back on the pinned core from its own `bun.lock`, to test the pin without the workspace. | consumer `node_modules` |
+
+### Recipes
+
+**You pushed a change to one repo (not core) and want the umbrella to record it.**
+For example, a plugins fix:
 
 ```bash
-git -C minimal-agent-core push origin HEAD
-git -C minimal-agent-plugins push origin HEAD
-git -C minimal-agent-cli push origin HEAD
-git -C minimal-agent-web push origin HEAD
-git add minimal-agent-core minimal-agent-plugins minimal-agent-cli minimal-agent-web
-git commit -m "chore: bump submodule pins"
+git -C minimal-agent-plugins push origin HEAD:main   # 1. the commit must be on the remote first
+git add minimal-agent-plugins                         # 2. stage the new gitlink
+bun run pins:check                                    # 3. still 0 stale: core did not move
+git commit -m "chore: bump plugins for <what changed>"
+git push
 ```
 
-To move every gitlink to its `origin/main` in one command, and update the pin
-approval lines in `CHANGELOG.md`:
+**You pushed a core change and want everything on it** (the core pin refresh):
 
 ```bash
-bun run pins:mains   # fetch, detach each submodule at origin/main, stage the gitlinks
-bun run pins:check   # fail if a consumer core pin differs from the core gitlink
+bun run pins:core --dry-run          # see what moves
+bun run check                        # gate the consumers on the new core (the workspace already uses it)
+bun run pins:core --commit --push    # pin, commit and push plugins, cli, web, then the umbrella
 ```
 
-**`pins:mains` runs `git checkout --detach <origin/main>` in every submodule.**
-Stash or commit your work in all four first. There is no confirmation prompt.
+With `--commit`, each consumer must be on `main`, level with `origin/main`, and
+have no tracked changes, so the pin commit is the only new commit. The script
+refuses a core SHA that is not on the core remote. If a run stops after the
+consumer pushes (for example, a commit-msg hook rejects the umbrella commit),
+run the same command again. It skips the consumers that are already on the SHA
+and commits only what is left.
 
-If only the core-pin strings need to move, and you do not want to detach
-anything, rewrite them and commit the pin lines per repo:
+Without `--commit`, it edits and stages only. Review each consumer diff, commit
+and push it, `git add` the consumer gitlinks, run `bun run pins:check`, and
+commit the umbrella.
+
+**You want every gitlink on its `origin/main`:**
 
 ```bash
-grep -rl 1e91520f --include=package.json --include=bun.lock minimal-agent-* \
-  | grep -v node_modules
+bun run pins:mains
+bun run pins:check    # stale? then the consumers pin an older core: run pins:core
 ```
 
-Then bump the root gitlinks and run `bun run pins:check`.
+`pins:mains` runs `git checkout --detach <origin/main>` in every submodule, with
+no prompt. Commit or stash your work in all of them first, and run
+`git -C <submodule> checkout main` afterwards to get back on a branch.
 
-`pins:check` reads `git show <gitlink>:file`, not your working tree. A rewrite
-in the working tree alone still reports stale until the pin commits land and
-the root gitlinks move.
+### Things that go wrong
+
+- **`not our ref` / `upload-pack` in CI.** The umbrella points at a submodule
+  commit that is not on that submodule's remote yet. Always push the submodule
+  first, then the umbrella.
+- **`pins:check` still reports stale after you edited the pins.** It reads
+  `git show <gitlink>:<file>`, not your working tree. The consumer pin commits
+  must exist and the umbrella gitlinks must point at them.
+- **`git submodule update` resets your work.** On a machine where the
+  submodule checkouts are the real working trees, it moves them to the pinned
+  commit. Prefer explicit pin bumps after an intentional pull.
+- **Do not edit pins by hand with `bun install`.** A consumer `bun install`
+  inside the workspace does not rewrite that consumer's own `bun.lock`.
+  `pins:core` edits both files directly.
+- **The plugins `core pin` test fails only on your machine.** That test
+  (`minimal-agent-plugins/scripts/core-pin.test.ts`) also scans ignored dirs
+  such as `minimal-agent-plugins/tmp/`. A stale copy of the plugins there fails
+  it locally but not in CI. Delete the copy.
+- **The approval lines in `CHANGELOG.md`** (between `pin-approvals:start` and
+  `pin-approvals:end`) are a record that only `pins:mains` rewrites. Nothing
+  checks them.
 
 ## Why submodules
 
