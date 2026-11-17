@@ -74,6 +74,7 @@ bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-a
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
 bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
 bun run pins:check       # fail if a consumer core pin differs from the core gitlink
+bun run pins:core        # move every consumer core pin to core origin/main (or <sha>); --commit --push does the whole refresh
 bun run link:dev         # DEPRECATED: the workspace already links core for dev
 bun run link:reset       # force a consumer back to its committed git pin
 bun run link:status      # linked or pinned, per consumer
@@ -143,6 +144,10 @@ run in that remote’s tree.
   tracked files still hurts. Prefer explicit pin bumps after intentional pulls.
 - **`bun run pins:mains` also detaches HEAD** (`git checkout --detach
   origin/main`) in all four submodules. Commit or stash before you run it.
+- **Core pin refresh:** `bun run pins:core --commit --push` rewrites the core
+  pin in every consumer `package.json` and `bun.lock`, commits and pushes each
+  consumer, then commits and pushes the umbrella after `pins:check` passes. Run
+  `bun run check` first. See "Pins" in `README.md`.
 - Nested `.git/` directories inside submodules (not absorbed into
   `.git/modules/`) are intentional when local `git worktree` layouts need a
   stable absolute gitdir path through a sibling symlink.
