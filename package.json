@@ -47,6 +47,7 @@
     "link:status": "bun run scripts/link-dev.ts status",
     "pins:mains": "bun run scripts/pin-mains.ts",
     "pins:check": "bun run scripts/check-core-pins.ts",
+    "pins:core": "bun run scripts/pin-core-everywhere.ts",
     "submodules:status": "git submodule status",
     "submodules:update": "git submodule update --remote --merge",
     "submodules:init": "git submodule update --init --recursive",
