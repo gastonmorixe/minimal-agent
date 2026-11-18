@@ -160,7 +160,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   never reads the submodule's own `bun.lock`. Five things follow from that.
   - `minimal-agent-studio/` and `minimal-agent-inspector/` were members of
     the root workspace, because Bun does not read `.gitignore` for workspace
-    globs. Two `!` patterns in `workspaces` now keep them out.
+    globs. `workspaces` now names the five submodules
+    (`minimal-agent-{core,plugins,cli,web,config}`) and no longer takes every
+    `minimal-agent-*` folder. The member list is the same 71 packages.
+    `catalogs:check` fails when a submodule matches no pattern.
   - New `bun run catalogs:check` (also in root `bun run check`): the tool
     versions of the core and plugins catalogs, the cli and web
     `devDependencies` and the config peers must equal the root catalog. The

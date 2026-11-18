@@ -11,13 +11,10 @@
   },
   "type": "module",
   "workspaces": [
-    "minimal-agent-*",
-    "minimal-agent-*/tools/*",
-    "minimal-agent-*/ma-*-plugin",
-    "minimal-agent-*/ma-*-kit",
-    "minimal-agent-*/*",
-    "!minimal-agent-studio/**",
-    "!minimal-agent-inspector/**"
+    "minimal-agent-{core,plugins,cli,web,config}",
+    "minimal-agent-core/tools/*",
+    "minimal-agent-plugins/ma-*",
+    "minimal-agent-web/{app,server}"
   ],
   "overrides": {
     "@minimal-agent/core": "workspace:*",

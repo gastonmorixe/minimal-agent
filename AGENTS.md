@@ -160,14 +160,21 @@ run in that remote’s tree.
 The monorepo root `package.json` is a Bun workspace root. It runs one install
 graph over all four submodules.
 
-- **Root `workspaces` uses globs, never literal directory names.** A literal
-  entry for a missing directory fails the install with
+- **Root `workspaces` names the five submodules, and every entry is a glob.**
+  The first entry is `minimal-agent-{core,plugins,cli,web,config}`. A plain
+  directory name for a missing directory fails the install with
   `error: Workspace not found`, and the umbrella `commitlint` job runs
-  `bun install` at the root with no submodule checkout. Globs match nothing and
-  pass.
+  `bun install` at the root with no submodule checkout. A brace list is a glob:
+  it matches nothing and passes.
+- **Do not widen the list to `minimal-agent-*`.** Bun does not read
+  `.gitignore` for workspace globs. A wide pattern also takes local projects
+  next to the submodules (`minimal-agent-studio/`, `minimal-agent-inspector/`)
+  into the root install. To add a submodule, add its name to the first entry:
+  `bun run catalogs:check` fails while a submodule matches no pattern.
 - **Nested members must be listed too.** Listing `minimal-agent-plugins` is not
-  enough: `minimal-agent-plugins/ma-*-plugin` and `minimal-agent-*/ma-*-kit`
-  must also appear, or the plugin packages keep the pinned core.
+  enough: `minimal-agent-plugins/ma-*` must also appear, or the plugin packages
+  keep the pinned core. The same holds for `minimal-agent-web/{app,server}` and
+  `minimal-agent-core/tools/*`.
 - **`overrides` carries `"@minimal-agent/core": "workspace:*"`.** Every consumer
   that declares core then resolves it to the local checkout, with no commit and
   no re-pin. A plain `bun install` inside a submodule keeps working: it is the
@@ -188,9 +195,6 @@ graph over all four submodules.
   writes `catalog:` needs its own `workspaces.catalog`, or its standalone
   install fails with `catalogs require a "workspaces" field`. Core and plugins
   have one. Cli and web write literal versions.
-- **`minimal-agent-studio/` and `minimal-agent-inspector/` are excluded with
-  `!` patterns in `workspaces`.** They are gitignored, but Bun does not read
-  `.gitignore` for workspace globs. Keep the two patterns.
 - **Inside the umbrella you cannot test a standalone install.** An install in
   any submodule is the root install: it never reads that submodule's
   `bun.lock`, and `--frozen-lockfile` there tests the root lockfile. The

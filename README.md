@@ -88,12 +88,12 @@ minimal-agent/                   # this monorepo
 The root `package.json` is a Bun workspace root. Three keys do the work:
 
 ```jsonc
-"workspaces": ["minimal-agent-*", "minimal-agent-*/ma-*-plugin", ..., "!minimal-agent-studio/**"],
+"workspaces": ["minimal-agent-{core,plugins,cli,web,config}", "minimal-agent-plugins/ma-*", ...],
 "overrides": { "@minimal-agent/core": "workspace:*", "@types/node": "^26", "brace-expansion": "^5.0.6" },
 "catalog": { "@biomejs/biome": "2.6.6", "oxlint": "1.92.0", ... }
 ```
 
-- `workspaces` globs the submodules and their members.
+- `workspaces` lists the five submodules by name, and globs their members.
 - `overrides` replaces every `@minimal-agent/core` declaration with the local
   directory. That is why edits show without a re-pin. Bun reads `overrides`
   only from the root of an install, so the root also repeats the version
@@ -128,17 +128,19 @@ build problem, not an install problem. See "Standalone binary" in
 
 Glob rules that matter, learned the hard way:
 
-- Use globs, never literal directory names. A literal entry for a missing
-  directory fails the install with `error: Workspace not found`, and the
-  `commitlint` CI job installs at the root with no submodules present.
-- List nested members too. `minimal-agent-plugins/ma-*-plugin` must appear, or
-  the plugins keep the pinned core.
+- Every entry must be a glob, never a plain directory name. A plain entry for
+  a missing directory fails the install with `error: Workspace not found`, and
+  the `commitlint` CI job installs at the root with no submodules present. A
+  brace list such as `minimal-agent-{core,cli}` is a glob.
+- List nested members too. `minimal-agent-plugins/ma-*` must appear, or the
+  plugin packages keep the pinned core.
 - A glob that matches nothing is fine.
-
-`minimal-agent-studio/` and `minimal-agent-inspector/` are local projects that
-match the `minimal-agent-*` glob. Bun does not read `.gitignore` for workspace
-globs, so the two `!` patterns in `workspaces` keep them out. Without the
-patterns, they join the root install and add their dependencies to its graph.
+- The list names the repos on purpose. Bun does not read `.gitignore` for
+  workspace globs, so a wide pattern such as `minimal-agent-*` also takes
+  local projects next to the submodules (`minimal-agent-studio/`,
+  `minimal-agent-inspector/`) and adds their dependencies to the root install.
+- To add a submodule, add its name to the first entry. `bun run catalogs:check`
+  fails while a submodule is not matched by any pattern.
 
 ## Tool versions
 
