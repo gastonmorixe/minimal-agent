@@ -83,15 +83,25 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `40465ca1af091b1acc9040f0db4aac9c76f7c627` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `a1680f7dccf61b349ccc5e2f7fbae6725b9c9f0a` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `c314a865925caeaf2f9e2584efdc826a1af6979f` (lead, decision 20).
-- Approved: `minimal-agent-web` at `aa42a0205b5263b6f287e0d2b096c2baac1ba373` (lead, decision 20).
+- Approved: `minimal-agent-core` at `fb25b0264bf925dbed50840d005e1e4a4e3d5003` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `dd9df6db8fe01d02e300f52f683e0cd7ac1d3b83` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `3d8376192deb956696fa7503afa30cd03c80cf4e` (lead, decision 20).
+- Approved: `minimal-agent-web` at `22fbfdfcaaba388519a7d5696a7e5b27b409b5df` (lead, decision 20).
 - Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
 
+- 2026-11-18: **Each web session gives plugins its own identity**: core
+  `fb25b02`, plugins `dd9df6d`, cli `3d83761`, web `22fbfdf`. A host with
+  many sessions in one process (the web host) opens each session with the
+  core session plugin scope, so a plugin tool (SessionInfo, ModelInfo,
+  SessionHistory, tasks) reads the id, live target, model info and token
+  counters of its own session, and net-dbg records each session into its
+  own folder. Before, a web session showed the boot default model, the
+  process sid or "unknown", agent v0.0.0, and the usage of every session.
+  Web session ids are UUIDs. The CLI does not change. The details are in
+  the changelog of each repo.
 - 2026-11-18: **Gitlinks bumped to the mains of the day** (`bun run
   pins:mains`): core `40465ca`, plugins `a1680f7`, cli `c314a86`, web
   `aa42a02`, config `7b504c3` (unchanged). The details of each change are in
