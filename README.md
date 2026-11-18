@@ -132,7 +132,7 @@ remote before the umbrella points at it.
 | plugins, cli or web | Steps 1 to 3 below. |
 | core | Steps 1 and 2 for core, then "A change in core". |
 | a dependency of core, cli or web | Also `bun run pins:lock` before the commit. |
-| config | Steps 1 to 3, then move the config pin in each consumer: see [`minimal-agent-config/README.md`](./minimal-agent-config/README.md). |
+| config | Steps 1 to 3, then "A change in config". |
 
 ### 1. Commit in the submodule
 
@@ -204,6 +204,23 @@ its `package.json` name different commits for a git dependency. Run
 also refuses a core SHA that is not on the core remote. If a run stops after
 the consumer pushes, run the same command again: it skips the consumers that
 are already on the SHA, and stages their gitlinks for the umbrella commit.
+
+### A change in config
+
+Core, plugins and cli each name one config commit (the **config pin**). Config
+is not linked the way core is, so a repo sees a config change only after its
+pin moves. After the config commit is on config `main` and recorded in the
+umbrella (steps 1 to 3):
+
+```bash
+bun run pins:config --dry-run    # print what moves, write nothing
+bun run pins:config              # rewrite the pin in core, plugins and cli, and update the bun.lock of core and cli
+# in core, plugins and cli: run the gate, commit "chore: pin config to <short sha>", push
+```
+
+Then record plugins and cli in the umbrella (step 3). The core commit needs
+the core pin refresh ("A change in core"). `bun run pins` prints a "Next" line
+while a config pin is behind.
 
 ### Get the latest
 
@@ -280,7 +297,7 @@ enforces it. It has two more checks:
   commit for each git dependency. A difference fails, because a frozen install
   stops on it in a standalone clone.
 - A config pin that differs from the config gitlink is printed as a note. It
-  does not fail: each repo moves its config pin on its own.
+  does not fail. `bun run pins:config` moves the config pins.
 
 ### Commands
 
@@ -293,6 +310,7 @@ enforces it. It has two more checks:
 | `bun run pins:core --dry-run` | Print the files and pins that would change. | nothing |
 | `bun run pins:core --commit` | As above, then commit in each changed consumer and in the umbrella (only if `pins:check` passes). | + commits |
 | `bun run pins:core --commit --push` | As above, then push each commit to `origin main`. | + pushes |
+| `bun run pins:config [<sha>]` | Rewrite the config pin in core, plugins and cli to `<sha>` (default: the config gitlink), then update the `bun.lock` of core and cli with `pins:lock`. `--dry-run` prints only. It commits nothing. | consumer working trees |
 | `bun run pins:lock [<repo>…]` | Update the committed `bun.lock` of core, cli and web to match their `package.json`, in a clone outside the umbrella, and copy it back. | `bun.lock` in the submodule working trees |
 | `bun run pins:verify [<repo>…]` | Clone core, plugins, cli and web at their gitlinks into a temp directory outside the umbrella, and install each one alone (`--frozen-lockfile` where the lockfile is committed). `--check` also runs `bun run check` there. `--head` uses the checked-out commit. | nothing here |
 | `bun run pins:mains` | Set **every** gitlink to its submodule's `origin/main`, stage them, and update the approval lines in `CHANGELOG.md`. | **detaches HEAD in every submodule**, umbrella index |

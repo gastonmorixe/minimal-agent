@@ -96,14 +96,19 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 <!-- pin-approvals:start -->
 - Approved: `minimal-agent-core` at `526f1657e7ce49115a6107591c17b42860060e41` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `8655ed53ee0460854799fea91ae87998dcd3078f` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `743944d5894a0ad324660878e70c55ec5ed581ca` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `c984e6a59a67a0ebe91de94317ce4e37f462b6aa` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `2d932b49c3342bd305c7c678f4d8f291f6bea20e` (lead, decision 20).
 - Approved: `minimal-agent-web` at `e613e570aaac59be9ffd1b27c54407a118c3b4b8` (lead, decision 20).
 - Approved: `minimal-agent-config` at `0a0c1dff6f773f05ab096f4b976f47124320d0c3` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
 
+- 2026-11-18: **`bun run pins:config`** moves the `@minimal-agent/config` pin
+  of core, plugins and cli to the config gitlink (or to a given commit), and
+  updates the `bun.lock` of core and cli. `bun run pins` now prints a "Next"
+  line while a config pin is behind. Before, the pin was moved by hand in
+  three repos.
 - 2026-11-18: **`bun run hooks`** sets up the commit hooks in the umbrella
   and in each submodule. `bun install` does it through the `prepare` scripts,
   but not on a machine where lifecycle scripts are off (`ignore-scripts` in
@@ -286,6 +291,17 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   does.
 - 2026-11-18: `catalogs:check` reports a submodule that matches no
   `workspaces` pattern also when it is not checked out.
+- 2026-11-18: **Two tests that failed once on a busy machine have a cause and
+  a fix**: plugins `b136e58` and cli `bfe31c1`. The cli test started a REPL
+  in a fresh home, which downloaded a plugin binary on each run (6.6 s of 7 s).
+  The plugins test gave a new script 300 ms, and on macOS the first run of a
+  new executable file takes about 220 ms. Plugins `c984e6a` and cli `2d932b4`
+  also move the config pin to `0a0c1df`. Core `9d8bee0` does the same and is
+  on core `main`, but the umbrella still records core `526f165`: the core
+  gitlink moves with the next core pin refresh.
+- 2026-11-18: `bun run pins` no longer says `git add minimal-agent-core` for
+  a core commit that the umbrella does not record. That step alone makes every
+  consumer pin differ from the core gitlink. It names the core pin refresh.
 
 - 2026-10-04: Core pin advanced to `e161ce1` (`59619f6`..`e161ce1`) and plugins
   pin to `c1943bb` (`1ec5339`..`c1943bb`). Prior pin commit `8f7dfe7` already

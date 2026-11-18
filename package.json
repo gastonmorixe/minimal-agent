@@ -50,6 +50,7 @@
     "pins:check": "bun run scripts/check-core-pins.ts",
     "catalogs:check": "bun run scripts/check-catalogs.ts",
     "pins:core": "bun run scripts/pin-core-everywhere.ts",
+    "pins:config": "bun run scripts/pin-config.ts",
     "pins:verify": "bun run scripts/verify-pins.ts",
     "pins:lock": "bun run scripts/lock-submodule.ts",
     "hooks": "husky && git submodule foreach --quiet 'bun run --if-present prepare'",
