@@ -89,7 +89,17 @@ for (const path of submodulePaths()) {
     }
   }
   if (dirty) state.push("uncommitted edits");
-  if (main && main !== link && main !== head) next.push(`${name(path)} origin/main is at ${short(main)}, the umbrella records ${short(link)}: bun run pins:mains moves every record to its main`);
+  if (main && main !== link && main !== head) {
+    if (path === CORE) {
+      // Not `pins:mains` and not `git add`: the core gitlink must move together with the consumer pins.
+      coreAhead = coreAhead || main;
+      corePushed = true;
+    } else {
+      next.push(
+        `${name(path)} origin/main is at ${short(main)}, the umbrella records ${short(link)}. To record it: git -C ${path} checkout --detach ${short(main)} && git add ${path}, then bun run pins:check`,
+      );
+    }
+  }
   rows.push([name(path), `${short(head)} (${branch})`, short(link), main ? short(main) : "unknown", state.join(", ") || "ok"]);
 }
 

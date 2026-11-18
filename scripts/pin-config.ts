@@ -61,6 +61,19 @@ for (const path of subs) {
   const cwd = join(root, path);
   const tracked = git(["ls-files"], cwd).split("\n");
   const manifests = tracked.filter((f) => /(^|\/)package\.json$/.test(f) && !f.includes("node_modules/"));
+  // The main of this repo can have the new pin when this checkout does not: the umbrella then
+  // records an older commit of the repo. A second pin commit here would be a duplicate.
+  let onMain = "";
+  try {
+    onMain = git(["show", "origin/main:package.json"], cwd);
+  } catch {
+    // No origin/main here: go on with the working tree.
+  }
+  const here = readFileSync(join(cwd, "package.json"), "utf8");
+  if (onMain.includes(`minimal-agent-config.git#${sha}`) && !here.includes(`minimal-agent-config.git#${sha}`)) {
+    console.log(`${path}: ok on origin/main (${git(["rev-parse", "--short", "origin/main"], cwd)} has the pin). This checkout is older: nothing to do here.`);
+    continue;
+  }
   let pins = 0;
   const olds = new Set<string>();
   for (const file of manifests) {
