@@ -87,11 +87,11 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `f705b0f0d969621b5bc4a452d7b7830d1c457ab5` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `49383be482a0ef21f2993513a7a2259dd2e2295d` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `5a531dde1314d71f8fd4936744f8cb9508b208b5` (lead, decision 20).
-- Approved: `minimal-agent-web` at `1d102efbc8b4851505c8facd097a6fcf2ceb873f` (lead, decision 20).
-- Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
+- Approved: `minimal-agent-core` at `07f723fe3d44a6c0d7a6bbb1edf92bd7160f066b` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `8180cf33bc218a86117cd3c2c9adb51ecf2d0e4c` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `1529ff36c991d1fbda32bf8ba9921233a69038f2` (lead, decision 20).
+- Approved: `minimal-agent-web` at `6eb9c581cae0eaaf0ccf21604fc87931842f7dc9` (lead, decision 20).
+- Approved: `minimal-agent-config` at `8c966cfaf6725ab84c643c76f59e5473224275c6` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
@@ -196,6 +196,9 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   passes in a standalone clone: its tests import core source through the
   installed package directory and not from `../../minimal-agent-core`, and
   its STE audit reads the installed core when no sibling checkout exists.
+  Gitlinks: core `07f723f`, plugins `8180cf3`, cli `1529ff3`, web `6eb9c58`,
+  config `8c966cf`. Every consumer pins core `07f723f` (`pins:check` reports
+  0 stale and no lockfile difference).
 - 2026-11-15: Pins advance to core `d0a6462`, plugins `af8b38f`, cli
   `ce8726d`, and web `26eea59`. In the `--debug` request dump, the system
   block now sits directly before the messages (order: tools, system,
