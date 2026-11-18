@@ -1,0 +1,268 @@
+# Pending work after the 2026-11-18 cleanup (Walter, 13:06)
+
+Nothing below was deleted or committed by me: it is work that is NOT on main, or has uncommitted files.
+
+## Remote branches not on main (commits exist only on GitHub)
+- minimal-agent-monorepo `feat/no-direct-writes` +1 commits, tip 5659390, 11-18_11:55: chore: backup of the no-direct-stdio guard (core, cli, plugins, web branches fea
+- minimal-agent-core `WT-transport-registry-v2` +1 commits, tip dedb081, 06-28_22:54: fix(plugin-host): drop stray duplicate `: {}),` after transport:registry block
+- minimal-agent-core `backup/cache-anchor-append-only` +1 commits, tip c857ffd, 11-18_11:58: wip(backup): Matthew's uncommitted feat/cache-anchor-append-only worktree snapsh
+- minimal-agent-core `feat/no-direct-writes` +1 commits, tip 7163621, 11-18_11:53: feat(lint): ban direct stdout and stderr writes with the ma/no-direct-stdio oxli
+- minimal-agent-core `ste/dictionary` +4 commits, tip d373900, 11-17_08:22: test(ste): regenerate the tool fixture for the restored risk items
+- minimal-agent-plugins `backup/cache-anchor-append-only` +1 commits, tip f689c66, 11-18_11:58: wip(backup): Matthew's uncommitted feat/cache-anchor-append-only worktree snapsh
+- minimal-agent-plugins `feat/no-direct-writes` +1 commits, tip a61cd90, 11-18_11:53: refactor(plugins): report config parse errors and refresh traces through the plu
+- minimal-agent-plugins `ste/dictionary` +4 commits, tip 906d7d8, 11-17_08:22: fix(ste): restore the risk items from the dropped-facts review, within the cap
+- minimal-agent-cli `backup/cache-anchor-append-only` +1 commits, tip 92125ca, 11-18_11:59: wip(backup): Matthew's uncommitted feat/cache-anchor-append-only worktree snapsh
+- minimal-agent-cli `feat/no-direct-writes` +1 commits, tip 1a00389, 11-18_11:53: refactor(diagnostics): route REPL-window leaks and boot warnings through the dia
+- minimal-agent-cli `ste/dictionary` +1 commits, tip 3c17eb9, 11-17_08:15: fix(ui): cloud tool presentation rows use the real wire names
+- minimal-agent-web `feat/no-direct-writes` +1 commits, tip 6614aa4, 11-18_11:53: test(lint): add the ma/no-direct-stdio allowlist and its ratchet test
+
+## Local branches with commits not on main (some also pushed)
+- minimal-agent-monorepo `chore/bump-plugins-user-needle` +0 commits, LOCAL-ONLY, tip 82abce2, worktree /Users/gaston/Projects/minimal-agent-monorepo/tmp/frank-lane/umbrella
+- minimal-agent-monorepo `chore/bump-web-thought-placement` +0 commits, LOCAL-ONLY, tip 4932c28, worktree /private/tmp/umbrella-pin-bump
+- minimal-agent-monorepo `chore/empty-schema-additions-allowlist` +1 commits, LOCAL-ONLY, tip cacf5e1, worktree /private/tmp/null-ad75
+- minimal-agent-monorepo `chore/gregory-bump-all` +0 commits, LOCAL-ONLY, tip 9dfce99, worktree /private/tmp/g-umb
+- minimal-agent-monorepo `docs/scrollback-follow-research` +0 commits, LOCAL-ONLY, tip 656ed77, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-research-lane
+- minimal-agent-monorepo `feat/no-direct-writes` +1 commits, pushed, tip 5659390, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes
+- minimal-agent-monorepo `feat/zero-prompts` +0 commits, LOCAL-ONLY, tip 17a490d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts
+- minimal-agent-monorepo `fix/live-area-scheduler-timer-leak` +1 commits, LOCAL-ONLY, tip 946813c
+- minimal-agent-monorepo `fix/live-area-scheduler-timer-leak-v2` +0 commits, LOCAL-ONLY, tip b86a00d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc
+- minimal-agent-monorepo `fix/target-switch-visibility` +0 commits, LOCAL-ONLY, tip e65bbd1, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-target-switch
+- minimal-agent-monorepo `tr/gabriel` +0 commits, LOCAL-ONLY, tip 9f210c8, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-gabriel
+- minimal-agent-monorepo `tr/helen` +0 commits, LOCAL-ONLY, tip 9f210c8, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen
+- minimal-agent-monorepo `tr/integrate` +0 commits, LOCAL-ONLY, tip 105ff9d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-integrate
+- minimal-agent-monorepo `zt/integrate-1` +0 commits, LOCAL-ONLY, tip ca8c421, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ
+- minimal-agent-monorepo `zt/integrate-3` +0 commits, LOCAL-ONLY, tip 53e81c0, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2
+- minimal-agent-monorepo `zt/integrate-5` +0 commits, LOCAL-ONLY, tip 463f911, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5
+- minimal-agent-monorepo `zt/jack-s14` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack
+- minimal-agent-monorepo `zt/judith-s13` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith
+- minimal-agent-monorepo `zt/julia-s0.2` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia
+- minimal-agent-monorepo `zt/lead` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-lead
+- minimal-agent-monorepo `zt/petter-s0.1` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter
+- minimal-agent-monorepo `zt/ricardo-s0.3` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo
+- minimal-agent-monorepo `zt/ronald-s12` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald
+- minimal-agent-monorepo `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip a1718d7, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha
+- minimal-agent-core `WT-agent-mesh` +7 commits, LOCAL-ONLY, tip 653a04f, worktree /Users/gaston/Projects/minimal-agent_WT-agent-mesh
+- minimal-agent-core `WT-lsp-formatter-linter` +0 commits, LOCAL-ONLY, tip 2989251, worktree /Users/gaston/Projects/minimal-agent_WT-lsp-formatter-linter
+- minimal-agent-core `WT-multi-provider-refactor` +4 commits, LOCAL-ONLY, tip 46e92e0, worktree /Users/gaston/Projects/minimal-agent_WT-multi-provider-refactor
+- minimal-agent-core `WT-quota-live-area` +0 commits, LOCAL-ONLY, tip a0d1d71, worktree /Users/gaston/Projects/minimal-agent_WT-quota-live-area
+- minimal-agent-core `WT-resize-preserve-scrollback` +1 commits, LOCAL-ONLY, tip 5b36689, worktree /Users/gaston/Projects/minimal-agent_WT-resize-preserve-scrollback
+- minimal-agent-core `WT-tool-budget` +2 commits, LOCAL-ONLY, tip c24b1c4, worktree /Users/gaston/Projects/minimal-agent_WT-tool-budget
+- minimal-agent-core `WT-transport-registry` +1 commits, LOCAL-ONLY, tip 218feac
+- minimal-agent-core `WT-transport-registry-v2` +1 commits, pushed, tip dedb081, worktree /Users/gaston/Projects/minimal-agent_WT-transport-registry
+- minimal-agent-core `WT-tui-debug` +0 commits, LOCAL-ONLY, tip 6bc14b0, worktree /Users/gaston/Projects/minimal-agent_WT-tui-debug
+- minimal-agent-core `WT-workspace-split` +1 commits, LOCAL-ONLY, tip abc3f9d, worktree /Users/gaston/Projects/minimal-agent_WT-workspace-split
+- minimal-agent-core `erik/mission-control` +0 commits, LOCAL-ONLY, tip 3e4d1fe, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc/minimal-agent-core
+- minimal-agent-core `feat/cache-anchor-append-only` +0 commits, LOCAL-ONLY, tip 5c62ee6, worktree /Users/gaston/Projects/minimal-agent_WT-cache-anchor/core
+- minimal-agent-core `feat/cache-fixes` +5 commits, LOCAL-ONLY, tip 06b265f, worktree /Users/gaston/Projects/minimal-agent_WT-cache-fixes
+- minimal-agent-core `feat/no-direct-writes` +1 commits, pushed, tip 806589b, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes/minimal-agent-core
+- minimal-agent-core `feat/prose-budget-trim` +1 commits, LOCAL-ONLY, tip a908f81, worktree /Users/gaston/Projects/minimal-agent_WT-lazy-tools
+- minimal-agent-core `feat/zero-prompts` +0 commits, LOCAL-ONLY, tip 9f1daee, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts/minimal-agent-core
+- minimal-agent-core `fix/compact-inflight` +0 commits, LOCAL-ONLY, tip e87c88b, worktree /Users/gaston/Projects/minimal-agent_WT-compact-inflight
+- minimal-agent-core `ste/dictionary` +0 commits, pushed, tip decb0e6, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-ste-dict/minimal-agent-core
+- minimal-agent-core `tr/helen-w3-e8` +0 commits, LOCAL-ONLY, tip 2c3b308, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen/minimal-agent-core
+- minimal-agent-core `tr/join-trial` +2 commits, LOCAL-ONLY, tip 6052f61
+- minimal-agent-core `zt/integrate-1` +0 commits, LOCAL-ONLY, tip 7bb0aa9, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ/minimal-agent-core
+- minimal-agent-core `zt/integrate-3` +0 commits, LOCAL-ONLY, tip bb4d1cf, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2/minimal-agent-core
+- minimal-agent-core `zt/integrate-4` +0 commits, LOCAL-ONLY, tip 092fc57, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ4/minimal-agent-core
+- minimal-agent-core `zt/integrate-5` +12 commits, LOCAL-ONLY, tip e88cf24, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-core
+- minimal-agent-core `zt/jack-a8` +4 commits, LOCAL-ONLY, tip 579d6ba
+- minimal-agent-core `zt/jack-s143` +12 commits, LOCAL-ONLY, tip ef4e1f0, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack/minimal-agent-core
+- minimal-agent-core `zt/jack-t45` +7 commits, LOCAL-ONLY, tip 6936bcb
+- minimal-agent-core `zt/judith-s13` +2 commits, LOCAL-ONLY, tip f018a1f
+- minimal-agent-core `zt/judith-s13.2` +8 commits, LOCAL-ONLY, tip 68c71f5
+- minimal-agent-core `zt/judith-s13.2-pre-trailerfix` +8 commits, LOCAL-ONLY, tip 60241c4
+- minimal-agent-core `zt/judith-s13.2-prereword` +8 commits, LOCAL-ONLY, tip 0459b4c
+- minimal-agent-core `zt/judith-t44` +20 commits, LOCAL-ONLY, tip 786ee2b, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith/minimal-agent-core
+- minimal-agent-core `zt/judith-t44-pre-rebase` +10 commits, LOCAL-ONLY, tip ddde94b
+- minimal-agent-core `zt/julia-s0.2` +2 commits, LOCAL-ONLY, tip 499dadf
+- minimal-agent-core `zt/julia-s0.4d` +2 commits, LOCAL-ONLY, tip 744bd1b
+- minimal-agent-core `zt/julia-s1.3` +7 commits, LOCAL-ONLY, tip a115b8e
+- minimal-agent-core `zt/julia-s2.0` +1 commits, LOCAL-ONLY, tip 7d2c001
+- minimal-agent-core `zt/julia-s2.2` +10 commits, LOCAL-ONLY, tip 9f8bd68, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-core
+- minimal-agent-core `zt/petter-s1.3f` +1 commits, LOCAL-ONLY, tip 38b8653
+- minimal-agent-core `zt/petter-s7.2` +5 commits, LOCAL-ONLY, tip 0621b3a, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter/minimal-agent-core
+- minimal-agent-core `zt/ricardo-s3.2b` +5 commits, LOCAL-ONLY, tip 90d2754, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-core
+- minimal-agent-core `zt/ronald-s12b` +10 commits, LOCAL-ONLY, tip 9680e6e, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald/minimal-agent-core
+- minimal-agent-core `zt/samantha-c3` +4 commits, LOCAL-ONLY, tip 26fddf2, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-helper
+- minimal-agent-core `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip 5cc6260, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha/minimal-agent-core
+- minimal-agent-core `zt/samantha-s5-c3-draft` +0 commits, LOCAL-ONLY, tip b9b0ff5, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-core
+- minimal-agent-core `zt/samantha-s53` +6 commits, LOCAL-ONLY, tip 330c95b, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-core
+- minimal-agent-plugins `WT-cloud-plugin` +10 commits, LOCAL-ONLY, tip 7c12e55, worktree /Users/gaston/Projects/minimal-agent-plugins_WT-cloud-plugin
+- minimal-agent-plugins `WT-teams` +2 commits, LOCAL-ONLY, tip 4f41ea4, worktree /Users/gaston/Projects/minimal-agent-plugins_WT-teams
+- minimal-agent-plugins `a5-transport-port` +1 commits, LOCAL-ONLY, tip 59e3231
+- minimal-agent-plugins `chore/drop-task-schema-additions` +1 commits, LOCAL-ONLY, tip 60344ef, worktree /private/tmp/null-ad75/minimal-agent-plugins
+- minimal-agent-plugins `erik/mission-control` +0 commits, LOCAL-ONLY, tip a742aca, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc/minimal-agent-plugins
+- minimal-agent-plugins `feat/cache-anchor-append-only` +0 commits, LOCAL-ONLY, tip a28c6f5, worktree /Users/gaston/Projects/minimal-agent_WT-cache-anchor/plugins
+- minimal-agent-plugins `feat/cache-fixes` +4 commits, LOCAL-ONLY, tip 3498b05, worktree /Users/gaston/Projects/minimal-agent-plugins_WT-cache-fixes
+- minimal-agent-plugins `feat/no-direct-writes` +1 commits, pushed, tip 35d4abc, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes/minimal-agent-plugins
+- minimal-agent-plugins `feat/per-model-input-formats` +6 commits, LOCAL-ONLY, tip 8cc165a
+- minimal-agent-plugins `feat/per-model-input-formats-chat` +8 commits, LOCAL-ONLY, tip a64713c
+- minimal-agent-plugins `feat/zero-prompts` +0 commits, LOCAL-ONLY, tip 88c1098, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts/minimal-agent-plugins
+- minimal-agent-plugins `fix/lane-scrub-check-user-needle` +0 commits, LOCAL-ONLY, tip 5061470, worktree /Users/gaston/Projects/minimal-agent-monorepo/tmp/frank-lane/minimal-agent-plugins
+- minimal-agent-plugins `fix/nullable-optional-tool-fields` +1 commits, LOCAL-ONLY, tip 86afb17
+- minimal-agent-plugins `fix/target-switch-visibility` +0 commits, LOCAL-ONLY, tip 6fb9e6c, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-target-switch/minimal-agent-plugins
+- minimal-agent-plugins `merge/gregory-all` +0 commits, LOCAL-ONLY, tip 47626fd, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen/minimal-agent-plugins
+- minimal-agent-plugins `ste/dictionary` +0 commits, pushed, tip 805fa66, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-ste-dict/minimal-agent-plugins
+- minimal-agent-plugins `tr/gabriel-w3` +1 commits, LOCAL-ONLY, tip 87ab46e
+- minimal-agent-plugins `tr/integrate` +1 commits, LOCAL-ONLY, tip 87ab46e
+- minimal-agent-plugins `tr/join-trial` +1 commits, LOCAL-ONLY, tip 3cd49bf
+- minimal-agent-plugins `w3c` +0 commits, LOCAL-ONLY, tip 88ca3b8, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-integrate/minimal-agent-plugins
+- minimal-agent-plugins `zt/integrate-1` +4 commits, LOCAL-ONLY, tip 3648a91
+- minimal-agent-plugins `zt/integrate-1b` +0 commits, LOCAL-ONLY, tip daa4385, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ/minimal-agent-plugins
+- minimal-agent-plugins `zt/integrate-3` +0 commits, LOCAL-ONLY, tip 4046c5c, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2/minimal-agent-plugins
+- minimal-agent-plugins `zt/integrate-4` +0 commits, LOCAL-ONLY, tip 758658a, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ4/minimal-agent-plugins
+- minimal-agent-plugins `zt/integrate-5` +10 commits, LOCAL-ONLY, tip e5fb1d0, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-plugins
+- minimal-agent-plugins `zt/judith-s13` +3 commits, LOCAL-ONLY, tip c8e8327
+- minimal-agent-plugins `zt/judith-s13.2` +6 commits, LOCAL-ONLY, tip 2162f20
+- minimal-agent-plugins `zt/judith-s13.2-prereword` +5 commits, LOCAL-ONLY, tip 5523aa3
+- minimal-agent-plugins `zt/judith-t44` +9 commits, LOCAL-ONLY, tip 8545a86, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith/minimal-agent-plugins
+- minimal-agent-plugins `zt/julia-s2.2` +2 commits, LOCAL-ONLY, tip 0a97dcc, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-plugins
+- minimal-agent-plugins `zt/julia-s3.0g` +3 commits, LOCAL-ONLY, tip 0da628f
+- minimal-agent-plugins `zt/julia-s3.0i` +4 commits, LOCAL-ONLY, tip fa4049b
+- minimal-agent-plugins `zt/petter-s0.1` +1 commits, LOCAL-ONLY, tip 26ad4af
+- minimal-agent-plugins `zt/petter-s0.1b` +2 commits, LOCAL-ONLY, tip 15fbb21
+- minimal-agent-plugins `zt/petter-s0.1c` +3 commits, LOCAL-ONLY, tip 1927004
+- minimal-agent-plugins `zt/petter-s1.2` +2 commits, LOCAL-ONLY, tip a80a8ab
+- minimal-agent-plugins `zt/petter-s11.2g` +0 commits, LOCAL-ONLY, tip 29006fb, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter/minimal-agent-plugins
+- minimal-agent-plugins `zt/ricardo-s11.1` +1 commits, LOCAL-ONLY, tip 193cdef
+- minimal-agent-plugins `zt/ricardo-s11.1b` +3 commits, LOCAL-ONLY, tip 006a30b
+- minimal-agent-plugins `zt/ricardo-s3.2b` +4 commits, LOCAL-ONLY, tip de4061d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-plugins
+- minimal-agent-plugins `zt/ronald-s12` +1 commits, LOCAL-ONLY, tip 966c6a1
+- minimal-agent-plugins `zt/ronald-s12b` +3 commits, LOCAL-ONLY, tip dde2a43, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald/minimal-agent-plugins
+- minimal-agent-plugins `zt/samantha-c3` +1 commits, LOCAL-ONLY, tip 130d800, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-plugins
+- minimal-agent-plugins `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip f08b722, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha/minimal-agent-plugins
+- minimal-agent-plugins `zt/samantha-s53` +2 commits, LOCAL-ONLY, tip 052d0c3, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-plugins
+- minimal-agent-cli `feat/cache-anchor-append-only` +0 commits, LOCAL-ONLY, tip cbc2038, worktree /Users/gaston/Projects/minimal-agent_WT-cache-anchor/cli
+- minimal-agent-cli `feat/cache-fixes` +0 commits, LOCAL-ONLY, tip b3e32e2, worktree /Users/gaston/Projects/minimal-agent-cli_WT-cache-fixes
+- minimal-agent-cli `feat/no-direct-writes` +2 commits, pushed, tip d5fe411, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes/minimal-agent-cli
+- minimal-agent-cli `feat/sanitize-scrollback` +0 commits, LOCAL-ONLY, tip ac6b555, worktree /Users/gaston/Projects/minimal-agent-monorepo/tmp/frank-lane/minimal-agent-cli
+- minimal-agent-cli `feat/zero-prompts` +0 commits, LOCAL-ONLY, tip 2814fa6, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts/minimal-agent-cli
+- minimal-agent-cli `fix/live-area-scheduler-timer-leak` +0 commits, LOCAL-ONLY, tip 152ace3, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc/minimal-agent-cli
+- minimal-agent-cli `fix/target-command-args` +0 commits, LOCAL-ONLY, tip 36fc6dd, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-target-switch/minimal-agent-cli
+- minimal-agent-cli `merge/gregory-all` +0 commits, LOCAL-ONLY, tip e6b5dee, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen/minimal-agent-cli
+- minimal-agent-cli `ste/dictionary` +2 commits, pushed, tip c187268
+- minimal-agent-cli `tr/gabriel-w3` +0 commits, LOCAL-ONLY, tip c5eacdb, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-gabriel/minimal-agent-cli
+- minimal-agent-cli `tr/join-trial` +1 commits, LOCAL-ONLY, tip 7c2f55d
+- minimal-agent-cli `w3c` +0 commits, LOCAL-ONLY, tip 834adde, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-integrate/minimal-agent-cli
+- minimal-agent-cli `zt/integrate-1` +0 commits, LOCAL-ONLY, tip 2ac620f, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ/minimal-agent-cli
+- minimal-agent-cli `zt/integrate-3` +0 commits, LOCAL-ONLY, tip 89c32c3, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2/minimal-agent-cli
+- minimal-agent-cli `zt/integrate-4` +0 commits, LOCAL-ONLY, tip b72282b, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ4/minimal-agent-cli
+- minimal-agent-cli `zt/integrate-5` +10 commits, LOCAL-ONLY, tip eb43147, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-cli
+- minimal-agent-cli `zt/jack-a8` +1 commits, LOCAL-ONLY, tip 00bb838
+- minimal-agent-cli `zt/jack-s143` +9 commits, LOCAL-ONLY, tip 7ca950d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack/minimal-agent-cli
+- minimal-agent-cli `zt/jack-t45` +2 commits, LOCAL-ONLY, tip 68c4556
+- minimal-agent-cli `zt/judith-s13` +1 commits, LOCAL-ONLY, tip 99589d0
+- minimal-agent-cli `zt/judith-s13.2` +2 commits, LOCAL-ONLY, tip d44b730, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith/minimal-agent-cli
+- minimal-agent-cli `zt/judith-s13.2-prereword` +2 commits, LOCAL-ONLY, tip 624f4f1
+- minimal-agent-cli `zt/julia-s0.4` +2 commits, LOCAL-ONLY, tip 58f5e60
+- minimal-agent-cli `zt/julia-s0.4d` +3 commits, LOCAL-ONLY, tip afb6382
+- minimal-agent-cli `zt/julia-s0.6` +1 commits, LOCAL-ONLY, tip b67c89a
+- minimal-agent-cli `zt/julia-s1.3` +1 commits, LOCAL-ONLY, tip 78a81de, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-cli
+- minimal-agent-cli `zt/petter-cleanenv` +1 commits, LOCAL-ONLY, tip 5bcb523, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter/minimal-agent-cli
+- minimal-agent-cli `zt/ricardo-s0.3` +0 commits, LOCAL-ONLY, tip 6a93174, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-cli
+- minimal-agent-cli `zt/ronald-s12` +1 commits, LOCAL-ONLY, tip 165b953
+- minimal-agent-cli `zt/ronald-s12b` +6 commits, LOCAL-ONLY, tip 84916e8, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald/minimal-agent-cli
+- minimal-agent-cli `zt/samantha-c3` +3 commits, LOCAL-ONLY, tip a8d1cfa, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-cli
+- minimal-agent-cli `zt/samantha-c3-pre-m4` +4 commits, LOCAL-ONLY, tip 5c50b00
+- minimal-agent-cli `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip 6a93174, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha/minimal-agent-cli
+- minimal-agent-cli `zt/samantha-s53` +4 commits, LOCAL-ONLY, tip a4f3a44, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-cli
+- minimal-agent-cli `zt/samantha-s53-pre-m5` +3 commits, LOCAL-ONLY, tip 3bccb91
+- minimal-agent-web `erik/mission-control` +0 commits, LOCAL-ONLY, tip 1a937aa, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc/minimal-agent-web
+- minimal-agent-web `feat/no-direct-writes` +1 commits, pushed, tip 360ff2c, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes/minimal-agent-web
+- minimal-agent-web `feat/zero-prompts` +0 commits, LOCAL-ONLY, tip 2ae6b95, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts/minimal-agent-web
+- minimal-agent-web `merge/gregory-pin` +0 commits, LOCAL-ONLY, tip 3181e2d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen/minimal-agent-web
+- minimal-agent-web `tr/gabriel-w3` +0 commits, LOCAL-ONLY, tip c1af952, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-gabriel/minimal-agent-web
+- minimal-agent-web `w3c` +0 commits, LOCAL-ONLY, tip ec71afa, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-integrate/minimal-agent-web
+- minimal-agent-web `zt/integrate-1` +0 commits, LOCAL-ONLY, tip 63df462, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ/minimal-agent-web
+- minimal-agent-web `zt/integrate-3` +0 commits, LOCAL-ONLY, tip 52f6f1f, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2/minimal-agent-web
+- minimal-agent-web `zt/integrate-4` +3 commits, LOCAL-ONLY, tip 64c7d5d, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ4/minimal-agent-web
+- minimal-agent-web `zt/integrate-5` +10 commits, LOCAL-ONLY, tip 70fbae1, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-web
+- minimal-agent-web `zt/jack-s14` +0 commits, LOCAL-ONLY, tip ac58d94, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack/minimal-agent-web
+- minimal-agent-web `zt/judith-s13` +0 commits, LOCAL-ONLY, tip ac58d94, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith/minimal-agent-web
+- minimal-agent-web `zt/julia-s0.4` +1 commits, LOCAL-ONLY, tip 313721b, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-web
+- minimal-agent-web `zt/petter-s0.1` +0 commits, LOCAL-ONLY, tip f889fde, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter/minimal-agent-web
+- minimal-agent-web `zt/ricardo-web-diag` +1 commits, LOCAL-ONLY, tip d9a5ade, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-web
+- minimal-agent-web `zt/ronald-s12` +2 commits, LOCAL-ONLY, tip c3327c6
+- minimal-agent-web `zt/ronald-s12b` +9 commits, LOCAL-ONLY, tip ac648b8, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald/minimal-agent-web
+- minimal-agent-web `zt/samantha-c3-web` +2 commits, LOCAL-ONLY, tip 086c225, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-web
+- minimal-agent-web `zt/samantha-c3-web-pre-m5` +2 commits, LOCAL-ONLY, tip d0af2b5
+- minimal-agent-web `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip ac58d94, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha/minimal-agent-web
+- minimal-agent-web `zt/samantha-s53-web` +3 commits, LOCAL-ONLY, tip 6286715, worktree /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-web
+- minimal-agent-web `zt/samantha-s53-web-pre-m5` +2 commits, LOCAL-ONLY, tip 5d638a0
+- minimal-agent-config `erik/mission-control` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-erik-mc/minimal-agent-config
+- minimal-agent-config `feat/no-direct-writes` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes/minimal-agent-config
+- minimal-agent-config `zt/integrate-1` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ/minimal-agent-config
+- minimal-agent-config `zt/integrate-2` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ2/minimal-agent-config
+- minimal-agent-config `zt/jack-s14` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack/minimal-agent-config
+- minimal-agent-config `zt/judith-s13` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith/minimal-agent-config
+- minimal-agent-config `zt/julia-s0.2` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-config
+- minimal-agent-config `zt/petter-s0.1` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter/minimal-agent-config
+- minimal-agent-config `zt/ricardo-s0.3` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-config
+- minimal-agent-config `zt/ronald-s12` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald/minimal-agent-config
+- minimal-agent-config `zt/samantha-s5` +0 commits, LOCAL-ONLY, tip 55623ce, worktree /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha/minimal-agent-config
+
+## Stashes
+- minimal-agent-core stash@{2026-10-31} 2026-10-31 WIP on main: 399802b fix(host): register a live-only picked model before the recovery switch
+- minimal-agent-core stash@{2026-10-31} 2026-10-31 WIP on main: 57181d5 docs: describe the direct-write and public closure ratchets
+- minimal-agent-core stash@{2026-10-31} 2026-10-31 WIP on main: 0b84ced feat(auth-status): add refresh, refresh-all, prune, and --table output
+- minimal-agent-core stash@{2026-05-28} 2026-05-28 WIP on dev-private: f70b8f2 feat(plugins): rename tui-plugins → plugins, unify <ma::*> schema, add 
+- minimal-agent-cli stash@{2026-11-18} 2026-11-18 WIP on tr/integrate: 57ff8a7 chore: pin core to 3e4d1fe (W3-0: one caps constant, one core kind list
+
+## Worktrees with uncommitted files (path, count) — these are NOT in git at all
+- 50 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-plugins
+- 41 /Users/gaston/Projects/minimal-agent-monorepo_WT-zero-prompts
+- 36 /Users/gaston/Projects/minimal-agent-monorepo/tmp/christina-wt/plugins
+- 33 /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-core
+- 28 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5/minimal-agent-core
+- 24 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-core
+- 22 /Users/gaston/Projects/minimal-agent_WT-cache-anchor/core
+- 16 /Users/gaston/Projects/minimal-agent_WT-cache-fixes
+- 9 /Users/gaston/Projects/minimal-agent-monorepo/tmp/gate-core
+- 9 /Users/gaston/Projects/minimal-agent_WT-cache-anchor/cli
+- 7 /Users/gaston/Projects/minimal-agent-cli_WT-cache-fixes
+- 7 /private/tmp/null-ad75
+- 6 /Users/gaston/Projects/minimal-agent_WT-compact-inflight
+- 5 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia/minimal-agent-plugins
+- 5 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-judith
+- 5 /Users/gaston/Projects/minimal-agent_WT-cache-anchor/plugins
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-samantha
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ronald
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-julia
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-jack
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ5
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-integ4
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-helen
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-tr-gabriel
+- 4 /Users/gaston/Projects/minimal-agent-monorepo_WT-no-direct-writes
+- 3 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-plugins
+- 3 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-rev-ronald
+- 3 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-rev-ricardo
+- 3 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-rev-judith
+- 3 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-petter
+- 2 /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-core
+- 2 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-ricardo/minimal-agent-core
+- 2 /Users/gaston/Projects/minimal-agent-monorepo_WT-ste-dict/minimal-agent-web
+- 1 /Users/gaston/Projects/minimal-agent-plugins_WT-teams
+- 1 /Users/gaston/Projects/minimal-agent-plugins_WT-cloud-plugin
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/tmp/christina-wt/plugins-head
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/s53-plugins
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-plugins
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/research/team/samantha/c3-helper
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/research/team/judith/proof-core
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-t44
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-ronald-s123c
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-ronald-s123a
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-julia-s22a-red
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-julia-s22a
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-judith-s132b-core
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-judith-s13.2
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-f7bb3fe
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-b4e2908
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-789f49b
+- 1 /Users/gaston/Projects/minimal-agent-monorepo/minimal-agent-core/tmp/rev-320e84f
+- 1 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-lead
+- 1 /Users/gaston/Projects/minimal-agent-monorepo_WT-zt-base5
+- 1 /Users/gaston/Projects/minimal-agent-monorepo_WT-ste-dict/minimal-agent-core
+- 1 /private/tmp/g-core-e8
+- 1 /private/tmp/g-core-base
