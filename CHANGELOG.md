@@ -299,6 +299,17 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   also move the config pin to `0a0c1df`. Core `9d8bee0` does the same and is
   on core `main`, but the umbrella still records core `526f165`: the core
   gitlink moves with the next core pin refresh.
+- 2026-11-18: **`bun run pins` and `bun run pins:config` gave advice from old
+  remote refs.** They read `origin/main` of each repo with no fetch. In a
+  checkout that had not fetched core, they said to move the core config pin,
+  which core `main` already had: a second, duplicate core commit. In a
+  checkout behind the umbrella `main`, `pins` said to record plugins and cli
+  commits that the umbrella `main` had recorded already. Both now fetch
+  `origin main` first (in parallel, about 3 s; `--no-fetch` skips it).
+  `pins` says first when the checkout is behind the umbrella `main`, and
+  does not advise to record a commit that the umbrella `main` records.
+  `pins:config` stops when a fetch fails. A failed fetch in `pins` prints a
+  warning with the repos it could not reach.
 - 2026-11-18: `bun run pins` no longer says `git add minimal-agent-core` for
   a core commit that the umbrella does not record. That step alone makes every
   consumer pin differ from the core gitlink. It names the core pin refresh.

@@ -36,7 +36,9 @@ commands, and "Pins" in `README.md` has the reference tables.
 2. **You do not touch pins to write code.** Edit, then run. An edit in core is
    live in plugins, cli and web with no commit and no pin.
 3. **`bun run pins` is the first command for any pin question.** It prints the
-   state and a numbered list of the commands to run next. It changes nothing.
+   state and a numbered list of the commands to run next. It fetches first and
+   changes none of your files. Run it again just before you act on its advice:
+   another session can push in between.
 4. **Do not work in the shared checkout when other sessions use it.** Make a
    full worktree with `bun run worktree:new <name>`. A folder with only some
    repos and no umbrella root is a set of standalone installs: plugins there

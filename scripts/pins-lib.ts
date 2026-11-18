@@ -23,6 +23,21 @@ export function git(args: string[], cwd = root): string {
   return res.stdout.toString().trim();
 }
 
+/**
+ * Fetch `origin main` in each directory, all at the same time. Return the directories where the
+ * fetch failed. A report that reads `origin/main` without a fetch can give advice for a state that
+ * is hours old: another session can have pushed since.
+ */
+export async function fetchMains(dirs: string[]): Promise<string[]> {
+  const results = await Promise.all(
+    dirs.map(async (cwd) => {
+      const proc = Bun.spawn(["git", "fetch", "--quiet", "origin", "main"], { cwd, stdout: "ignore", stderr: "ignore", timeout: 30_000 });
+      return { cwd, ok: (await proc.exited) === 0 };
+    }),
+  );
+  return results.filter((r) => !r.ok).map((r) => r.cwd);
+}
+
 /** The gitlink SHA for `path` in the umbrella index (staged value wins over HEAD). */
 export function gitlink(path: string): string {
   const line = git(["ls-files", "--stage", "--", path]);
