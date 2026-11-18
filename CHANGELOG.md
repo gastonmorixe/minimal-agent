@@ -185,7 +185,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
   The matching commits are in core (regenerated `bun.lock`), web
   (`@types/node ^26`, `bun-types ^1.4.4`, the `brace-expansion` guard, new
-  `bun.lock`) and cli (docs).
+  `bun.lock`), cli and config (docs), and plugins. The plugins gate now also
+  passes in a standalone clone: its tests import core source through the
+  installed package directory and not from `../../minimal-agent-core`, and
+  its STE audit reads the installed core when no sibling checkout exists.
 - 2026-11-15: Pins advance to core `d0a6462`, plugins `af8b38f`, cli
   `ce8726d`, and web `26eea59`. In the `--debug` request dump, the system
   block now sits directly before the messages (order: tools, system,
