@@ -1,0 +1,40 @@
+# mixed @ 80 cols, 36 input chunks, 38 segments, 933 bytes (mdstream 0.3.9)
+# input chunks: ["# R","eport","\n\nIn","tro par","agraph"," wi","th **","bold** ","and ","`code`",".\n\n- ","ite","m o","ne\n- ","item"," **two*","*\n\n| k"," | ","v |\n|","---|---","|\n| ","a | 1 ","|\n| b"," | ","22 ","|\n\n``","`bas","h\nmake ","test\nm","ake"," buil","d\n```\n\n","Clos","ing pa","ragra","ph."]
+[c  0] # R
+[c  1] eport
+[c  2] <CR><EL>Report<LF>━━━━━━<LF>
+[c  2] <LF>In
+[c  3] tro par
+[c  4] agraph
+[c  5]  wi
+[c  6] th **
+[c  7] bold** 
+[c  8] and 
+[c  9] `code`
+[c 10] <CR><EL>Intro paragraph with bold and code.<LF><LF>- 
+[c 11] ite
+[c 12] m o
+[c 13] <CR><EL>  • item one<LF>- 
+[c 14] item
+[c 15]  **two*
+[c 16] <CR><EL>  • item two<LF><LF>| k
+[c 17]  | 
+[c 18] <CR><EL>|
+[c 19] ---|---
+[c 20] <CR><EL>| 
+[c 21] a | 1 
+[c 22] <CR><EL>| b
+[c 23]  | 
+[c 24] 22 
+[c 25] <CR><EL> k │ v  <LF>━━━┿━━━━<LF> a │ 1  <LF>───┼────<LF> b │ 22 <LF><LF>``
+[c 26] `bas
+[c 27] <CR><EL>── bash ────────────────────────────────<LF>make 
+[c 29] <CR><EL>  1  make test<LF>m
+[c 29] ake
+[c 30]  buil
+[c 31] <CR><EL>  2  make build<LF>────────────────────────────────────────<LF><LF>
+[c 32] Clos
+[c 33] ing pa
+[c 34] ragra
+[c 35] ph.
+[c 36] <LF>

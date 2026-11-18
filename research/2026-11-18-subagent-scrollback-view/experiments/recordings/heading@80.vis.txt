@@ -1,0 +1,13 @@
+# heading @ 80 cols, 9 input chunks, 11 segments, 136 bytes (mdstream 0.3.9)
+# input chunks: ["## ","A hea","ding","\n\nBody ","text u","nde","r the"," headin","g."]
+[c  0] ## 
+[c  1] A hea
+[c  2] ding
+[c  3] <CR><EL>A heading<LF>─────────<LF>
+[c  3] <LF>Body 
+[c  4] text u
+[c  5] nde
+[c  6] r the
+[c  7]  headin
+[c  8] g.
+[c  9] <LF>

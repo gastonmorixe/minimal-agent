@@ -1,0 +1,14 @@
+# para-short @ 80 cols, 11 input chunks, 12 segments, 151 bytes (mdstream 0.3.9)
+# input chunks: ["Hel","lo **","worl","d**, th","is is ","a s","hort ","paragra","ph w","ith `c","ode`."]
+[c  0] Hel
+[c  1] lo **
+[c  2] worl
+[c  3] d**, th
+[c  4] is is 
+[c  5] a s
+[c  6] hort 
+[c  7] paragra
+[c  8] ph w
+[c  9] ith `c
+[c 10] ode`.
+[c 11] <CR><EL>Hello world, this is a short paragraph with code.<LF>

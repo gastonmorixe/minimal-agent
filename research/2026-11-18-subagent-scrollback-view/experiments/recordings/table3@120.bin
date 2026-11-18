@@ -1,0 +1,9 @@
+| name | qty[K|---[K| apple [K| pear | 12[K| fig | [K [1mname[0m  │ [1mqty[0m 
+━━━━━━━┿━━━━━[0m
+ apple │ 3   
+───────┼─────[0m
+ pear  │ 12  
+───────┼─────[0m
+ fig   │ 7   
+
+After the table.

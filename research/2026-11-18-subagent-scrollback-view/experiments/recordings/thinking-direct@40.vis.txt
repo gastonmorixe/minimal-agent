@@ -1,0 +1,44 @@
+# thinking-direct @ 40 cols, 42 input chunks, 42 segments, 201 bytes (mdstream 0.3.9)
+# input chunks: ["Let"," me t","hink"," about ","this c","are","fully"," before"," ans","wering",". The"," re","que","st is"," sma","ll, so ","I shou","ld ","read ","the cod","e fi","rst, c","heck ","the"," ed","ge ca","ses,"," and th","en pic","k t","he si","mplest ","desi","gn tha","t sti","ll ","wor","ks an","d st","ays eas","y to t","e\n"]
+[c  0] Let
+[c  1]  me t
+[c  2] hink
+[c  3]  about 
+[c  4] this c
+[c  5] are
+[c  6] fully
+[c  7]  before
+[c  8]  ans
+[c  9] wering
+[c 10] . The
+[c 11]  re
+[c 12] que
+[c 13] st is
+[c 14]  sma
+[c 15] ll, so 
+[c 16] I shou
+[c 17] ld 
+[c 18] read 
+[c 19] the cod
+[c 20] e fi
+[c 21] rst, c
+[c 22] heck 
+[c 23] the
+[c 24]  ed
+[c 25] ge ca
+[c 26] ses,
+[c 27]  and th
+[c 28] en pic
+[c 29] k t
+[c 30] he si
+[c 31] mplest 
+[c 32] desi
+[c 33] gn tha
+[c 34] t sti
+[c 35] ll 
+[c 36] wor
+[c 37] ks an
+[c 38] d st
+[c 39] ays eas
+[c 40] y to t
+[c 41] e<LF>

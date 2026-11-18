@@ -1,0 +1,20 @@
+# Report[K[1m[38;2;255;100;100mReport[0m
+[38;2;255;100;100m━━━━━━[0m
+
+Intro paragraph with **bold** and `code`[KIntro paragraph with [1mbold[22m and [1m[38;2;180;140;255mcode[39m[22m.
+
+- item o[K  • item one
+- item **two*[K  • item [1mtwo[22m
+
+| k | [K|---|---[K| a | 1 [K| b | 22 [K [1mk[0m │ [1mv[0m  
+━━━┿━━━━[0m
+ a │ 1  
+───┼────[0m
+ b │ 22 
+
+```bas[K[2m──[0m [38;2;190;150;80m[1mbash[0m [2m────────────────────────────────[0m
+make [K[2m  1  [0m[38;2;96;214;255mmake[38;2;96;214;255m test[38;2;232;238;250m[0m
+make buil[K[2m  2  [0m[38;2;96;214;255mmake[38;2;96;214;255m build[38;2;232;238;250m[0m
+[2m────────────────────────────────────────[0m
+
+Closing paragraph.

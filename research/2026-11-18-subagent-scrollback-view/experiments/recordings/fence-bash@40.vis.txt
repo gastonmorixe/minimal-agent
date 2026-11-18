@@ -1,0 +1,19 @@
+# fence-bash @ 40 cols, 15 input chunks, 17 segments, 680 bytes (mdstream 0.3.9)
+# input chunks: ["Run"," this",":\n\n`","``bash\n","cd /tm","p\nl","s -la","\necho d","one\n","pwd\n``","`\n\nAf","ter"," th","e cod","e."]
+[c  0] Run
+[c  1]  this
+[c  2] <CR><EL>Run this:<LF><LF>`
+[c  3] <CR><EL>── bash ────────────────────────────────<LF>
+[c  4] cd /tm
+[c  5] <CR><EL>  1  cd /tmp<LF>l
+[c  6] s -la
+[c  7] <CR><EL>  2  ls -la<LF>echo d
+[c  8] <CR><EL>  3  echo done<LF>
+[c  9]   4  pwd<LF>``
+[c 10] <CR><EL>────────────────────────────────────────<LF><LF>
+[c 10] Af
+[c 11] ter
+[c 12]  th
+[c 13] e cod
+[c 14] e.
+[c 15] <LF>

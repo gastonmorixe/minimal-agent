@@ -1,0 +1,14 @@
+# bullets @ 40 cols, 10 input chunks, 12 segments, 109 bytes (mdstream 0.3.9)
+# input chunks: ["- o","ne\n- ","two ","with **","bold**","\n- ","three","\n\nAfter"," the"," list."]
+[c  0] - o
+[c  1] <CR><EL>  • one<LF>- 
+[c  2] two 
+[c  3] with **
+[c  4] bold**
+[c  5] <CR><EL>  • two with bold<LF>- 
+[c  6] three
+[c  7] <CR><EL>  • three<LF>
+[c  7] <LF>After
+[c  8]  the
+[c  9]  list.
+[c 10] <LF>

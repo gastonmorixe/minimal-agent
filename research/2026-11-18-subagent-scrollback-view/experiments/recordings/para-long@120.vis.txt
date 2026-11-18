@@ -1,0 +1,56 @@
+# para-long @ 120 cols, 53 input chunks, 54 segments, 4167 bytes (mdstream 0.3.9)
+# input chunks: ["Thi","s is ","a de","liberat","ely lo","ng ","parag","raph th","at w","raps a","cross"," se","ver","al te","rmin","al rows"," at ev","ery"," widt","h we te","st, ","becaus","e the"," qu","ick"," brow","n fo","x jumps"," over ","the"," lazy"," dog ag","ain ","and ag","ain, ","and"," it"," keep","s go","ing wit","h **bo","ld ","words","** and ","`inl","ine co","de` u","nti","l i","t fin","ally"," ends h","ere."]
+[c  0] Thi
+[c  1] s is 
+[c  2] a de
+[c  3] liberat
+[c  4] ely lo
+[c  5] ng 
+[c  6] parag
+[c  7] raph th
+[c  8] at w
+[c  9] raps a
+[c 10] cross
+[c 11]  se
+[c 12] ver
+[c 13] al te
+[c 14] rmin
+[c 15] al rows
+[c 16]  at ev
+[c 17] ery
+[c 18]  widt
+[c 19] h we te
+[c 20] st, 
+[c 21] becaus
+[c 22] e the
+[c 23]  qu
+[c 24] ick
+[c 25] <CR><EL>…is a deliberately long paragraph that wraps across several terminal rows at every width we test, because the quick brow
+[c 26] <CR><EL>… deliberately long paragraph that wraps across several terminal rows at every width we test, because the quick brown fo
+[c 27] <CR><EL>…rately long paragraph that wraps across several terminal rows at every width we test, because the quick brown fox jumps
+[c 28] <CR><EL>… long paragraph that wraps across several terminal rows at every width we test, because the quick brown fox jumps over 
+[c 29] <CR><EL>…ng paragraph that wraps across several terminal rows at every width we test, because the quick brown fox jumps over the
+[c 30] <CR><EL>…ragraph that wraps across several terminal rows at every width we test, because the quick brown fox jumps over the lazy
+[c 31] <CR><EL>… that wraps across several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog ag
+[c 32] <CR><EL>…t wraps across several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again 
+[c 33] <CR><EL>…s across several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and ag
+[c 34] <CR><EL>…oss several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, 
+[c 35] <CR><EL>… several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and
+[c 36] <CR><EL>…veral terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and it
+[c 37] <CR><EL>… terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and it keep
+[c 38] <CR><EL>…minal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps go
+[c 39] <CR><EL>…ows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going wit
+[c 40] <CR><EL>… every width we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bo
+[c 41] <CR><EL>…ery width we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold 
+[c 42] <CR><EL>…idth we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words
+[c 43] <CR><EL>… test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and 
+[c 44] <CR><EL>…t, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inl
+[c 45] <CR><EL>…ause the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline co
+[c 46] <CR><EL>…the quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` u
+[c 47] <CR><EL>… quick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` unti
+[c 48] <CR><EL>…ick brown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` until i
+[c 49] <CR><EL>…rown fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` until it fin
+[c 50] <CR><EL>… fox jumps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` until it finally
+[c 51] <CR><EL>…mps over the lazy dog again and again, and it keeps going with **bold words** and `inline code` until it finally ends h
+[c 52] <CR><EL>…over the lazy dog again and again, and it keeps going with **bold words** and `inline code` until it finally ends here.
+[c 53] <CR><EL>This is a deliberately long paragraph that wraps across several terminal rows at every width we test, because the quick brown fox jumps over the lazy dog again and again, and it keeps going with bold words and inline code until it finally ends here.<LF>

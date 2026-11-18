@@ -1,0 +1,15 @@
+# blockquote @ 40 cols, 11 input chunks, 13 segments, 113 bytes (mdstream 0.3.9)
+# input chunks: ["> q","uoted"," lin","e one\n>"," quote","d l","ine t","wo\n\nAft","er t","he quo","te."]
+[c  0] > q
+[c  1] uoted
+[c  2]  lin
+[c  3] <CR><EL>  │ quoted line one<LF>>
+[c  4]  quote
+[c  5] d l
+[c  6] ine t
+[c  7] <CR><EL>  │ quoted line two<LF>
+[c  7] <LF>Aft
+[c  8] er t
+[c  9] he quo
+[c 10] te.
+[c 11] <LF>

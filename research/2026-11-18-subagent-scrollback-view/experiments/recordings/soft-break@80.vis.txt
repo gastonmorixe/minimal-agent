@@ -1,0 +1,20 @@
+# soft-break @ 80 cols, 17 input chunks, 18 segments, 146 bytes (mdstream 0.3.9)
+# input chunks: ["Fir","st li","ne o","f one p","aragra","ph\n","secon","d line ","of t","he sam","e par","agr","aph",".\n\nNe","xt p","aragrap","h."]
+[c  0] Fir
+[c  1] st li
+[c  2] ne o
+[c  3] f one p
+[c  4] aragra
+[c  5] <CR><EL>First line of one paragraph<LF>
+[c  6] secon
+[c  7] d line 
+[c  8] of t
+[c  9] he sam
+[c 10] e par
+[c 11] agr
+[c 12] aph
+[c 13] <CR><EL>second line of the same paragraph.<LF><LF>Ne
+[c 14] xt p
+[c 15] aragrap
+[c 16] h.
+[c 17] <LF>

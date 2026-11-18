@@ -1,0 +1,20 @@
+# table3 @ 80 cols, 17 input chunks, 18 segments, 293 bytes (mdstream 0.3.9)
+# input chunks: ["| n","ame |"," qty"," |\n|---","|---|\n","| a","pple ","| 3 |\n|"," pea","r | 12"," |\n| ","fig"," | ","7 |\n\n","Afte","r the t","able."]
+[c  0] | n
+[c  1] ame |
+[c  2]  qty
+[c  3] <CR><EL>|---
+[c  4] <CR><EL>
+[c  5] | a
+[c  6] pple 
+[c  7] <CR><EL>|
+[c  8]  pea
+[c  9] r | 12
+[c 10] <CR><EL>| 
+[c 11] fig
+[c 12]  | 
+[c 13] <CR><EL> name  │ qty <LF>━━━━━━━┿━━━━━<LF> apple │ 3   <LF>───────┼─────<LF> pear  │ 12  <LF>───────┼─────<LF> fig   │ 7   <LF><LF>
+[c 14] Afte
+[c 15] r the t
+[c 16] able.
+[c 17] <LF>
