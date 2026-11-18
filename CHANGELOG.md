@@ -83,10 +83,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `332b125ed28b33f198e82c499f6d2d52e0ca9b95` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `617e0a7c56e50bc1b9976ebcca0aca2e9eb4908f` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `cd36e47e6bd9b8ebd2896057d8c1e43850cd31f8` (lead, decision 20).
-- Approved: `minimal-agent-web` at `641ce7ae680e49fe4a35027aaad11ca185eab90e` (lead, decision 20).
+- Approved: `minimal-agent-core` at `f38d9c88d553a6274247b21008fe4fb8f1b42f42` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `bd666f4b5e747e2551ae9260f750f1d738819edf` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `01ec00f094571d9631a5fa0592d19e90feb490a9` (lead, decision 20).
+- Approved: `minimal-agent-web` at `a6848315644fafe4360cc819d0891f4f35ec8cd3` (lead, decision 20).
 - Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
 <!-- pin-approvals:end -->
 
@@ -100,6 +100,15 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   the changed part, including the thinking removal + cache lookback cascade.
   The server's `cache_missed_input_tokens` is shown as the "server-reported
   miss size", not as tokens lost.
+- 2026-11-18: **The web follow-ups of the session identity fix**: core
+  `f38d9c8`, plugins `bd666f4`, cli `01ec00f`, web `a684831`. (1) The Task
+  tool takes `ctx.agent.sessionId` first, so each web session keeps its own
+  board. (2) A worker that a sub-agent starts is the CLI, not a second web
+  server: the web host publishes `MINIMAL_AGENT_BIN` (the sibling CLI entry)
+  when the var is unset. (3) MA-02 no longer says that every session has a
+  transcript file: a host can keep it in memory, and `SessionInfo` gives the
+  id. Only the prompt fixtures and the request goldens change in that line.
+  The details are in the changelog of each repo.
 - 2026-11-18: **Each web session gives plugins its own identity**: core
   `fb25b02`, plugins `dd9df6d`, cli `3d83761`, web `22fbfdf`. A host with
   many sessions in one process (the web host) opens each session with the
