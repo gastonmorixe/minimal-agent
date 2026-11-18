@@ -14,8 +14,8 @@
  *   bun run worktree:new <name>                  # ../<main checkout>_WT-<name>, branch <name>, from origin/main
  *   bun run worktree:new <name> --branch <b>     # another umbrella branch name
  *   bun run worktree:new <name> --from <ref>     # another start commit
- *   bun run worktree:rm <name>                   # remove it; stops when work would be lost
- *   bun run worktree:rm <name> --force           # remove it also then
+ *   bun run worktree:rm <name>                   # remove it; stops when it holds work that is nowhere else
+ *   bun run worktree:rm <name> --force           # remove it with no check
  *
  * `new` leaves each submodule on a detached HEAD at the commit the umbrella
  * records. Before you commit in a submodule, make a branch there:
@@ -23,12 +23,20 @@
  *
  * `rm` exists because `git worktree remove` refuses a worktree that has
  * submodules, and `--force` deletes the submodule repos of that worktree with
- * every commit that is only there. So `rm` first looks for uncommitted files
- * and for commits that are on no remote, in the umbrella and in each
- * submodule, and stops when it finds one.
+ * everything that is only there. So `rm` first looks, in the umbrella and in
+ * each submodule repo of that worktree, and stops when it finds:
+ *
+ *   - an uncommitted or untracked file;
+ *   - an ignored file that no tool makes again (notes, research, logs);
+ *   - a stash;
+ *   - a commit that is on no remote, on any branch, under a tag or only in
+ *     the reflog. The old copy of a commit that was rebased or cherry-picked
+ *     and then pushed does not count.
+ *
+ * It fetches each submodule first. A remote that is not reachable is a stop.
  */
-import { existsSync, realpathSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readdirSync, realpathSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { git, root, submodulePaths } from "./pins-lib.ts";
 
 const args = process.argv.slice(2);
@@ -83,20 +91,26 @@ function create(): void {
   console.log(`  umbrella branch ${branch} at ${base.slice(0, 7)} (${from})`);
 
   for (const sub of subs) {
-    // Copy objects from the main checkout when it has this submodule: no download.
+    // Copy objects from the main checkout when it has this submodule: little or no download.
+    // (Git still asks the remote, so the remote must be reachable.)
     // `--dissociate` makes the new repo complete, so it does not break when the main one prunes objects.
     const reference = join(mainCheckout, sub);
     const local = existsSync(join(reference, ".git")) ? ["--reference", reference, "--dissociate"] : [];
     const init = (extra: string[]): boolean =>
       Bun.spawnSync(["git", "submodule", "--quiet", "update", "--init", ...extra, "--", sub], { cwd: dest, stderr: "pipe" }).exitCode === 0;
     if (!init(local) && !init([])) {
-      fail(`could not check out ${sub} in ${dest}. Is its recorded commit on the remote? Remove the worktree with: bun run worktree:rm ${name} --force`);
+      // Nothing of value is in a worktree that was made a moment ago: remove it and its new branch.
+      tryGit(["worktree", "remove", "--force", dest], root);
+      tryGit(["branch", "-D", branch], root);
+      fail(`could not check out ${sub}: is its remote reachable, and is the recorded commit on it? The new worktree and the branch "${branch}" are removed again.`);
     }
     console.log(`  ${sub} at ${git(["rev-parse", "--short", "HEAD"], join(dest, sub))} (detached)`);
   }
 
   console.log("  bun install");
-  if (!run(dest, ["bun", "install"])) fail(`bun install failed in ${dest}`);
+  if (!run(dest, ["bun", "install"])) {
+    fail(`bun install failed in ${dest}. The worktree is kept. To remove it: bun run worktree:rm ${name} --force && git branch -D ${branch}`);
+  }
 
   // The commit-msg hooks check the commit format and the agent trailer. `bun install` sets them up
   // through each `prepare` script. Do it here for a repo where that did not run.
@@ -117,53 +131,177 @@ function create(): void {
   if (!linked) process.exit(1);
 }
 
-/** Work in `cwd` that a removal would destroy. `ownRepo` is true for a submodule: its repo is deleted too. */
-function lostWork(label: string, cwd: string, ownRepo: boolean): string[] {
+/** Run git and return stdout as it is, not trimmed. Throw on a non-zero exit. */
+function gitRaw(gitArgs: string[], cwd: string, input?: string): string {
+  const res = Bun.spawnSync(["git", ...gitArgs], { cwd, stdin: input === undefined ? "ignore" : Buffer.from(input), stdout: "pipe", stderr: "pipe" });
+  if (res.exitCode !== 0) throw new Error(`git ${gitArgs.join(" ")}: ${res.stderr.toString().trim()}`);
+  return res.stdout.toString();
+}
+
+const lines = (text: string): string[] => text.split("\n").filter(Boolean);
+
+/** Ignored paths that a tool makes again. Any other ignored file can be work (notes, research, logs). */
+const GENERATED_DIRS = new Set(["node_modules", "dist", "build", "tmp", ".tmp", "coverage", ".net-dbg", ".node-net-dbg"]);
+const GENERATED_FILES = new Set(["bun.lock", ".DS_Store"]);
+function isGenerated(path: string): boolean {
+  const parts = path.replace(/\/$/, "").split("/");
+  const last = parts.at(-1) ?? "";
+  if (parts.some((part) => GENERATED_DIRS.has(part)) || GENERATED_FILES.has(last)) return true;
+  return last === "_" && parts.at(-2) === ".husky";
+}
+
+/** Files in the working tree `cwd` that a removal deletes. `skip` holds paths that are checked elsewhere. */
+function lostFiles(label: string, cwd: string, skip: Set<string>): string[] {
+  const tokens = gitRaw(["status", "--porcelain", "-z", "--ignored"], cwd).split("\0").filter(Boolean);
+  let changed = 0;
+  const ignored: string[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i] ?? "";
+    const state = token.slice(0, 2);
+    const path = token.slice(3);
+    // A rename or a copy has its old path in the next token.
+    if (state.includes("R") || state.includes("C")) i++;
+    if (skip.has(path.replace(/\/$/, ""))) continue;
+    if (state !== "!!") changed++;
+    else if (!isGenerated(path)) ignored.push(path);
+  }
   const out: string[] = [];
-  const dirty = tryGit(["status", "--porcelain"], cwd)
-    .split("\n")
-    // A changed submodule pointer in the umbrella is the submodule's own state: it is checked there.
-    // The path is the text after the status letters. `git()` trims the output, so the first line
-    // can have lost its leading space: do not cut at a fixed column.
-    .filter((line) => line !== "" && !(!ownRepo && subs.includes(line.replace(/^\s*\S+\s+/, ""))));
-  if (dirty.length > 0) out.push(`${label}: ${dirty.length} uncommitted or untracked file(s)`);
-  const refs = ownRepo
-    ? ["HEAD", ...tryGit(["for-each-ref", "--format=%(refname)", "refs/heads"], cwd).split("\n").filter(Boolean)]
-    : ["HEAD"];
-  const seen = new Set<string>();
-  for (const ref of refs) {
-    const n = Number(tryGit(["rev-list", "--count", ref, "--not", "--remotes"], cwd) || "0");
-    const sha = tryGit(["rev-parse", ref], cwd);
-    if (n === 0 || seen.has(sha)) continue;
-    seen.add(sha);
-    out.push(`${label}: ${n} commit(s) on ${ref.replace("refs/heads/", "")} that are on no remote`);
+  if (changed > 0) out.push(`${label}: ${changed} uncommitted or untracked file(s)`);
+  if (ignored.length > 0) out.push(`${label}: ignored file(s) that no tool makes again: ${ignored.slice(0, 3).join(", ")}${ignored.length > 3 ? ", ..." : ""}`);
+  return out;
+}
+
+/** The patch id of each commit in `shas` that has a diff, as patch id to commit. */
+function patchIds(gitDir: string, shas: string[]): Map<string, string> {
+  const ids = new Map<string, string>();
+  if (shas.length === 0) return ids;
+  const res = Bun.spawnSync(["bash", "-c", "git diff-tree --stdin --root -p | git patch-id --stable"], {
+    stdin: Buffer.from(`${shas.join("\n")}\n`),
+    stdout: "pipe",
+    stderr: "pipe",
+    env: { ...process.env, GIT_DIR: gitDir },
+  });
+  if (res.exitCode !== 0) throw new Error(`git patch-id: ${res.stderr.toString().trim()}`);
+  for (const line of lines(res.stdout.toString())) {
+    const [id, sha] = line.split(" ");
+    if (id && sha) ids.set(id, sha);
+  }
+  return ids;
+}
+
+/**
+ * Commits and stashes that only the repo `gitDir` has. The removal deletes that repo.
+ *
+ * A commit counts when no remote has it and no remote commit has the same change. So the old copy
+ * of a commit that was rebased or cherry-picked and then pushed does not count. It looks at every
+ * ref and at the reflog: a commit on a deleted branch, under a tag, or left behind on a detached
+ * HEAD is found.
+ */
+function lostCommits(label: string, gitDir: string): string[] {
+  const g = (gitArgs: string[], input?: string): string => gitRaw(["--git-dir", gitDir, ...gitArgs], root, input);
+  const out: string[] = [];
+  try {
+    // Without this, a branch that was deleted on the remote still looks pushed.
+    g(["fetch", "--prune", "--quiet", "origin"]);
+  } catch {
+    out.push(`${label}: its remote is not reachable, so a commit that is only here cannot be ruled out`);
+  }
+  const stashes = lines(tryGit(["--git-dir", gitDir, "stash", "list"], root));
+  if (stashes.length > 0) out.push(`${label}: ${stashes.length} stash(es)`);
+  const stashShas = new Set(stashes.length > 0 ? lines(g(["reflog", "show", "--format=%H", "refs/stash"])) : []);
+
+  // "On a remote" means: under a remote branch, or under a tag that the remote has. A release
+  // tag can hold commits that are on no branch. A tag that exists only here does not count.
+  let remoteTags: string[] = [];
+  try {
+    remoteTags = lines(g(["ls-remote", "--tags", "origin"])).map((line) => line.split("\t")[0] ?? "");
+  } catch {
+    // The fetch above failed too, and that is reported.
+  }
+  const only = ["--ignore-missing", "--all", "--reflog", "--not", "--remotes", ...new Set(remoteTags)];
+  const merges = lines(g(["rev-list", "--merges", ...only])).filter((sha) => !stashShas.has(sha));
+  if (merges.length > 0) out.push(`${label}: ${merges.length} merge commit(s) that are on no remote`);
+
+  const local = lines(g(["rev-list", "--no-merges", ...only]));
+  if (local.length === 0) return out;
+  const mine = patchIds(gitDir, local);
+  // A remote copy of a local commit is not older than that commit: look at the remote commits from the oldest one on.
+  const oldest = Math.min(...lines(g(["log", "--no-walk", "--format=%at", "--stdin"], `${local.join("\n")}\n`)).map(Number));
+  const theirs = patchIds(gitDir, lines(g(["rev-list", "--ignore-missing", "--no-merges", `--since=${oldest - 86400}`, "--remotes", ...new Set(remoteTags)])));
+  const lost = [...mine].filter(([id]) => !theirs.has(id)).map(([, sha]) => sha);
+  if (lost.length > 0) {
+    const newest = g(["log", "--no-walk", "--date-order", "--format=%h %s", "-1", ...lost.slice(0, 200)]).trim();
+    out.push(`${label}: ${lost.length} commit(s) that are on no remote, and no remote commit has the same change (newest: ${newest.slice(0, 70)})`);
+  }
+  return out;
+}
+
+/** Every git repo below `dir`. A worktree keeps the repos of its submodules there, and a removal deletes them. */
+function reposBelow(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  const out: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const path = join(dir, entry.name);
+    if (existsSync(join(path, "HEAD")) && existsSync(join(path, "objects"))) out.push(path, ...reposBelow(join(path, "modules")));
+    else out.push(...reposBelow(path));
   }
   return out;
 }
 
 function remove(): void {
-  const listed = git(["worktree", "list", "--porcelain"])
-    .split("\n")
-    .some((line) => line === `worktree ${dest}` || line === `worktree ${existsSync(dest) ? realpathSync(dest) : dest}`);
+  const listed = lines(git(["worktree", "list", "--porcelain"])).includes(`worktree ${existsSync(dest) ? realpathSync(dest) : dest}`);
   if (!listed) fail(`${dest} is not a worktree of this repo`);
-  if (existsSync(dest) && realpathSync(dest) === realpathSync(root)) fail("run this from another checkout, not from the worktree to remove");
-
-  const problems = lostWork("umbrella", dest, false);
-  for (const sub of subs) {
-    if (existsSync(join(dest, sub, ".git"))) problems.push(...lostWork(sub, join(dest, sub), true));
+  if (!existsSync(dest)) {
+    // The repos of its submodules are still in the main `.git`. Nothing here can check them through a missing folder.
+    fail(`${dest} is a worktree of this repo, but the folder is not there. Nothing is removed. If you moved it: git worktree repair <new path>`);
   }
+  const here = realpathSync(root);
+  const target = realpathSync(dest);
+  if (here === target || here.startsWith(`${target}/`)) fail("run this from another checkout, not from the worktree to remove");
+
+  const problems: string[] = [];
+  /** Run one check. A check that cannot run is a problem, not a pass. */
+  const check = (label: string, run: () => string[]): void => {
+    try {
+      problems.push(...run());
+    } catch (error) {
+      problems.push(`${label}: could not check (${error instanceof Error ? error.message.slice(0, 120) : "error"})`);
+    }
+  };
+
+  // The umbrella. Its branch stays in the main repo, so only a commit on a detached HEAD can be lost.
+  const gitlinks = new Set(lines(tryGit(["ls-files", "--stage"], dest)).filter((line) => line.startsWith("160000")).map((line) => line.split("\t")[1] ?? ""));
+  check("umbrella", () => lostFiles("umbrella", dest, gitlinks));
+  const branch = tryGit(["branch", "--show-current"], dest);
+  if (!branch) {
+    check("umbrella", () => {
+      const n = Number(git(["rev-list", "--count", "HEAD", "--not", "--remotes", "--branches"], dest));
+      return n > 0 ? [`umbrella: ${n} commit(s) on a detached HEAD that are on no remote and on no branch`] : [];
+    });
+  }
+
+  // Every submodule repo that this worktree owns, also one that is not checked out now.
+  const modules = join(git(["rev-parse", "--absolute-git-dir"], dest), "modules");
+  for (const repo of reposBelow(modules)) {
+    const label = repo.slice(modules.length + 1).replace(/\/modules\//g, "/");
+    check(label, () => lostCommits(label, repo));
+    const workTree = tryGit(["--git-dir", repo, "config", "--get", "core.worktree"], root);
+    const dir = workTree ? resolve(repo, workTree) : "";
+    if (dir && existsSync(join(dir, ".git"))) check(label, () => lostFiles(label, dir, new Set()));
+  }
+
   if (problems.length > 0) {
     console.log(`worktree: ${dest} has work that a removal deletes:`);
     for (const line of problems) console.log(`  ${line}`);
-    if (!force) fail("stopped. Push or commit that work, or run again with --force to delete it.");
+    if (!force) fail("stopped. Commit and push that work, or run again with --force to delete it.");
   }
 
-  const branch = tryGit(["branch", "--show-current"], dest);
   // `--force` is necessary for a worktree with submodules. The checks above are the guard.
+  // No `git worktree prune`: it also deletes the data of every other worktree whose folder is absent just now.
   git(["worktree", "remove", "--force", dest]);
-  git(["worktree", "prune"]);
   console.log(`worktree: removed ${dest}`);
-  if (branch) console.log(`  the umbrella branch "${branch}" is kept. Delete it with: git branch -d ${branch}`);
+  if (branch) console.log(`  the umbrella branch "${branch}" is kept. Delete it with: git branch -d ${branch} (-D when it is not merged)`);
 }
 
 if (cmd === "new") create();

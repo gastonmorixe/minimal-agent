@@ -30,8 +30,10 @@
  * the consumer commits are pushed.
  *
  * Resumable: if a run stops after the consumer pushes (for example on a
- * commit-msg hook), run it again. Consumers already on the SHA are skipped,
- * and the umbrella commit names every staged consumer gitlink.
+ * commit-msg hook), run it again. Consumers already on the SHA are skipped.
+ * With `--commit`, the gitlink of such a consumer is staged too when it is
+ * not at the consumer HEAD, and the umbrella commit names every staged
+ * consumer gitlink.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -110,17 +112,23 @@ const preflight: string[] = [];
 for (const line of lockfileProblems(gitPinsAt(CORE, sha))) preflight.push(`${CORE}@${sha.slice(0, 7)}: ${line}`);
 for (const path of submodulePaths()) {
   if (path === CORE) continue;
-  // The core pin is left out: step 2 rewrites it in both files.
-  for (const line of lockfileProblems(gitPinsAt(path, "HEAD"), [CORE])) preflight.push(`${path}: ${line}`);
+  // Step 4 reads a consumer at its gitlink. A consumer with a core pin gets its gitlink staged at
+  // HEAD (or at the pin commit on top of HEAD), so read it at HEAD. One with no core pin is not
+  // staged, so read it at its gitlink. The core pin is left out: step 2 rewrites it in both files.
+  const head = gitPinsAt(path, "HEAD");
+  const pins = head.manifest.has(CORE) || head.lock.has(CORE) ? head : gitPinsAt(path, gitlink(path));
+  for (const line of lockfileProblems(pins, [CORE])) preflight.push(`${path}: ${line}`);
 }
 if (preflight.length > 0) {
-  const text = `a committed bun.lock differs from its package.json:\n${preflight.map((l) => `  ${l}`).join("\n")}\nFix: bun run pins:lock, commit and push bun.lock in that repo, then run this again.`;
+  const text = `a committed bun.lock differs from its package.json:\n${preflight.map((l) => `  ${l}`).join("\n")}\nFix: bun run pins:lock, commit and push bun.lock in that repo, then run pins:core again (with the new core commit, when the fix is in core).`;
   if (dryRun) console.log(`WARNING: a real run stops here. ${text}`);
   else fail(text);
 }
 
 // 2. Rewrite the pins in each consumer.
 const changed: string[] = [];
+/** Consumers that already pin the target, but whose gitlink in the umbrella is not at their HEAD. */
+const aligned: string[] = [];
 for (const path of submodulePaths()) {
   if (path === CORE) continue;
   const cwd = join(root, path);
@@ -146,6 +154,11 @@ for (const path of submodulePaths()) {
   }
   if (edits.length === 0) {
     console.log(`${path}: ok (already on ${sha.slice(0, 7)} or no core pins)`);
+    // A run that stopped after this consumer was committed left its gitlink behind. Step 4 reads
+    // the gitlink, so stage it with the others. Only a clean consumer: HEAD is then what was pinned.
+    const pinned = files.some((file) => readFileSync(join(cwd, file), "utf8").includes(`minimal-agent-core.git#${sha}`));
+    const clean = git(["status", "--porcelain", "--untracked-files=no"], cwd) === "";
+    if (pinned && clean && git(["rev-parse", "HEAD"], cwd) !== gitlink(path)) aligned.push(path);
     continue;
   }
 
@@ -188,7 +201,7 @@ for (const path of changed) {
 
 git(["checkout", "--quiet", "--detach", sha], coreDir);
 git(["add", "--", CORE]);
-if (commit) for (const path of changed) git(["add", "--", path]);
+if (commit) for (const path of [...changed, ...aligned]) git(["add", "--", path]);
 
 if (!commit) {
   console.log(`\nStaged the core gitlink. Next: review each consumer diff, commit and push it,`);

@@ -166,15 +166,15 @@ function isWorkspaceMember(path: string): boolean {
 }
 
 for (const sub of submodulePaths()) {
-  if (!existsSync(join(root, sub, "package.json"))) {
-    console.log(`${sub}: not checked out, skipped`);
-    continue;
-  }
-  // Rule 5.
+  // Rule 5. It needs no checkout, so it runs first.
   if (!isWorkspaceMember(sub)) {
     outside.push(sub);
     console.log(`${sub}: NOT IN THE WORKSPACE`);
     console.log(`  package.json: no "workspaces" pattern matches "${sub}". Add its name to the list.`);
+    continue;
+  }
+  if (!existsSync(join(root, sub, "package.json"))) {
+    console.log(`${sub}: not checked out, versions not checked`);
     continue;
   }
   const ownCatalog = catalogOf(read(join(sub, "package.json")));
