@@ -360,7 +360,15 @@ no prompt. Commit or stash your work in all of them first, and run
   repo, then run `bun run pins:verify --head <repo>`.
 - **`pins:verify --check` runs fewer tests than the umbrella gate.** A
   standalone clone has no sibling checkouts, so the tests that need one skip
-  themselves (55 in the cli). The umbrella gate stays the full gate.
+  themselves (55 in the cli, 39 in plugins). The umbrella gate stays the full
+  gate.
+- **A test needs a core module that has no public subpath.** Import it
+  through the installed package directory
+  (`../node_modules/@minimal-agent/core/src/x.ts`), not from the sibling
+  checkout (`../../minimal-agent-core/src/x.ts`). The two are the same
+  directory in the umbrella. In a standalone clone only the first one is the
+  core that the repo installs: the second is missing, or it is a second copy
+  that core refuses to load. A plugins guard test rejects the second form.
 - **`link:reset` is removed.** It ran the consumer's frozen install, which is
   the root install, so the workspace link came back and the pin was not
   tested. Use `bun run pins:verify`.
