@@ -84,7 +84,7 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 <!-- pin-approvals:start -->
 - Approved: `minimal-agent-core` at `4cc65e4421b5d73a4a96b8ba34645a53039b8557` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `ea97c35efdda4a0c6fc87efadcf2274cff29a29e` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `a338ca867dc200cee4cb2986edd161682ca77ca1` (lead, decision 20).
 - Approved: `minimal-agent-cli` at `64ae9f711481acfc3688baa4c4cccf9d4253fa12` (lead, decision 20).
 - Approved: `minimal-agent-web` at `cc51543e60706a0c38d8427ae8c0dd39936c8937` (lead, decision 20).
 - Approved: `minimal-agent-config` at `55623ce805ef8edcf41ec0f6e3b50125315248ac` (lead, decision 20).
@@ -92,6 +92,17 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 ### Added
 
+- 2026-11-18: **Model registries refreshed from live 2026-11-18 catalogs**:
+  plugins `a338ca8` (lead task, stored auth, no secrets logged). OpenAI
+  +`gpt-6.2-astra` / +`gpt-6.2-sol` (Responses + `-chat`); OpenCode Go
+  +`hy4-flash-free` / +`qwen4-max`; OpenCode Zen +`gpt-6.2-sol` /
+  +`gpt-6.2-astra` / +`hy4-flash-free`, retired `-glm-5.3-flash-free` /
+  `-minimax-m3.1-flash-free`; OpenRouter `gpt-6.1-sol` -> `gpt-6.2-sol`
+  flagship, Kimi K3.1 Pro repriced `2/10` -> `0.2403/8.4023`; HuggingFace
+  Kimi-K2.7-Code + GLM-5.3 backend repricing; Wafer 3 cache-read reprices;
+  Anthropic live-models beta-header fix (400 -> 200, no registry drift).
+  Meta/Grok/Ollama/Cursor/ClinePass: no drift. Details are in
+  `minimal-agent-plugins/CHANGELOG.md`.
 - 2026-11-18: **The prompt-cache anchor marker is on by default**: core
   `4cc65e4`, plugins `ea97c35`, cli `64ae9f7`, web `cc51543`. `cacheAnchor`
   is on unless something turns it off: `"cacheAnchor": false` in the config,
