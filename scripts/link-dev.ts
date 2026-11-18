@@ -5,23 +5,24 @@
  * DEPRECATED for daily work. The monorepo root `package.json` is a Bun
  * workspace root with `overrides["@minimal-agent/core"] = "workspace:*"`, so
  * one `bun install` at the root links every consumer to the local checkout.
- * Verified: a plain `bun install` inside a submodule keeps that link.
+ * A `bun install` inside a submodule is the same root install, so it keeps
+ * that link. It does not read the submodule's own `bun.lock`.
  *
- * Keep this script for the one case the workspace cannot cover: forcing a
- * consumer back to its committed git pin without a root install. `reset`
- * removes the workspace symlink and runs the consumer's own frozen install.
- * That is a pin check, not a dev step.
+ * `reset` is removed. It deleted the link and ran the consumer's frozen
+ * install, but that install is the root install: it put the workspace link
+ * back and tested nothing (verified on Bun 1.4.4). To test the committed pin,
+ * use `bun run pins:verify`, which installs each repo in a clone outside the
+ * umbrella.
  *
  * Usage
  * -----
  *   bun run link:dev     # point each consumer's node_modules/@minimal-agent/core at ./minimal-agent-core
- *   bun run link:reset   # restore the pinned copy from each consumer's bun.lock
  *   bun run link:status  # show linked or pinned per consumer
+ *   bun run link:reset   # prints where to go (pins:verify) and exits 1
  *
- * Neither command edits package.json or bun.lock. A plain `bun install` in a
- * consumer also drops the link and restores the pin.
+ * No command edits package.json or bun.lock.
  */
-import { existsSync, lstatSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const root = join(import.meta.dir, "..");
@@ -79,13 +80,11 @@ function link() {
   }
 }
 
-function reset() {
-  for (const dir of consumers()) {
-    const path = installedCore(dir);
-    if (existsSync(path) && lstatSync(path).isSymbolicLink()) rmSync(path);
-    run(dir, ["bun", "install", "--frozen-lockfile"]);
-    console.log(`reset ${relative(root, dir)} to ${readManifest(dir)?.dependencies?.[CORE_NAME]}`);
-  }
+function reset(): never {
+  die(
+    "reset is removed: inside the workspace, the frozen install of a consumer is the root install and puts the link back. " +
+      "To test the committed pins, run `bun run pins:verify`.",
+  );
 }
 
 function status() {

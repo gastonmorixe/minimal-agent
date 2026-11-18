@@ -54,7 +54,7 @@ bun run start      # the CLI, running the local core
 
 After that, edit a file in `minimal-agent-core/` and run `bun run start` again. The change is already live. There is no commit, no push, and no pin bump.
 
-**Do not run `bun install` inside a submodule** as part of your normal loop. It works and keeps the link, because Bun finds the root workspace, but it resolves against the root lockfile and does nothing a root install did not already do. Use it only when you are testing that repo as a standalone.
+**Do not run `bun install` inside a submodule** as part of your normal loop. It works and keeps the link, because Bun finds the root workspace and runs the root install. It uses the root lockfile and never reads that submodule's own `bun.lock`, so it does nothing a root install did not already do. It also does not test the repo as a standalone: use `bun run pins:verify` for that (see "Pins").
 
 ## Layout
 
@@ -77,19 +77,35 @@ minimal-agent/                   # this monorepo
 The root `package.json` is a Bun workspace root. Three keys do the work:
 
 ```jsonc
-"workspaces": ["minimal-agent-*", "minimal-agent-*/ma-*-plugin", ...],
-"overrides": { "@minimal-agent/core": "workspace:*", "@types/node": "^26" },
+"workspaces": ["minimal-agent-*", "minimal-agent-*/ma-*-plugin", ..., "!minimal-agent-studio/**"],
+"overrides": { "@minimal-agent/core": "workspace:*", "@types/node": "^26", "brace-expansion": "^5.0.6" },
 "catalog": { "@biomejs/biome": "2.6.6", "oxlint": "1.92.0", ... }
 ```
 
 - `workspaces` globs the submodules and their members.
 - `overrides` replaces every `@minimal-agent/core` declaration with the local
-  directory. That is why edits show without a re-pin.
-- `catalog` is the single place where tool versions are declared.
+  directory. That is why edits show without a re-pin. Bun reads `overrides`
+  only from the root of an install, so the root also repeats the version
+  guards that the submodules carry for their own installs (`@types/node`,
+  `brace-expansion`).
+- `catalog` holds the tool versions for the root install (see "Tool versions").
 
-The committed git pins stay. A clean clone of one submodule, on its own, still
-resolves the pinned core, because it has no workspace root above it. CI behaves
-the same way.
+### Two install contexts
+
+The committed git pins stay. They are for the second column:
+
+| | Inside the umbrella | A standalone clone of one repo |
+| --- | --- | --- |
+| Install that runs | the root install, from any directory | that repo's own install |
+| Lockfile | the root `bun.lock` (gitignored) | the repo's `bun.lock` (committed in core, cli and web; ignored in plugins) |
+| `overrides` and `catalog` | the root ones only | the repo's own |
+| `@minimal-agent/core` | the local checkout | the git pin |
+| `@minimal-agent/config` | the git pin (no override) | the git pin |
+
+The umbrella CI `check` job is the first context. It installs at the root, so
+it does not read the committed lockfiles of the submodules. No command inside
+the umbrella tests the second context. `bun run pins:verify` does: it clones
+each submodule outside the umbrella and installs there.
 
 Glob rules that matter, learned the hard way:
 
@@ -100,16 +116,32 @@ Glob rules that matter, learned the hard way:
   the plugins keep the pinned core.
 - A glob that matches nothing is fine.
 
-`minimal-agent-studio/` and `minimal-agent-inspector/` are gitignored so the
-`minimal-agent-*` glob does not pull them in.
+`minimal-agent-studio/` and `minimal-agent-inspector/` are local projects that
+match the `minimal-agent-*` glob. Bun does not read `.gitignore` for workspace
+globs, so the two `!` patterns in `workspaces` keep them out. Without the
+patterns, they join the root install and add their dependencies to its graph.
 
 ## Tool versions
 
-Versions live in the root `catalog` and in `@minimal-agent/config`. To upgrade
-one, change the catalog entry, then run `bun install` at the root.
+The same tool versions are written in more than one place. Each submodule
+must also install alone, and `catalog:` resolves only against the root of an
+install:
 
-The affected repos are listed per tool in `AGENTS.md`. Bump one tool per
-commit, and run `bun run check` before the next.
+- the root `catalog`, for the root install;
+- the `workspaces.catalog` of core and of plugins, for their standalone installs;
+- literal versions in the cli and web `devDependencies`;
+- the `peerDependencies` of `@minimal-agent/config`.
+
+`bun run catalogs:check` fails when one of them differs from the root catalog.
+Root `bun run check` runs it. It also checks that a root `overrides` range,
+such as `@types/node`, equals what each repo declares.
+
+To upgrade a tool, change every place, run `bun install` at the root, then
+`bun run catalogs:check`. Bump one tool per commit, and run `bun run check`
+before the next.
+
+One exception is intended: `minimal-agent-core/tools/docs` keeps TypeScript 6
+for typedoc.
 
 ## Shared config
 
@@ -214,20 +246,30 @@ its root `package.json` and one per plugin package (21 in total). The cli and
 web each pin core in `package.json` and twice in `bun.lock`.
 
 **The rule:** every core pin must equal the core gitlink. `bun run pins:check`
-enforces it, and root `bun run check` and CI print the same report.
+enforces it, and root `bun run check` prints the same report.
+
+`pins:check` has two more checks:
+
+- In one repo, `package.json` and the committed `bun.lock` must name the same
+  SHA for each git dependency. A difference fails, because a frozen install
+  stops on it in a standalone clone.
+- Core, plugins and cli also pin `@minimal-agent/config` by git SHA. The
+  workspace does not override config, so each repo moves that pin on its own.
+  A config pin that differs from the config gitlink is printed as a note.
 
 ### Commands
 
 | Command | What it does | Changes |
 | --- | --- | --- |
-| `bun run pins:check` | Compare every consumer core pin with the core gitlink. Exit 1 on any stale pin. | nothing |
+| `bun run pins:check` | Compare every consumer core pin with the core gitlink, and each committed `bun.lock` with its `package.json`. Exit 1 on a stale pin or a lockfile difference. | nothing |
+| `bun run pins:verify [<repo>…]` | Clone core, plugins, cli and web at their gitlinks into a temp directory outside the umbrella, and install each one alone (`--frozen-lockfile` where the lockfile is committed). `--check` also runs `bun run check` there. `--head` uses the checked-out commit. | nothing here |
+| `bun run catalogs:check` | Compare the tool versions of every repo with the root catalog (see "Tool versions"). | nothing |
 | `bun run pins:core [<sha>]` | Rewrite the core pin in every consumer to `<sha>` (default: core `origin/main`), check out core at it, stage the core gitlink. | consumer working trees, core checkout, umbrella index |
 | `bun run pins:core --dry-run` | Print the files and pins that would change. | nothing |
 | `bun run pins:core --commit` | As above, then commit in each changed consumer and in the umbrella (only if `pins:check` passes). | + commits |
 | `bun run pins:core --commit --push` | As above, then push each commit to `origin main`. | + pushes |
 | `bun run pins:mains` | Set **every** gitlink to its submodule's `origin/main`, stage them, and update the approval lines in `CHANGELOG.md`. | **detaches HEAD in every submodule**, umbrella index |
 | `bun run link:status` | Show per consumer whether `node_modules/@minimal-agent/core` is the local link or the pinned copy. | nothing |
-| `bun run link:reset` | Put each consumer back on the pinned core from its own `bun.lock`, to test the pin without the workspace. | consumer `node_modules` |
 
 ### Recipes
 
@@ -286,6 +328,14 @@ no prompt. Commit or stash your work in all of them first, and run
 - **Do not edit pins by hand with `bun install`.** A consumer `bun install`
   inside the workspace does not rewrite that consumer's own `bun.lock`.
   `pins:core` edits both files directly.
+- **A lockfile is out of date and nothing in the umbrella fails.** The root
+  install never reads a submodule's `bun.lock`, and `--frozen-lockfile` inside
+  the umbrella tests the root lockfile. To update a submodule lockfile, clone
+  that repo outside the umbrella, run `bun install` there, and copy the new
+  `bun.lock` back. Then run `bun run pins:verify --head <repo>`.
+- **`link:reset` is removed.** It ran the consumer's frozen install, which is
+  the root install, so the workspace link came back and the pin was not
+  tested. Use `bun run pins:verify`.
 - **The plugins `core pin` test fails only on your machine.** That test
   (`minimal-agent-plugins/scripts/core-pin.test.ts`) also scans ignored dirs
   such as `minimal-agent-plugins/tmp/`. A stale copy of the plugins there fails

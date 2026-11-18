@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-11-18T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-18-workspace-install-contexts"
+    type: fix
+    status: landed
+    detail: "Root workspace excludes studio and inspector. catalogs:check and pins:verify are new. pins:check also compares each bun.lock with its package.json. link:reset removed"
   - id: "2026-11-15-debug-dump-order-pin-sweep"
     type: chore
     status: landed
@@ -150,6 +154,34 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 ### Changed
 
+- 2026-11-18: **The root workspace and the standalone installs are checked
+  against each other.** Inside the umbrella, an install in any submodule is
+  the root install: it uses the root lockfile and the root `overrides`, and
+  never reads the submodule's own `bun.lock`. Five things follow from that.
+  - `minimal-agent-studio/` and `minimal-agent-inspector/` were members of
+    the root workspace, because Bun does not read `.gitignore` for workspace
+    globs. Two `!` patterns in `workspaces` now keep them out.
+  - New `bun run catalogs:check` (also in root `bun run check`): the tool
+    versions of the core and plugins catalogs, the cli and web
+    `devDependencies` and the config peers must equal the root catalog. The
+    root `bun-types` and `typescript` now use `catalog:` (`bun-types` was
+    `^1.3.14`).
+  - The root `overrides` gains `brace-expansion ^5.0.6`. The same guard in
+    core, plugins and cli applies only to their standalone installs.
+  - `bun run pins:check` also fails when a committed `bun.lock` and its
+    `package.json` name different SHAs for a git dependency, and prints a
+    note for a config pin behind the config gitlink. It found that the core
+    `bun.lock` was last regenerated on 2026-11-07: it held config `4448bfa`
+    and the old tool versions, so a frozen install of a standalone core clone
+    failed.
+  - New `bun run pins:verify`: clone each submodule at its gitlink outside
+    the umbrella and install it alone. `bun run link:reset` is removed: its
+    frozen install was the root install, so the workspace link came back and
+    the pin was not tested. `bun run install:all` is now `bun install`.
+
+  The matching commits are in core (regenerated `bun.lock`), web
+  (`@types/node ^26`, `bun-types ^1.4.4`, the `brace-expansion` guard, new
+  `bun.lock`) and cli (docs).
 - 2026-11-15: Pins advance to core `d0a6462`, plugins `af8b38f`, cli
   `ce8726d`, and web `26eea59`. In the `--debug` request dump, the system
   block now sits directly before the messages (order: tools, system,
