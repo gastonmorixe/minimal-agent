@@ -34,7 +34,7 @@ tests, and gates live **inside** the submodules.
 ├── minimal-agent-web/              # submodule → gastonmorixe/minimal-agent-web
 ├── minimal-agent-config/           # submodule → gastonmorixe/minimal-agent-config
 ├── package.json                    # workspace root, tool catalog, orchestration scripts
-├── scripts/link-dev.ts             # legacy per-consumer link (deprecated for dev)
+├── scripts/                        # pin, catalog and version scripts (see "Build, test, lint")
 ├── AGENTS.md                       # you are here
 ├── CHANGELOG.md
 ├── LICENSE                         # proprietary, all rights reserved
@@ -73,10 +73,11 @@ bun run start            # CLI entrypoint (core is a library, no bin)
 bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-agent-cli/dist/
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
 bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
-bun run pins:check       # fail if a consumer core pin differs from the core gitlink
+bun run pins:check       # fail if a consumer core pin differs from the core gitlink, or a committed bun.lock from its package.json
+bun run pins:verify      # install each submodule alone, in a clone outside the umbrella (--check also runs its gate)
+bun run catalogs:check   # fail if a repo declares a tool version that differs from the root catalog
 bun run pins:core        # move every consumer core pin to core origin/main (or <sha>); --commit --push does the whole refresh
 bun run link:dev         # DEPRECATED: the workspace already links core for dev
-bun run link:reset       # force a consumer back to its committed git pin
 bun run link:status      # linked or pinned, per consumer
 bun run submodules:status
 bun run submodules:init  # git submodule update --init --recursive
@@ -86,8 +87,8 @@ bun run submodules:init  # git submodule update --init --recursive
 `bun run start` again. No commit, no push, no pin bump. See "Bun workspaces"
 below for why, and for the glob rules the root `workspaces` list must keep.
 
-`bun run install:all` still exists and installs per submodule. You do not need
-it, and it does not change the outcome of a root install.
+`bun run install:all` is an alias of `bun install`. Inside the umbrella, an
+install in any submodule is the root install, so there is nothing more to run.
 
 ### Plugin roots (dev mode)
 
@@ -167,14 +168,34 @@ graph over all four submodules.
   must also appear, or the plugin packages keep the pinned core.
 - **`overrides` carries `"@minimal-agent/core": "workspace:*"`.** Every consumer
   that declares core then resolves it to the local checkout, with no commit and
-  no re-pin. A plain `bun install` inside a submodule keeps working and uses the
-  root lockfile.
+  no re-pin. A plain `bun install` inside a submodule keeps working: it is the
+  root install, with the root lockfile.
+- **Bun reads `overrides` only from the root of an install.** The `overrides`
+  in a submodule `package.json` apply to its standalone install and are ignored
+  here. So a version guard must be in both places: `brace-expansion` is in the
+  root and in core, plugins, cli and web. `@types/node` is forced to `^26` at
+  the root (web's old `^24` broke the cli typecheck), and every repo that
+  declares it must declare `^26`.
 - **The root lockfile is gitignored.** A fresh resolve follows the catalog
   ranges, so pin a tool exactly in the catalog when an upgrade must be
-  deliberate. `catalog` at the root is the single place that declares tool
-  versions; the per-submodule catalogs still exist and must match.
-- **`minimal-agent-studio/` and `minimal-agent-inspector/` are gitignored** so
-  the `minimal-agent-*` glob does not pull them into the workspace.
+  deliberate. The root `catalog` declares the tool versions for the root
+  install. The catalogs of core and plugins, the literal versions in cli and
+  web, and the `@minimal-agent/config` peers hold the same versions for the
+  standalone installs. `bun run catalogs:check` fails when they differ.
+- **`catalog:` resolves only against the root of an install.** A repo that
+  writes `catalog:` needs its own `workspaces.catalog`, or its standalone
+  install fails with `catalogs require a "workspaces" field`. Core and plugins
+  have one. Cli and web write literal versions.
+- **`minimal-agent-studio/` and `minimal-agent-inspector/` are excluded with
+  `!` patterns in `workspaces`.** They are gitignored, but Bun does not read
+  `.gitignore` for workspace globs. Keep the two patterns.
+- **Inside the umbrella you cannot test a standalone install.** An install in
+  any submodule is the root install: it never reads that submodule's
+  `bun.lock`, and `--frozen-lockfile` there tests the root lockfile. The
+  umbrella CI `check` job has the same limit. Use `bun run pins:verify`, which
+  installs each submodule in a clone outside the umbrella. To update a
+  submodule lockfile, run `bun install` in such a clone and copy `bun.lock`
+  back.
 
 Per submodule:
 
@@ -194,8 +215,10 @@ Per submodule:
 - **Web** workspaces: `server`, `app`. It declares `@minimal-agent/core` by a
   git URL the same way the CLI does.
 
-The committed pins stay. CI and a standalone clone of one repo still resolve a
-fixed core, because neither has the monorepo root above it.
+The committed pins stay. A standalone clone of one repo and the cli release
+build resolve the pinned core, because they have no monorepo root above them.
+The umbrella CI `check` job does have the root above it, so it runs the gates
+on the core gitlink checkout, not on the pinned git copy.
 
 ## Shared tool config
 
@@ -213,6 +236,17 @@ extend it for Biome, oxlint and TypeScript, and keep only what is repo-specific:
   holds `compilerOptions` only.
 
 See `minimal-agent-config/README.md` for the exact lines.
+
+Two facts about how config installs:
+
+- The root `overrides` has no entry for `@minimal-agent/config`. Core, plugins
+  and cli install the git copy at their own config pin, also inside the
+  umbrella. An edit in `minimal-agent-config/` reaches them only after a
+  config commit and a new pin in each repo. `bun run pins:check` prints a note
+  for a config pin that is behind the config gitlink.
+- The `peerDependencies` of `@minimal-agent/config` are one of the places that
+  hold the tool versions. `bun run catalogs:check` compares them with the root
+  catalog.
 
 ## License and public docs
 
