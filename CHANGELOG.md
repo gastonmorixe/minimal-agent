@@ -178,6 +178,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
     the umbrella and install it alone. `bun run link:reset` is removed: its
     frozen install was the root install, so the workspace link came back and
     the pin was not tested. `bun run install:all` is now `bun install`.
+  - `bun run pins:core` checks the same lockfile rule before it writes
+    anything. Without that, a refresh to a core commit with a stale
+    `bun.lock` pushed the consumer pins and then stopped at `pins:check`,
+    with the umbrella still on the old core.
   - New `bun run pins`: one report with each checkout, what the umbrella
     records, the two checks, and a numbered list of the commands to run next.
   - New `bun run pins:lock`: update the committed `bun.lock` of core, cli and

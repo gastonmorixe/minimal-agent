@@ -31,6 +31,56 @@ export function gitlink(path: string): string {
   return sha;
 }
 
+/** Any git dependency pin: `<repo>.git#<sha>`. */
+const GIT_PIN_RE = /([\w.-]+)\.git#([0-9a-f]{7,40})/g;
+
+/** The git pins of one commit: repo name to SHAs, for the manifests and for the lockfiles. */
+export type GitPins = { manifest: Map<string, Set<string>>; lock: Map<string, Set<string>>; locks: number };
+
+/** Read the git pins of every tracked `package.json` and `bun.lock` of submodule `path` at commit `rev`. */
+export function gitPinsAt(path: string, rev: string): GitPins {
+  const cwd = join(root, path);
+  const pins: GitPins = { manifest: new Map(), lock: new Map(), locks: 0 };
+  const files = git(["ls-tree", "-r", "--name-only", rev], cwd)
+    .split("\n")
+    .filter((f) => /(^|\/)(package\.json|bun\.lock)$/.test(f) && !f.includes("node_modules/"));
+  for (const file of files) {
+    const isLock = file.endsWith("bun.lock");
+    if (isLock) pins.locks++;
+    const into = isLock ? pins.lock : pins.manifest;
+    for (const m of git(["show", `${rev}:${file}`], cwd).matchAll(GIT_PIN_RE)) {
+      const set = into.get(m[1] ?? "") ?? new Set<string>();
+      set.add(m[2] ?? "");
+      into.set(m[1] ?? "", set);
+    }
+  }
+  return pins;
+}
+
+/** Short SHAs, sorted, as one text. */
+export function shortShas(shas: Iterable<string>): string {
+  return [...shas]
+    .map((s) => s.slice(0, 7))
+    .sort()
+    .join(", ");
+}
+
+/**
+ * One line for each git dependency that `bun.lock` and `package.json` pin to
+ * different SHAs. `bun install --frozen-lockfile` stops on such a difference
+ * in a standalone clone. `skip` names dependencies to leave out.
+ */
+export function lockfileProblems(pins: GitPins, skip: string[] = []): string[] {
+  if (pins.locks === 0) return [];
+  const out: string[] = [];
+  for (const [name, want] of pins.manifest) {
+    const got = pins.lock.get(name);
+    if (!got || skip.includes(name)) continue;
+    if (shortShas(want) !== shortShas(got)) out.push(`bun.lock has ${name} ${shortShas(got)}, package.json has ${shortShas(want)}`);
+  }
+  return out;
+}
+
 /** Approval line markers in `CHANGELOG.md`. The sweep rewrites only the SHAs between them. */
 export const APPROVAL_START = "<!-- pin-approvals:start -->";
 export const APPROVAL_END = "<!-- pin-approvals:end -->";
