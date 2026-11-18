@@ -1,7 +1,9 @@
 #!/usr/bin/env bun
 /**
  * Show the state of every pin in one report, and the next command to run.
- * It changes nothing.
+ * It changes no file, no branch and no index. It fetches `origin main` in the
+ * umbrella and in each submodule first, so the report is about the state of
+ * the remotes now, not at your last fetch.
  *
  * When you code, you do not touch pins: the root workspace links the local
  * core checkout into every repo. Pins matter only when a set of commits must
@@ -11,8 +13,8 @@
  *
  * Usage
  * -----
- *   bun run pins            # report from the local git data
- *   bun run pins --fetch    # first fetch origin/main in every submodule
+ *   bun run pins               # fetch, then report
+ *   bun run pins --no-fetch    # report from the local git data (no network)
  *
  * Exit code: 0 when the recorded pins are consistent, 1 when a check fails.
  * Local work that is not recorded yet (new commits, uncommitted edits) does
@@ -20,10 +22,10 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { git, gitlink, root, submodulePaths } from "./pins-lib.ts";
+import { fetchMains, git, gitlink, root, submodulePaths } from "./pins-lib.ts";
 
 const CORE = "minimal-agent-core";
-const fetch = process.argv.includes("--fetch");
+const noFetch = process.argv.includes("--no-fetch");
 const short = (sha: string): string => sha.slice(0, 7);
 const name = (path: string): string => path.replace("minimal-agent-", "");
 
@@ -47,6 +49,20 @@ const rows: string[][] = [["repo", "checkout", "umbrella records", "origin/main"
 let coreAhead = "";
 let corePushed = false;
 
+const checkedOut = submodulePaths().filter((path) => existsSync(join(root, path, ".git")));
+const notFetched = noFetch ? [] : await fetchMains([root, ...checkedOut.map((path) => join(root, path))]);
+
+// This checkout against the umbrella main. When it is behind, the umbrella main can record
+// already what looks unrecorded here.
+const umbrellaBehind = Number(tryGit(["rev-list", "--count", "HEAD..origin/main"], root) || "0");
+if (umbrellaBehind > 0) {
+  const current = tryGit(["branch", "--show-current"], root);
+  const update = current === "main" ? "git pull --ff-only" : current ? "git rebase origin/main" : "git checkout --detach origin/main";
+  next.push(`this checkout is ${umbrellaBehind} commit(s) behind the umbrella origin/main: ${update}, then git submodule update, then bun run pins again`);
+}
+/** The commit of `path` that the umbrella `origin/main` records. */
+const upstreamRecord = (path: string): string => tryGit(["rev-parse", `origin/main:${path}`], root);
+
 for (const path of submodulePaths()) {
   const cwd = join(root, path);
   if (!existsSync(join(cwd, ".git"))) {
@@ -54,7 +70,6 @@ for (const path of submodulePaths()) {
     next.push(`${name(path)} is not checked out: bun run submodules:init`);
     continue;
   }
-  if (fetch) tryGit(["fetch", "--quiet", "origin", "main"], cwd);
   const head = git(["rev-parse", "HEAD"], cwd);
   const link = gitlink(path);
   const main = tryGit(["rev-parse", "origin/main"], cwd);
@@ -68,7 +83,9 @@ for (const path of submodulePaths()) {
     const behind = tryGit(["rev-list", "--count", `${head}..${link}`], cwd);
     if (ahead !== "0" && behind === "0") {
       state.push(`${ahead} new commit${ahead === "1" ? "" : "s"}${pushed ? "" : ", not pushed"}`);
-      if (path === CORE) {
+      if (upstreamRecord(path) === head) {
+        // The umbrella main records this commit. Only this checkout of the umbrella is behind.
+      } else if (path === CORE) {
         // Never `git add` core alone: every consumer pin would then differ from the core gitlink.
         coreAhead = head;
         corePushed = pushed;
@@ -90,7 +107,9 @@ for (const path of submodulePaths()) {
   }
   if (dirty) state.push("uncommitted edits");
   if (main && main !== link && main !== head) {
-    if (path === CORE) {
+    if (upstreamRecord(path) === main) {
+      // The umbrella main records it. The "behind" line above covers this.
+    } else if (path === CORE) {
       // Not `pins:mains` and not `git add`: the core gitlink must move together with the consumer pins.
       coreAhead = coreAhead || main;
       corePushed = true;
@@ -106,6 +125,11 @@ for (const path of submodulePaths()) {
 const widths = rows[0]?.map((_, i) => Math.max(...rows.map((r) => (r[i] ?? "").length))) ?? [];
 console.log("Checkouts");
 for (const r of rows) console.log(`  ${r.map((c, i) => c.padEnd(widths[i] ?? 0)).join("  ")}`.trimEnd());
+if (noFetch) console.log("  (no fetch: the origin/main column and the advice below can be old)");
+if (notFetched.length > 0) {
+  const who = notFetched.map((dir) => (dir === root ? "umbrella" : name(dir.slice(root.length + 1)))).join(", ");
+  console.log(`  WARNING: could not fetch ${who}. The origin/main column and the advice below can be old for them.`);
+}
 
 const pins = check("check-core-pins.ts");
 const catalogs = check("check-catalogs.ts");

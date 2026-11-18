@@ -276,7 +276,9 @@ It keeps the umbrella branch. `--force` skips every check.
 ## Pins (reference)
 
 **Short version:** run `bun run pins`. It prints the state of every pin and
-the exact command to run next. It changes nothing.
+the exact command to run next. It fetches first, and changes none of your
+files or branches. When your checkout is behind the umbrella `main`, it says
+so first: update, then run it again.
 
 ### What is pinned, and where
 
@@ -303,14 +305,14 @@ enforces it. It has two more checks:
 
 | Command | What it does | Changes |
 | --- | --- | --- |
-| `bun run pins` | One report: each checkout against what the umbrella records and against `origin/main`, the two checks below, and a numbered "Next" list of commands. `--fetch` fetches first. Exit 1 when a check fails. | nothing |
+| `bun run pins` | One report: each checkout against what the umbrella records and against `origin/main`, the two checks below, and a numbered "Next" list of commands. It fetches `origin main` in the umbrella and in each submodule first, so the advice is about the remotes as they are now; `--no-fetch` skips that. Exit 1 when a check fails. | no file, branch or index (it updates the remote-tracking refs) |
 | `bun run pins:check` | Compare every core pin with the core gitlink, and each committed `bun.lock` with its `package.json`. Exit 1 on a stale pin or a lockfile difference. | nothing |
 | `bun run catalogs:check` | Compare the tool versions of every repo with the root catalog (see "Tool versions"). | nothing |
 | `bun run pins:core [<sha>]` | Rewrite the core pin in every consumer to `<sha>` (default: core `origin/main`), check out core at it, stage the core gitlink. | consumer working trees, core checkout, umbrella index |
 | `bun run pins:core --dry-run` | Print the files and pins that would change. | nothing |
 | `bun run pins:core --commit` | As above, then commit in each changed consumer and in the umbrella (only if `pins:check` passes). | + commits |
 | `bun run pins:core --commit --push` | As above, then push each commit to `origin main`. | + pushes |
-| `bun run pins:config [<sha>]` | Rewrite the config pin in core, plugins and cli to `<sha>` (default: the config gitlink), then update the `bun.lock` of core and cli with `pins:lock`. `--dry-run` prints only. It commits nothing. | consumer working trees |
+| `bun run pins:config [<sha>]` | Rewrite the config pin in core, plugins and cli to `<sha>` (default: the config gitlink), then update the `bun.lock` of core and cli with `pins:lock`. It fetches first, and skips a repo whose `main` has the pin already. `--dry-run` prints only. It commits nothing. | consumer working trees |
 | `bun run pins:lock [<repo>…]` | Update the committed `bun.lock` of core, cli and web to match their `package.json`, in a clone outside the umbrella, and copy it back. | `bun.lock` in the submodule working trees |
 | `bun run pins:verify [<repo>…]` | Clone core, plugins, cli and web at their gitlinks into a temp directory outside the umbrella, and install each one alone (`--frozen-lockfile` where the lockfile is committed). `--check` also runs `bun run check` there. `--head` uses the checked-out commit. | nothing here |
 | `bun run pins:mains` | Set **every** gitlink to its submodule's `origin/main`, stage them, and update the approval lines in `CHANGELOG.md`. | **detaches HEAD in every submodule**, umbrella index |

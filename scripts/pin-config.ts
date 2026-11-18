@@ -18,19 +18,25 @@
  *   bun run pins:config              # to the config gitlink of the umbrella
  *   bun run pins:config <sha>        # to a given config commit (7-40 hex)
  *   bun run pins:config --dry-run    # print what would change, write nothing
+ *   bun run pins:config --no-fetch   # use the local refs (no network)
+ *
+ * It fetches `origin main` in each consumer first. The main of a repo can have
+ * the new pin when your checkout does not, and a second pin commit would then
+ * be a duplicate. When a fetch fails, it stops (a dry run prints a warning).
  *
  * It commits nothing. Next, in each changed repo: run its gate, commit and push.
  * A commit in core then needs the core pin refresh (`bun run pins:core`).
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { git, gitlink, root, submodulePaths } from "./pins-lib.ts";
+import { fetchMains, git, gitlink, root, submodulePaths } from "./pins-lib.ts";
 
 const CONFIG = "minimal-agent-config";
 const PIN_RE = /minimal-agent-config\.git#([0-9a-f]{7,40})/g;
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+const noFetch = args.includes("--no-fetch");
 const shaArg = args.find((a) => !a.startsWith("--"));
 
 function fail(msg: string): never {
@@ -53,6 +59,16 @@ if (git(["branch", "-r", "--contains", sha], configDir).trim() === "") {
   fail(`config ${sha.slice(0, 7)} is not on any origin branch; push it first (consumers clone by SHA)`);
 }
 console.log(`config: ${sha.slice(0, 7)}  ${git(["log", "-1", "--format=%s", sha], configDir)}`);
+
+if (!noFetch) {
+  const consumers = subs.filter((path) => path !== CONFIG).map((path) => join(root, path));
+  const failed = (await fetchMains(consumers)).map((dir) => dir.slice(root.length + 1));
+  if (failed.length > 0) {
+    const text = `could not fetch ${failed.join(", ")}: their main can have the new pin already`;
+    if (dryRun) console.log(`WARNING: ${text}. A real run stops here.`);
+    else fail(`${text}. Fix the network, or run again with --no-fetch to use the local refs.`);
+  }
+}
 
 const changed: string[] = [];
 const withLock: string[] = [];
