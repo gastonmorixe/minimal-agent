@@ -2,9 +2,10 @@ Orientation for agents working in this **umbrella** repository. User-facing
 overview lives in [`README.md`](README.md); the audit trail of monorepo-level
 changes lives in [`CHANGELOG.md`](CHANGELOG.md).
 
-This tree is **not** the agent harness source. It pins four first-party
-submodules (core, plugins, cli, web) and provides thin orchestration scripts. Almost all product code,
-tests, and gates live **inside** the submodules.
+This tree is **not** the agent harness source. It records one commit of each of
+five first-party submodules (core, plugins, cli, web, config), runs one Bun
+workspace over them, and holds thin orchestration scripts. Almost all product
+code, tests, and gates live **inside** the submodules.
 
 ## Working directory (read this first)
 
@@ -24,6 +25,38 @@ tests, and gates live **inside** the submodules.
   the **remote**, not the on-disk monorepo folder name and not a path prefix
   for tools.
 
+## The workflow in ten rules
+
+Read these before you change anything. "Git and Bun workflow" below has the
+commands, and "Pins" in `README.md` has the reference tables.
+
+1. **Six git repos, one Bun install.** The umbrella records one commit SHA per
+   submodule (a gitlink). One `bun install` at the root links the local core
+   checkout into plugins, cli and web.
+2. **You do not touch pins to write code.** Edit, then run. An edit in core is
+   live in plugins, cli and web with no commit and no pin.
+3. **`bun run pins` is the first command for any pin question.** It prints the
+   state and a numbered list of the commands to run next. It changes nothing.
+4. **Do not work in the shared checkout when other sessions use it.** Make a
+   full worktree with `bun run worktree:new <name>`. A folder with only some
+   repos and no umbrella root is a set of standalone installs: plugins there
+   uses the pinned core, and your core edit is not tested.
+5. **A submodule is on a detached HEAD.** Run `git switch -c <branch>` in it
+   before you commit. `git submodule update` leaves a commit that is on no
+   branch behind.
+6. **Land the submodule first, the umbrella second.** The umbrella must not
+   point at a commit that is not on the submodule's remote.
+7. **A core commit needs a core pin refresh** (`bun run pins:core`). It pushes
+   to plugins, cli and web. Tell the other active sessions before you run it,
+   and do not run it while another session lands a change.
+8. **After a dependency change in core, cli or web, run `bun run pins:lock`.**
+   The root install never writes a submodule's own `bun.lock`.
+9. **Inside the umbrella you cannot test a standalone install.** Use
+   `bun run pins:verify`. A frozen install in a submodule here tests the root
+   lockfile.
+10. **Report the exit code of a gate, not the last line of its output.**
+    `bun run check | tail` exits with the code of `tail`.
+
 ## Layout
 
 ```
@@ -34,7 +67,7 @@ tests, and gates live **inside** the submodules.
 ├── minimal-agent-web/              # submodule → gastonmorixe/minimal-agent-web
 ├── minimal-agent-config/           # submodule → gastonmorixe/minimal-agent-config
 ├── package.json                    # workspace root, tool catalog, orchestration scripts
-├── scripts/                        # pin, catalog and version scripts (see "Build, test, lint")
+├── scripts/                        # pin, catalog, worktree and version scripts
 ├── AGENTS.md                       # you are here
 ├── CHANGELOG.md
 ├── LICENSE                         # proprietary, all rights reserved
@@ -62,37 +95,70 @@ Each submodule keeps its own git history, `bun.lock` (or local install), CI, and
 ## Build, test, lint (monorepo)
 
 The root is a Bun **workspace root**, so one install links every consumer to the
-local core. Root scripts still `cd` into each tree for the gates:
+local core. Root scripts `cd` into each tree for the gates.
+
+Every day:
 
 ```bash
-bun install              # workspace install: links local core into all consumers
-bun run check            # core check && plugins check && cli check && web check
+bun install              # the one install: links local core into plugins, cli and web
+bun run hooks            # once after a clone: commit hooks in the umbrella and in each submodule
+bun run start            # CLI entrypoint (core is a library, no bin)
+bun run check            # pin report, tool versions, then core, plugins, cli and web check
 bun run test             # core test && plugins test && cli test && web test
 bun run test:plugins     # plugins only: parallel per-package via --filter
-bun run start            # CLI entrypoint (core is a library, no bin)
+bun run pins             # START HERE for pins: state of every pin and the next command (changes nothing)
+```
+
+Worktrees:
+
+```bash
+bun run worktree:new <name>   # a full worktree: umbrella + every submodule + one root install
+bun run worktree:rm <name>    # remove it; stops on uncommitted files, stashes, and commits that are on no remote
+```
+
+When you land a change:
+
+```bash
+bun run pins:check       # fail if a core pin differs from the core gitlink, or a committed bun.lock from its package.json
+bun run catalogs:check   # fail if a repo declares a tool version that differs from the root catalog
+bun run pins:lock        # update the committed bun.lock of core, cli and web after a dependency change
+bun run pins:core        # move every core pin to core origin/main (or <sha>); --dry-run prints; --commit --push does the whole refresh
+bun run pins:verify      # install each submodule alone, in a clone outside the umbrella (--check also runs its gate)
+bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
+```
+
+Other:
+
+```bash
 bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-agent-cli/dist/
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
-bun run pins             # START HERE for pins: state of every pin and the next command to run (changes nothing)
-bun run pins:lock        # update the committed bun.lock of core, cli and web after a dependency change
-bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
-bun run pins:check       # fail if a consumer core pin differs from the core gitlink, or a committed bun.lock from its package.json
-bun run pins:verify      # install each submodule alone, in a clone outside the umbrella (--check also runs its gate)
-bun run catalogs:check   # fail if a repo declares a tool version that differs from the root catalog
-bun run pins:core        # move every consumer core pin to core origin/main (or <sha>); --commit --push does the whole refresh
-bun run link:dev         # DEPRECATED: the workspace already links core for dev
 bun run link:status      # linked or pinned, per consumer
-bun run worktree:new <name>   # a full worktree: umbrella + every submodule + one root install
-bun run worktree:rm <name>    # remove it; stops when uncommitted or unpushed work would be lost
+bun run link:dev         # DEPRECATED: the workspace already links core for dev
 bun run submodules:status
 bun run submodules:init  # git submodule update --init --recursive
 ```
 
-**Daily loop:** `bun install` once at the root, then edit core and run
-`bun run start` again. No commit, no push, no pin bump. See "Bun workspaces"
-below for why, and for the glob rules the root `workspaces` list must keep.
-
 `bun run install:all` is an alias of `bun install`. Inside the umbrella, an
 install in any submodule is the root install, so there is nothing more to run.
+`bun run link:reset` is removed: it prints a pointer to `pins:verify`.
+
+### Gates that must stay green
+
+- **Core:** `bun run --cwd minimal-agent-core check`  
+  (typecheck, oxlint, format, biome, docs, arch tests, full suite)
+- **Plugins:** `bun run --cwd minimal-agent-plugins check`  
+  (typecheck, oxlint, format, biome, STE audit, tests)
+- **CLI:** `bun run --cwd minimal-agent-cli check`  
+  (typecheck, oxlint, format, biome, architecture preflight, tests)
+- **Web:** `bun run --cwd minimal-agent-web check`  
+  (typecheck, oxlint, format, biome, tests, build, Playwright e2e)
+
+Root `bun run check` runs the pin report and `catalogs:check`, then the four
+gates in that order. It is the same set of gates as the `check` job of the
+umbrella CI. These gates run on the root install, so they use the local core
+checkout. `bun run pins:verify --check` runs each gate in a standalone clone,
+on the pinned core. It runs fewer tests: the tests that need a sibling checkout
+skip themselves.
 
 ### Plugin roots (dev mode)
 
@@ -113,54 +179,117 @@ install in any submodule is the root install, so there is nothing more to run.
   warning. It moves nothing. Move the packages to
   `<cwd>/.agents/minimal-agent/plugins` yourself.
 
-### Gates that must stay green
+## Git and Bun workflow
 
-- **Core:** `cd minimal-agent-core && bun run check`  
-  (typecheck, oxlint, format, biome, docs, arch tests, full suite)
-- **Plugins:** `cd minimal-agent-plugins && bun run check`  
-  (typecheck, oxlint, format, biome, tests)
-- **CLI:** `cd minimal-agent-cli && bun run check`  
-  (typecheck, oxlint, format, biome, architecture preflight, tests)
-- **Web:** `cd minimal-agent-web && bun run check`  
-  (typecheck, oxlint, format, biome, tests, build, Playwright e2e)
+### Start work
 
-Root `bun run check` is a convenience wrapper; CI for each remote should still
-run in that remote’s tree.
+```bash
+bun run worktree:new my-fix                      # ../<this checkout>_WT-my-fix, umbrella branch my-fix
+cd ../<this checkout>_WT-my-fix
+git -C minimal-agent-plugins switch -c my-fix    # in each submodule that you will change
+```
 
-## Submodules (read this before `git submodule update`)
+`worktree:new` checks out every submodule at the commit the umbrella records,
+runs the root install, and sets up the commit hooks. It ends with a check that
+the cli uses the core of that worktree. When you are done and the work is on
+the remotes: `bun run worktree:rm my-fix`, from another checkout.
+
+### Change, test, commit
+
+1. Edit in the submodule. Run that repo's gate: `bun run check` in it.
+2. If you changed a dependency of core, cli or web, run `bun run pins:lock`
+   at the umbrella root and add the new `bun.lock` to the commit.
+3. Commit in the submodule, on your branch. The commit hooks check the commit
+   format and the agent trailer (see "Git commits" below).
+
+### Land a change in plugins, cli, web or config
+
+```bash
+git -C minimal-agent-plugins push origin HEAD:main   # 1. the submodule first
+git add minimal-agent-plugins                        # 2. stage the new gitlink
+bun run pins:check                                   # 3. 0 stale: core did not move
+git commit -m "chore: bump plugins for <what changed>"
+git push origin HEAD:main                            # 4. the umbrella
+bun run pins                                         # 5. "Next: Nothing"
+```
+
+Before step 1, fetch and rebase when `origin/main` of that repo moved. Push
+only a fast-forward. Never force-push a `main`.
+
+For config, the consumers (core, plugins, cli) then need a new config pin: see
+`minimal-agent-config/README.md`. `pins:check` prints a note while a config
+pin is behind the config gitlink. The note does not fail the check.
+
+### Land a change in core (the core pin refresh)
+
+Plugins, cli and web each name one core commit. After the core commit is on
+core `main`, move those pins to it.
+
+In a worktree (the umbrella is not on `main` there), step by step:
+
+```bash
+git -C minimal-agent-core push origin HEAD:main      # 1. core first
+bun run pins:core <core sha> --dry-run               # 2. print what moves; a WARNING means: fix that first
+bun run pins:core <core sha>                         # 3. rewrite the 27 pins, stage the core gitlink
+bun run pins:lock cli web                            # 4. must print "up to date"
+# 5. in plugins, cli and web: review the diff, commit "chore: pin core to <short sha> (<what changed>)", push HEAD:main
+git add minimal-agent-plugins minimal-agent-cli minimal-agent-web
+bun run pins:check                                   # 6. 0 stale, no lockfile difference
+git commit -m "chore: bump core, plugins, cli and web for <what changed>"
+git push origin HEAD:main                            # 7. the umbrella
+```
+
+In a checkout where the umbrella and plugins, cli and web are all on `main`,
+level with `origin/main` and with no tracked changes, one command does steps 3
+to 7: `bun run pins:core --commit --push`. Run `bun run check` first.
+
+`pins:core` stops before it writes anything when a committed `bun.lock` and
+its `package.json` name different commits for a git dependency, in the target
+core commit or in a consumer. Run `bun run pins:lock`, commit and push that
+`bun.lock`, then run `pins:core` again.
+
+### Check the result
+
+```bash
+bun run pins                    # exit 0 and "Next: Nothing"
+bun run check                   # the gates, on the root install
+bun run pins:verify --check     # the gates of each repo in a standalone clone (slow)
+```
+
+### Get the latest
+
+```bash
+git pull
+git submodule update            # each submodule to the commit the umbrella records
+bun install                     # when a package.json changed
+```
+
+### Git rules for submodules
 
 - The monorepo records a **gitlink** (mode `160000`) commit SHA for each child.
-- Develop **inside** the submodule: commit and **push to that repo’s remote
-  first**, then from the monorepo root bump the gitlink and push. Monorepo CI
-  clones by SHA; a pin bump that lands before the sibling commit is reachable
-  fails with `not our ref` / `upload-pack` (workflows retry briefly, but do not
-  race the push order):
-  ```bash
-  git -C minimal-agent-core push origin HEAD
-  # and/or: git -C minimal-agent-plugins push origin HEAD
-  # and/or: git -C minimal-agent-web push origin HEAD
-  git add minimal-agent-core   # and/or minimal-agent-plugins, minimal-agent-web
-  git commit -m "chore: bump … pin"
-  git push
-  ```
-- **`git submodule update` is dangerous** on a day-to-day machine that uses the
-  submodule working trees as the real checkouts: it can reset working trees to
-  the pin and thrash local WIP / `private/` is gitignored but a hard reset of
-  tracked files still hurts. Prefer explicit pin bumps after intentional pulls.
+- **Push the submodule commit before the umbrella commit that records it.** A
+  clone and the monorepo CI fetch each submodule by SHA. An umbrella commit
+  that lands first fails with `not our ref` / `upload-pack`.
+- **`git submodule update` detaches HEAD in each submodule.** It keeps
+  uncommitted edits, and stops when they are in the way. It does not keep a
+  commit that you made on a detached HEAD: that commit is then on no branch
+  (find it with `git reflog`). Commit on a branch. Never add `--force`: that
+  discards uncommitted edits.
 - **`bun run pins:mains` also detaches HEAD** (`git checkout --detach
-  origin/main`) in all four submodules. Commit or stash before you run it.
-- **Core pin refresh:** `bun run pins:core --commit --push` rewrites the core
-  pin in every consumer `package.json` and `bun.lock`, commits and pushes each
-  consumer, then commits and pushes the umbrella after `pins:check` passes. Run
-  `bun run check` first. See "Pins" in `README.md`.
-- **Make a worktree with `bun run worktree:new <name>`, and remove it with
-  `bun run worktree:rm <name>`.** A full worktree has its own checkout of
-  every submodule and one root install, so plugins, cli and web use the core
-  of that worktree. A folder with only some repos and no umbrella root is a
-  set of standalone installs: plugins there uses the pinned core, and a core
-  edit next to it is not tested. Do not use `git worktree remove --force` on
-  a worktree with submodules: it deletes the submodule repos of that worktree
-  and every commit that is only there.
+  origin/main`) in every submodule, with no prompt. Commit on a branch first.
+- **Do not use `git worktree remove --force`** on a worktree with submodules.
+  It deletes the submodule repos of that worktree and everything that is only
+  there. Use `bun run worktree:rm <name>`. It stops on an uncommitted or
+  untracked file, on an ignored file that no tool makes again (a note under
+  `research/`), on a stash, and on a commit that is on no remote. It fetches
+  first, so it needs the remotes. `--force` skips every check: do not add it
+  to get past a stop that you do not understand.
+- **Do not run `git worktree prune`** while the folder of another worktree is
+  absent (moved, or on a disk that is not mounted). It deletes the data of
+  that worktree, with the repos of its submodules.
+- **Before you move a checkout that is not yours** (the shared checkout, a
+  worktree of another session), check that it has no tracked changes and no
+  commit that is on no remote, in the umbrella and in each submodule.
 - Nested `.git/` directories inside submodules (not absorbed into
   `.git/modules/`) are intentional when local `git worktree` layouts need a
   stable absolute gitdir path through a sibling symlink.
@@ -168,7 +297,7 @@ run in that remote’s tree.
 ## Bun workspaces
 
 The monorepo root `package.json` is a Bun workspace root. It runs one install
-graph over all four submodules.
+graph over all five submodules.
 
 - **Root `workspaces` names the five submodules, and every entry is a glob.**
   The first entry is `minimal-agent-{core,plugins,cli,web,config}`. A plain
@@ -218,23 +347,31 @@ Per submodule:
 - **Core** workspaces: `tools/docs`. `plugin-api/` is a folder inside the
   `@minimal-agent/core` package (exported as `@minimal-agent/core/plugin-api/*`),
   not a workspace package.  
-  Toolchain versions live under `workspaces.catalog` and are referenced as
-  `"catalog:"` from root `devDependencies`. `tools/docs` keeps TypeScript 6 for
-  typedoc; only `bun-types` is catalogued there.
-- **Plugins** workspaces: `ma-*-plugin`. Same catalog pattern.  
+  Toolchain versions live under its own `workspaces.catalog` and are referenced
+  as `"catalog:"` from its `devDependencies`. `tools/docs` keeps TypeScript 6
+  for typedoc; only `bun-types` is catalogued there.
+- **Plugins** workspaces: `ma-*-plugin` and `ma-*-kit`. Same catalog pattern.
+  Its `bun.lock` is gitignored, so its standalone install is not frozen.  
   `bun run test:plugins` runs `bun --filter 'ma-*' test` in parallel. Per-package
   `test` scripts use `bun test --pass-with-no-tests` so empty packages do not
   fail the fan-out.
 - **CLI** has no workspaces of its own. It declares `@minimal-agent/core` by a
   git URL pin, which the root `overrides` replaces with the local workspace
-  during a root install. `bun run link:dev` is no longer needed for dev.
+  during a root install. It writes literal tool versions, and commits its
+  `bun.lock`.
 - **Web** workspaces: `server`, `app`. It declares `@minimal-agent/core` by a
-  git URL the same way the CLI does.
+  git URL the same way the CLI does, writes literal tool versions, and commits
+  its `bun.lock`.
 
 The committed pins stay. A standalone clone of one repo and the cli release
 build resolve the pinned core, because they have no monorepo root above them.
 The umbrella CI `check` job does have the root above it, so it runs the gates
 on the core gitlink checkout, not on the pinned git copy.
+
+A test that needs a core module with no public subpath imports it through the
+installed package directory (`../node_modules/@minimal-agent/core/src/x.ts`),
+never from the sibling checkout (`../../minimal-agent-core/src/x.ts`). The
+second form exists only in the umbrella, and a plugins guard test rejects it.
 
 ## Shared tool config
 
@@ -277,8 +414,17 @@ personal worktree rewire notes.
 
 Commit subjects follow [Conventional Commits](https://www.conventionalcommits.org/)
 (`feat:`, `fix:`, `chore:`, …). Husky + Commitlint enforce this on `commit-msg`
-in this repo and in each of the four submodules (`commitlint.config.js`, `.husky/commit-msg`).
-`bun install` / `bun run install:all` runs `prepare` → `husky` so hooks wire up.
+in this repo and in core, plugins, cli and web (`commitlint.config.js`,
+`.husky/commit-msg`). `minimal-agent-config` has no hook: follow the same
+format there.
+
+`bun run hooks` sets the hooks up in the umbrella and in each submodule. Run it
+once after a clone. `bun install` also does it, through each `prepare` script,
+but not on a machine where lifecycle scripts are off (`ignore-scripts` in
+`~/.npmrc`, which Bun reads). `bun run worktree:new` sets them up for a new
+worktree. To check: `git -C <repo> config --get core.hooksPath` prints
+`.husky/_`. A repo with no hook accepts any commit message, so check before
+you commit.
 CI also runs a `commitlint` job (`bun run commitlint:last` on push; range lint
 on PRs). Local check: `echo 'feat: ok' | bun run commitlint`.
 
@@ -336,7 +482,11 @@ Agents must not bypass with `--no-verify`.
 - Don’t commit secrets, credentials, or `private/` research (those stay
   gitignored inside core).
 - Don’t rewrite submodule history from the monorepo; work in the child repo.
-- Don’t “fix” independent core/plugins CI by only running root scripts.
+- Don’t force-push any `main`.
+- Don’t move pins by hand. `bun run pins` names the command.
+- Don’t run `bun install --frozen-lockfile` in a submodule to test its
+  lockfile: inside the umbrella that tests the root lockfile. Use
+  `bun run pins:verify`.
 
 ## Versioning and releases
 
@@ -385,8 +535,10 @@ private git repos (`@minimal-agent/core`, `@minimal-agent/config`), and each
 repo's own `GITHUB_TOKEN` cannot read another private repo. So their standalone
 workflows install only the pinned `@commitlint/*` packages (a `jq` filter of
 package.json) and lint the commit message. No deploy keys and no per-repo
-secrets. To gate a submodule change, push it, then bump its pin here: the
-monorepo `ci.yml` runs all four `bun run check` gates against that pin.
+secrets. To gate a submodule change, push it, then bump its gitlink here: the
+monorepo `ci.yml` runs all four `bun run check` gates on that commit. The job
+installs at the root, so it uses the core gitlink checkout and does not read
+the committed lockfiles of the submodules. `bun run pins:verify` tests those.
 
 Private submodule clones in monorepo CI use the `minimal-agent-ci` GitHub App
 (contents:read + metadata:read, installed on all six repos). The `check` job
@@ -412,3 +564,4 @@ download. Action majors: `actions/checkout@v7`, `oven-sh/setup-bun@v2`,
 | Plugins       | https://github.com/gastonmorixe/minimal-agent-plugins |
 | CLI           | https://github.com/gastonmorixe/minimal-agent-cli     |
 | Web           | https://github.com/gastonmorixe/minimal-agent-web     |
+| Shared config | https://github.com/gastonmorixe/minimal-agent-config  |

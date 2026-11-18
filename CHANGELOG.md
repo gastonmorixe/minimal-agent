@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-11-18T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-18-workflow-docs-and-worktree-rm-fix"
+    type: fix
+    status: landed
+    detail: "worktree:rm no longer deletes stashes, tagged or detached commits, or ignored notes, and never prunes. pins:core --commit can resume. New: bun run hooks. README and AGENTS rewritten around the workflow"
   - id: "2026-11-18-worktree-scripts"
     type: feat
     status: landed
@@ -100,6 +104,17 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 ### Added
 
+- 2026-11-18: **`bun run hooks`** sets up the commit hooks in the umbrella
+  and in each submodule. `bun install` does it through the `prepare` scripts,
+  but not on a machine where lifecycle scripts are off (`ignore-scripts` in
+  `~/.npmrc`). There, no repo had a hook and any commit message was accepted.
+- 2026-11-18: **`README.md` and `AGENTS.md` are rewritten around the
+  workflow.** The README starts with how the six repos and the one install
+  fit together, then clone, daily work, "Commit and land a change" (a
+  submodule change, a core change, getting the latest), worktrees, and the
+  reference for pins and for the workspace. `AGENTS.md` starts with ten rules
+  and has one "Git and Bun workflow" section with the commands in order.
+  Every command in both files was run in a fresh clone.
 - 2026-11-18: **`bun run worktree:new <name>` and `bun run worktree:rm
   <name>`.** `worktree:new` makes a full umbrella worktree next to the main
   checkout: the umbrella on a new branch from `origin/main`, every submodule
@@ -250,6 +265,27 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   - Both gates are green: core 0 lint warnings, plugins 4375 pass, 0 warnings.
 
 ### Fixed
+
+- 2026-11-18: **`worktree:rm` deleted work that it reported as safe.** A
+  review found seven cases, each one reproduced: a stash in a submodule; a
+  commit kept only by a local tag; a commit left on a detached HEAD; a
+  worktree folder that was moved by hand; a submodule that was deinitialized;
+  a branch that was pushed and then deleted on the remote; an ignored file
+  such as a note under `research/`. It also ran `git worktree prune`, which
+  deleted the submodule repos of every other worktree whose folder was absent
+  at that moment. Now it checks every submodule repo that the worktree owns
+  (not only the ones checked out), fetches first, reads all refs and the
+  reflog, counts a commit as safe only when a remote has it or has the same
+  change, and never prunes. It no longer stops for an unpushed commit on the
+  umbrella branch, because that branch is kept. 13 scenarios are tested.
+- 2026-11-18: **`pins:core --commit` can finish a run that stopped after a
+  consumer push.** A consumer that already pinned the target core was
+  skipped, and its gitlink stayed on the old commit, so `pins:check` failed
+  with all pins stale. Its gitlink is now staged with the others. The
+  preflight reads a consumer with no core pin at its gitlink, as `pins:check`
+  does.
+- 2026-11-18: `catalogs:check` reports a submodule that matches no
+  `workspaces` pattern also when it is not checked out.
 
 - 2026-10-04: Core pin advanced to `e161ce1` (`59619f6`..`e161ce1`) and plugins
   pin to `c1943bb` (`1ec5339`..`c1943bb`). Prior pin commit `8f7dfe7` already
