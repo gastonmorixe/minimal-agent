@@ -72,6 +72,8 @@ bun run test:plugins     # plugins only: parallel per-package via --filter
 bun run start            # CLI entrypoint (core is a library, no bin)
 bun run cli:compile:dev      # standalone binary, working-tree core -> minimal-agent-cli/dist/
 bun run cli:compile:release  # standalone binary, the core commit the CLI pins
+bun run pins             # START HERE for pins: state of every pin and the next command to run (changes nothing)
+bun run pins:lock        # update the committed bun.lock of core, cli and web after a dependency change
 bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
 bun run pins:check       # fail if a consumer core pin differs from the core gitlink, or a committed bun.lock from its package.json
 bun run pins:verify      # install each submodule alone, in a clone outside the umbrella (--check also runs its gate)
@@ -194,8 +196,8 @@ graph over all four submodules.
   `bun.lock`, and `--frozen-lockfile` there tests the root lockfile. The
   umbrella CI `check` job has the same limit. Use `bun run pins:verify`, which
   installs each submodule in a clone outside the umbrella. To update a
-  submodule lockfile, run `bun install` in such a clone and copy `bun.lock`
-  back.
+  submodule lockfile after a dependency change, run `bun run pins:lock` and
+  commit the new `bun.lock` in that repo.
 
 Per submodule:
 

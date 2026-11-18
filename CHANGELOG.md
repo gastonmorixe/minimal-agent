@@ -12,7 +12,7 @@ latest-unreleased:
   - id: "2026-11-18-workspace-install-contexts"
     type: fix
     status: landed
-    detail: "Root workspace excludes studio and inspector. catalogs:check and pins:verify are new. pins:check also compares each bun.lock with its package.json. link:reset removed"
+    detail: "Root workspace excludes studio and inspector. New: pins (status report), pins:lock, pins:verify, catalogs:check. pins:check also compares each bun.lock with its package.json. link:reset removed"
   - id: "2026-11-15-debug-dump-order-pin-sweep"
     type: chore
     status: landed
@@ -178,6 +178,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
     the umbrella and install it alone. `bun run link:reset` is removed: its
     frozen install was the root install, so the workspace link came back and
     the pin was not tested. `bun run install:all` is now `bun install`.
+  - New `bun run pins`: one report with each checkout, what the umbrella
+    records, the two checks, and a numbered list of the commands to run next.
+  - New `bun run pins:lock`: update the committed `bun.lock` of core, cli and
+    web in a clone outside the umbrella and copy it back.
 
   The matching commits are in core (regenerated `bun.lock`), web
   (`@types/node ^26`, `bun-types ^1.4.4`, the `brace-expansion` guard, new
