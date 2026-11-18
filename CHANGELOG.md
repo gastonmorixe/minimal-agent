@@ -310,6 +310,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   does not advise to record a commit that the umbrella `main` records.
   `pins:config` stops when a fetch fails. A failed fetch in `pins` prints a
   warning with the repos it could not reach.
+- 2026-11-18: The config pin note of `pins:check` names the commit that it
+  read, and says when the main of that repo has the new pin already. Then
+  there is no pin to move: the note goes when the umbrella records that
+  commit. The plain note read as "run `pins:config`".
 - 2026-11-18: `bun run pins` no longer says `git add minimal-agent-core` for
   a core commit that the umbrella does not record. That step alone makes every
   consumer pin differ from the core gitlink. It names the core pin refresh.
