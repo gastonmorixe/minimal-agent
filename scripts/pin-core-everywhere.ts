@@ -24,13 +24,18 @@
  * `Co-authored-by` trailer (AGENTS.md). It does not run the checks: run
  * `bun run check` (or each repo's `check`) before you push.
  *
+ * Before it writes anything, it stops when a committed `bun.lock` and its
+ * `package.json` pin a git dependency to different SHAs, in the target core
+ * commit or in a consumer. `pins:check` rejects that, and it runs only after
+ * the consumer commits are pushed.
+ *
  * Resumable: if a run stops after the consumer pushes (for example on a
  * commit-msg hook), run it again. Consumers already on the SHA are skipped,
  * and the umbrella commit names every staged consumer gitlink.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { git, gitlink, root, submodulePaths } from "./pins-lib.ts";
+import { git, gitlink, gitPinsAt, lockfileProblems, root, submodulePaths } from "./pins-lib.ts";
 
 const CORE = "minimal-agent-core";
 const PIN_RE = /minimal-agent-core\.git#([0-9a-f]{7,40})/g;
@@ -97,6 +102,22 @@ const subject = git(["log", "-1", "--format=%s", sha], coreDir);
 // The committed pin, not the staged one, so a resumed run still names the real "from".
 const oldCore = git(["rev-parse", `HEAD:${CORE}`]);
 console.log(`core: ${oldCore.slice(0, 7)} -> ${sha.slice(0, 7)}  ${subject}`);
+
+// 1b. Stop before any write when `pins:check` would fail after the pin. Step 4
+// runs `pins:check` after the consumer commits are pushed, so a failure there
+// leaves the consumers on the new pin and the umbrella on the old one.
+const preflight: string[] = [];
+for (const line of lockfileProblems(gitPinsAt(CORE, sha))) preflight.push(`${CORE}@${sha.slice(0, 7)}: ${line}`);
+for (const path of submodulePaths()) {
+  if (path === CORE) continue;
+  // The core pin is left out: step 2 rewrites it in both files.
+  for (const line of lockfileProblems(gitPinsAt(path, "HEAD"), [CORE])) preflight.push(`${path}: ${line}`);
+}
+if (preflight.length > 0) {
+  const text = `a committed bun.lock differs from its package.json:\n${preflight.map((l) => `  ${l}`).join("\n")}\nFix: bun run pins:lock, commit and push bun.lock in that repo, then run this again.`;
+  if (dryRun) console.log(`WARNING: a real run stops here. ${text}`);
+  else fail(text);
+}
 
 // 2. Rewrite the pins in each consumer.
 const changed: string[] = [];

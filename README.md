@@ -318,7 +318,12 @@ bun run pins:core --commit --push    # pin, commit and push plugins, cli, web, t
 
 With `--commit`, each consumer must be on `main`, level with `origin/main`, and
 have no tracked changes, so the pin commit is the only new commit. The script
-refuses a core SHA that is not on the core remote. If a run stops after the
+refuses a core SHA that is not on the core remote. Before it writes anything,
+it also stops when a committed `bun.lock` and its `package.json` pin a git
+dependency to different SHAs, in the target core commit or in a consumer:
+`pins:check` rejects that, and it runs only after the consumer commits are
+pushed. Run `bun run pins:lock`, commit and push that `bun.lock`, then run
+`pins:core` again. If a run stops after the
 consumer pushes (for example, a commit-msg hook rejects the umbrella commit),
 run the same command again. It skips the consumers that are already on the SHA
 and commits only what is left.
