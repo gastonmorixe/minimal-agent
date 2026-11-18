@@ -41,6 +41,17 @@ If you cloned without submodules:
 git submodule update --init --recursive
 ```
 
+What to expect on a first clone:
+
+1. `bun install` at the root is the only install. It links the local core
+   checkout into plugins, cli and web.
+2. It writes a root `bun.lock`. That file is gitignored: do not commit it.
+3. `bun run pins` prints the state of every pin and the next command to run.
+   On a clean clone it reports nothing to do.
+4. `bun run check` runs the pin report, the tool version check, then the four
+   gates (core, plugins, cli, web).
+5. You do not touch pins to write code. See "Pins" for when they matter.
+
 ## Daily commands
 
 Run these from the monorepo root. One `bun install` here is all you need.
@@ -106,6 +117,14 @@ The umbrella CI `check` job is the first context. It installs at the root, so
 it does not read the committed lockfiles of the submodules. No command inside
 the umbrella tests the second context. `bun run pins:verify` does: it clones
 each submodule outside the umbrella and installs there.
+
+A compiled binary (`bun run cli:compile:dev` or `cli:compile:release`) is a
+third case, and it uses neither install. The build does not read
+`node_modules`: it bundles core from the working tree (dev) or from a
+`git archive` of the commit the cli pins (release), and embeds the first-party
+plugins the same way. So a `Cannot find package` error from a binary is a
+build problem, not an install problem. See "Standalone binary" in
+[`minimal-agent-cli/README.md`](./minimal-agent-cli/README.md).
 
 Glob rules that matter, learned the hard way:
 
@@ -222,11 +241,14 @@ build that fails a check exits 1 and leaves the previous binary in place.
 Run the checks on any binary with
 `minimal-agent-cli/scripts/compile-e2e.sh PATH`.
 
-The binary holds the CLI and core only. Plugins, including every LLM
-provider, load from `~/.minimal-agent/plugins` at run time, the same as a
-run from source.
+The binary holds the CLI, core and every first-party plugin (the embedded
+plugin root). A plugin in the project root or in `~/.minimal-agent/plugins`
+still takes precedence, the same as a run from source.
 
 ## Pins
+
+**Short version:** run `bun run pins`. It prints the state of every pin and
+the exact command to run next. It changes nothing.
 
 Pins are a release concern, not a dev concern. Daily work never touches them,
 because the root workspace `overrides` already point every consumer at the
@@ -261,6 +283,8 @@ enforces it, and root `bun run check` prints the same report.
 
 | Command | What it does | Changes |
 | --- | --- | --- |
+| `bun run pins` | One report: each checkout against what the umbrella records and against `origin/main`, the two checks below, and a numbered "Next" list of commands. `--fetch` fetches first. Exit 1 when a check fails. | nothing |
+| `bun run pins:lock [<repo>…]` | Update the committed `bun.lock` of core, cli and web to match their `package.json`, in a clone outside the umbrella, and copy it back. | `bun.lock` in the submodule working trees |
 | `bun run pins:check` | Compare every consumer core pin with the core gitlink, and each committed `bun.lock` with its `package.json`. Exit 1 on a stale pin or a lockfile difference. | nothing |
 | `bun run pins:verify [<repo>…]` | Clone core, plugins, cli and web at their gitlinks into a temp directory outside the umbrella, and install each one alone (`--frozen-lockfile` where the lockfile is committed). `--check` also runs `bun run check` there. `--head` uses the checked-out commit. | nothing here |
 | `bun run catalogs:check` | Compare the tool versions of every repo with the root catalog (see "Tool versions"). | nothing |
@@ -330,9 +354,13 @@ no prompt. Commit or stash your work in all of them first, and run
   `pins:core` edits both files directly.
 - **A lockfile is out of date and nothing in the umbrella fails.** The root
   install never reads a submodule's `bun.lock`, and `--frozen-lockfile` inside
-  the umbrella tests the root lockfile. To update a submodule lockfile, clone
-  that repo outside the umbrella, run `bun install` there, and copy the new
-  `bun.lock` back. Then run `bun run pins:verify --head <repo>`.
+  the umbrella tests the root lockfile. `bun run pins:check` reports a git
+  pin that differs between the two files. Run `bun run pins:lock` after any
+  dependency change in core, cli or web, commit the new `bun.lock` in that
+  repo, then run `bun run pins:verify --head <repo>`.
+- **`pins:verify --check` runs fewer tests than the umbrella gate.** A
+  standalone clone has no sibling checkouts, so the tests that need one skip
+  themselves (55 in the cli). The umbrella gate stays the full gate.
 - **`link:reset` is removed.** It ran the consumer's frozen install, which is
   the root install, so the workspace link came back and the pin was not
   tested. Use `bun run pins:verify`.

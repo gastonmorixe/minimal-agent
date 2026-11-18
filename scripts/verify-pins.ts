@@ -27,11 +27,14 @@
  *
  * The git dependencies (`@minimal-agent/core`, `@minimal-agent/config`) are
  * fetched from GitHub, so the pinned commits must be on the remote.
+ *
+ * `MA_PINS_TMPDIR` sets the parent of the temp directory (default `/tmp`).
+ * A standalone clone runs fewer tests than the umbrella: the tests that need
+ * a sibling checkout skip themselves.
  */
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
-import { git, gitlink, root, submodulePaths } from "./pins-lib.ts";
+import { existsSync, rmSync } from "node:fs";
+import { join } from "node:path";
+import { cloneStandalone, git, gitlink, root, standaloneBase, submodulePaths } from "./pins-lib.ts";
 
 const PREFIX = "minimal-agent-";
 /** Submodules with an install of their own. Config has no dependencies to install. */
@@ -52,17 +55,6 @@ const known = submodulePaths();
 for (const name of names) if (!known.includes(name)) fail(`"${name}" is not a submodule (${known.join(", ")})`);
 const targets = names.length > 0 ? names : DEFAULT.filter((p) => known.includes(p));
 
-/** The first `package.json` in a parent of `dir`, or "". A parent workspace root would capture the install. */
-function manifestAbove(dir: string): string {
-  let at = dirname(dir);
-  for (;;) {
-    if (existsSync(join(at, "package.json"))) return join(at, "package.json");
-    const up = dirname(at);
-    if (up === at) return "";
-    at = up;
-  }
-}
-
 /** Run a command with inherited output. Return true on exit 0. */
 function run(cwd: string, cmd: string[]): boolean {
   // HUSKY=0: do not install git hooks in a throwaway clone.
@@ -70,12 +62,7 @@ function run(cwd: string, cmd: string[]): boolean {
   return res.exitCode === 0;
 }
 
-const base = mkdtempSync(join(tmpdir(), "ma-pins-verify-"));
-const above = manifestAbove(join(base, "x"));
-if (above) {
-  rmSync(base, { recursive: true, force: true });
-  fail(`${above} is above the temp directory; set TMPDIR to a directory with no package.json above it`);
-}
+const base = standaloneBase("ma-pins-verify-");
 
 const failed: string[] = [];
 for (const path of targets) {
@@ -85,10 +72,7 @@ for (const path of targets) {
     continue;
   }
   const rev = useHead ? git(["rev-parse", "HEAD"], src) : gitlink(path);
-  const dest = join(base, path);
-  // A local clone has every commit of the checkout, also one that is not pushed yet.
-  git(["clone", "--quiet", "--no-checkout", src, dest]);
-  git(["checkout", "--quiet", "--detach", rev], dest);
+  const dest = cloneStandalone(base, path, rev);
   const frozen = git(["ls-files", "--", "bun.lock"], dest) !== "";
   const install = frozen ? ["bun", "install", "--frozen-lockfile"] : ["bun", "install"];
   console.log(`\n${path}@${rev.slice(0, 7)}: ${install.join(" ")}${frozen ? "" : " (bun.lock is not tracked in this repo)"}`);
