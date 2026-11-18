@@ -23,6 +23,10 @@
  *   4. A root `overrides` range (for example `@types/node`) must equal every
  *      direct declaration of that package, and every submodule `overrides`
  *      entry of the same name.
+ *   5. Every submodule that has a `package.json` must match a root
+ *      `workspaces` pattern. The patterns list the repos by name, so a new
+ *      submodule stays out of the root install until its name is added. Out
+ *      of the install, it uses the pinned core and not the local checkout.
  *
  * Usage
  * -----
@@ -150,9 +154,27 @@ function report(label: string, results: Array<{ count: number; bad: string[] }>)
 
 report("root", [check("package.json", rootCatalog, true)]);
 
+/** The root `workspaces` patterns, without the `!` exclusions. */
+const workspacePatterns = (Array.isArray(rootManifest.workspaces) ? rootManifest.workspaces : []).filter((p) => !p.startsWith("!"));
+
+/** Submodules that no root `workspaces` pattern matches (rule 5). */
+const outside: string[] = [];
+
+/** True when `path` matches a root `workspaces` pattern. */
+function isWorkspaceMember(path: string): boolean {
+  return workspacePatterns.some((pattern) => new Bun.Glob(pattern).match(path));
+}
+
 for (const sub of submodulePaths()) {
   if (!existsSync(join(root, sub, "package.json"))) {
     console.log(`${sub}: not checked out, skipped`);
+    continue;
+  }
+  // Rule 5.
+  if (!isWorkspaceMember(sub)) {
+    outside.push(sub);
+    console.log(`${sub}: NOT IN THE WORKSPACE`);
+    console.log(`  package.json: no "workspaces" pattern matches "${sub}". Add its name to the list.`);
     continue;
   }
   const ownCatalog = catalogOf(read(join(sub, "package.json")));
@@ -165,5 +187,6 @@ for (const sub of submodulePaths()) {
   );
 }
 
-console.log(`${differ} of ${total} tool version declarations differ from the root catalog.`);
-if (differ > 0 && !reportOnly) process.exit(1);
+const outsidePart = outside.length > 0 ? ` Not in the workspace: ${outside.join(", ")}.` : "";
+console.log(`${differ} of ${total} tool version declarations differ from the root catalog.${outsidePart}`);
+if ((differ > 0 || outside.length > 0) && !reportOnly) process.exit(1);
