@@ -76,7 +76,19 @@ for (const path of subs) {
   // Check 3: the config pin against the config gitlink (a note).
   if (configSha && path !== CONFIG) {
     for (const sha of pins.manifest.get(CONFIG) ?? []) {
-      if (!configSha.startsWith(sha)) notes.push(`${path} pins config ${sha.slice(0, 7)} (${configDistance(sha)})`);
+      if (configSha.startsWith(sha)) continue;
+      // This reads the repo at its gitlink. Its main can have the new pin already: then there is
+      // no pin to move, and the note goes when the umbrella records that commit.
+      let onMain = "";
+      try {
+        onMain = git(["show", "origin/main:package.json"], cwd);
+      } catch {
+        // No origin/main here.
+      }
+      const fixed = onMain.includes(`minimal-agent-config.git#${configSha}`)
+        ? `. Its main has the new pin already: ${path === CORE ? "the core pin refresh records it" : "record its main in the umbrella"}, do not run pins:config`
+        : "";
+      notes.push(`${path} pins config ${sha.slice(0, 7)} at ${rev.slice(0, 7)} (${configDistance(sha)})${fixed}`);
     }
   }
 
