@@ -122,6 +122,7 @@ When you land a change:
 bun run pins:check       # fail if a core pin differs from the core gitlink, or a committed bun.lock from its package.json
 bun run catalogs:check   # fail if a repo declares a tool version that differs from the root catalog
 bun run pins:lock        # update the committed bun.lock of core, cli and web after a dependency change
+bun run pins:config      # move the config pin of core, plugins and cli to the config gitlink (or <sha>); commits nothing
 bun run pins:core        # move every core pin to core origin/main (or <sha>); --dry-run prints; --commit --push does the whole refresh
 bun run pins:verify      # install each submodule alone, in a clone outside the umbrella (--check also runs its gate)
 bun run pins:mains       # set every gitlink to origin/main, print old -> new (DETACHES each submodule)
@@ -216,9 +217,11 @@ bun run pins                                         # 5. "Next: Nothing"
 Before step 1, fetch and rebase when `origin/main` of that repo moved. Push
 only a fast-forward. Never force-push a `main`.
 
-For config, the consumers (core, plugins, cli) then need a new config pin: see
-`minimal-agent-config/README.md`. `pins:check` prints a note while a config
-pin is behind the config gitlink. The note does not fail the check.
+For config, the consumers (core, plugins, cli) then need a new config pin:
+`bun run pins:config` rewrites it in the three repos and updates the
+`bun.lock` of core and cli. Run each gate, commit and push. The core commit
+then needs the core pin refresh below. `bun run pins` prints a "Next" line
+while a config pin is behind the config gitlink. It does not fail the check.
 
 ### Land a change in core (the core pin refresh)
 
@@ -395,8 +398,8 @@ Two facts about how config installs:
 - The root `overrides` has no entry for `@minimal-agent/config`. Core, plugins
   and cli install the git copy at their own config pin, also inside the
   umbrella. An edit in `minimal-agent-config/` reaches them only after a
-  config commit and a new pin in each repo. `bun run pins:check` prints a note
-  for a config pin that is behind the config gitlink.
+  config commit and a new pin in each repo. `bun run pins:config` moves the
+  pins, and `bun run pins` says when one is behind the config gitlink.
 - The `peerDependencies` of `@minimal-agent/config` are one of the places that
   hold the tool versions. `bun run catalogs:check` compares them with the root
   catalog.

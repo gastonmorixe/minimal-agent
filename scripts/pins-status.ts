@@ -45,6 +45,7 @@ function check(script: string): { ok: boolean; lines: string[] } {
 const next: string[] = [];
 const rows: string[][] = [["repo", "checkout", "umbrella records", "origin/main", "state"]];
 let coreAhead = "";
+let corePushed = false;
 
 for (const path of submodulePaths()) {
   const cwd = join(root, path);
@@ -67,12 +68,18 @@ for (const path of submodulePaths()) {
     const behind = tryGit(["rev-list", "--count", `${head}..${link}`], cwd);
     if (ahead !== "0" && behind === "0") {
       state.push(`${ahead} new commit${ahead === "1" ? "" : "s"}${pushed ? "" : ", not pushed"}`);
-      next.push(
-        pushed
-          ? `${name(path)} has ${ahead} pushed commit(s) the umbrella does not record: git add ${path}`
-          : `${name(path)} has ${ahead} commit(s) that are not on its remote: push them, then git add ${path}`,
-      );
-      if (path === CORE) coreAhead = head;
+      if (path === CORE) {
+        // Never `git add` core alone: every consumer pin would then differ from the core gitlink.
+        coreAhead = head;
+        corePushed = pushed;
+        if (!pushed) next.push(`core has ${ahead} commit(s) that are not on its remote: push them (git -C ${path} push origin HEAD:main)`);
+      } else {
+        next.push(
+          pushed
+            ? `${name(path)} has ${ahead} pushed commit(s) the umbrella does not record: git add ${path}`
+            : `${name(path)} has ${ahead} commit(s) that are not on its remote: push them, then git add ${path}`,
+        );
+      }
     } else if (ahead === "0") {
       state.push(`${behind} behind the record`);
       next.push(`${name(path)} checkout is older than the umbrella record: git -C ${path} checkout --detach ${short(link)} (when you have no work there)`);
@@ -104,8 +111,21 @@ console.log("  not run   standalone installs (slow): bun run pins:verify");
 const summary = pins.lines.at(-1) ?? "";
 if (!/^0 of/.test(summary)) next.push("consumers pin a core that is not the umbrella core: bun run pins:core --dry-run, then bun run pins:core --commit --push");
 if (/lockfile pin/.test(summary)) next.push("a committed bun.lock differs from its package.json: bun run pins:lock, then commit bun.lock in that repo");
+// A config pin that is behind. When the main of that repo has the new pin already, the umbrella
+// only records an older commit of the repo: the "origin/main" line above covers it.
+const configSha = submodulePaths().includes("minimal-agent-config") ? gitlink("minimal-agent-config") : "";
+const behind = pins.lines.flatMap((l) => /note: (\S+) pins config /.exec(l)?.[1] ?? []);
+const toMove = behind.filter((path) => !tryGit(["show", "origin/main:package.json"], join(root, path)).includes(`minimal-agent-config.git#${configSha}`));
+if (toMove.length > 0) {
+  next.push(`the config pin of ${toMove.map(name).join(", ")} is behind the config gitlink: bun run pins:config, then commit in each repo it names`);
+}
 if (!catalogs.ok) next.push("a repo declares a tool version that differs from the root catalog: change the lines above, then bun install");
-if (coreAhead) next.push(`after the core commits are pushed, move every consumer to them: bun run pins:core ${short(coreAhead)} --dry-run`);
+if (coreAhead) {
+  next.push(
+    `${corePushed ? "core has pushed commits the umbrella does not record" : "after the core commits are pushed"}: move every consumer pin and the core gitlink to them with the core pin refresh. ` +
+      `First ask the other sessions (it pushes to plugins, cli and web): bun run pins:core ${short(coreAhead)} --dry-run`,
+  );
+}
 
 console.log("\nNext");
 if (next.length === 0) console.log("  Nothing. To code, edit and run: the workspace uses your local checkouts.");
