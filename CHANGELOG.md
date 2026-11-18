@@ -310,6 +310,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   does not advise to record a commit that the umbrella `main` records.
   `pins:config` stops when a fetch fails. A failed fetch in `pins` prints a
   warning with the repos it could not reach.
+- 2026-11-18: Docs: the README of each submodule has a "Work in the monorepo"
+  section, and its text agrees with the code again. Here, the plugin roots no
+  longer name `<cli>/plugins` (the CLI does not read it), and the release
+  table has the daily cli nightly.
 - 2026-11-18: The config pin note of `pins:check` names the commit that it
   read, and says when the main of that repo has the new pin already. Then
   there is no pin to move: the note goes when the umbrella records that

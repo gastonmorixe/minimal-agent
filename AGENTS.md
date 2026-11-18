@@ -167,8 +167,8 @@ skip themselves.
 
 - The CLI reads 3 plugin roots. Precedence: project, then user, then embedded.
 - Project: `<cwd>/.agents/minimal-agent/plugins`. User: `~/.minimal-agent/plugins`.
-  Embedded: `<cli>/plugins`, plus the `../minimal-agent-plugins` checkout next
-  to the CLI, or the dirs in `MINIMAL_AGENT_PLUGIN_SIBLINGS` (colon separated).
+  Embedded: the `../minimal-agent-plugins` checkout next to the CLI, or the
+  dirs in `MINIMAL_AGENT_PLUGIN_SIBLINGS` (colon separated).
 - Dev mode: a checkout dir holds at least one plugin package (a subdir with
   `manifest.json` or `provider.json`). Then the user tier is empty and the CLI
   does not clone the plugins repo. Edit `minimal-agent-plugins/` and run
@@ -504,10 +504,11 @@ the gitignored `research/` folder in `cc89102`.
 | -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
 | package.json   | monorepo, core (+ tools/docs), plugins root + every `ma-*-plugin`, cli        | `0.1.0` (semver)                               |
 | Stable git tag | each of the four remotes                                                      | `v0.1.0` (must match that repo’s package.json) |
-| Core nightlies | core CI only (`release.yml` on push to `main`)                                | `v0.1.0-nightly.<UTC-stamp>`                   |
+| Core nightlies | core `release.yml`, on each push to `main`: a source tarball                  | `v0.1.0-nightly.<UTC-stamp>`                   |
+| Cli nightlies  | cli `release.yml`, one time each day: the compiled binaries (newest 7 kept)   | `v0.1.0-nightly.<UTC-stamp>`                   |
 
 Keep the four remotes on the **same** stable version when cutting a coordinated
-release. Nightlies only advance the core pre-release stream; they do not bump
+release. Nightlies are pre-releases of core and of the cli. They do not bump
 package.json.
 
 **Tooling** (from monorepo root):
@@ -531,7 +532,7 @@ commits, it also commits monorepo submodule pin bumps.
 | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | core     | `ci.yml` (commitlint only), `release.yml` (nightly on main + stable on `v*`, tag must match package.json, no gate)     |
 | plugins  | `ci.yml` (commitlint only), `release.yml` (stable `v*` only)                                                           |
-| cli      | `ci.yml` (commitlint only), `release.yml` (stable `v*`, no gate)                                                       |
+| cli      | `ci.yml` (commitlint only), `release.yml` (daily nightly + stable on `v*`: compiled binaries, no gate, binary e2e)     |
 | web      | `ci.yml` (commitlint only)                                                                                             |
 | monorepo | `ci.yml` (commitlint + submodule retry + core, plugins, cli, web checks), `release.yml` (stable `v*` + pin notes)     |
 
