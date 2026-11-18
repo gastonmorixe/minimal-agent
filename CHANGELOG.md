@@ -83,15 +83,23 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `219c035a134946760eefc07de3c71b70f3414b2a` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `b8c2f43a452df6ebc7f946137bd095ff302bf7a3` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `69121d7030fecf1c77a0628c51dafb9065a88322` (lead, decision 20).
-- Approved: `minimal-agent-web` at `39019ca14fd0f17b0b4c2a07122fe643ab8d664e` (lead, decision 20).
+- Approved: `minimal-agent-core` at `b7dc36035d7831696b1ef38c2acb384875ff2f3e` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `2db4ba2ce0ef39c9d2369b0155d015beba988c38` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `ae985f8eff65b4c505ff5849321a592202e2a216` (lead, decision 20).
+- Approved: `minimal-agent-web` at `dadf56d4984c5824320c0806cf6b491dacfe7a4a` (lead, decision 20).
 - Approved: `minimal-agent-config` at `55623ce805ef8edcf41ec0f6e3b50125315248ac` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
 
+- 2026-11-18: **The cache warning no longer blames the client for a likely
+  server-side cache miss**: plugins `2db4ba2`. `ma-cache-plugin` fingerprints
+  each request prefix. A read of 0 with an unchanged prefix (after a request
+  that read its cache) is now the info code `server_miss` with the request
+  id, not a `prefix_changed` warning. Real client changes still warn and name
+  the changed part, including the thinking removal + cache lookback cascade.
+  The server's `cache_missed_input_tokens` is shown as the "server-reported
+  miss size", not as tokens lost.
 - 2026-11-18: **Each web session gives plugins its own identity**: core
   `219c035`, plugins `b8c2f43`, cli `69121d7`, web `39019ca`. A host with
   many sessions in one process (the web host) opens each session with the
