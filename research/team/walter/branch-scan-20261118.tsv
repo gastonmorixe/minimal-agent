@@ -1,0 +1,100 @@
+minimal-agent-monorepo	chore/empty-schema-additions-allowlist	1	1	1	1	11-18	no	chore: bump plugins for the empty schema-additions allowlist
+minimal-agent-monorepo	feat/no-direct-writes	1	1	4	4	11-18	yes	chore: backup of the no-direct-stdio guard (core, cli, plugi
+minimal-agent-monorepo	fix/live-area-scheduler-timer-leak	1	1	1	1	11-18	no	chore: PRE-CHECK (do not merge) the live-area slot timer fix
+minimal-agent-core	WT-agent-mesh	7	7	9	51	05-27	no	docs(agent-mesh): change-doc entry + flip delivered chat-v2 
+minimal-agent-core	WT-multi-provider-refactor	4	4	4	12	05-20	no	feat(canonical): provider-agnostic schema + builders + event
+minimal-agent-core	WT-resize-preserve-scrollback	1	1	2	2	05-06	no	fix(compositor): preserve visible viewport content on resize
+minimal-agent-core	WT-tool-budget	2	2	6	9	05-06	no	feat(plugins): wire Hooks facade into PluginLoader; register
+minimal-agent-core	WT-transport-registry	1	1	3	5	06-24	no	core: add transport:registry capability (host-brokered remot
+minimal-agent-core	WT-transport-registry-v2	1	1	1	1	06-28	yes	fix(plugin-host): drop stray duplicate `: {}),` after transp
+minimal-agent-core	WT-workspace-split	1	1	2	11	07-01	no	feat(workspace): Phase 0 — stand up packages/{core,tui,cli} 
+minimal-agent-core	feat/cache-fixes	5	5	16	35	11-01	no	feat(cache): stable thinking strip behind MINIMAL_AGENT_THIN
+minimal-agent-core	feat/no-direct-writes	1	1	0	6	11-18	yes	feat(lint): ban direct stdout and stderr writes with the ma/
+minimal-agent-core	feat/prose-budget-trim	1	1	1	6	06-30	no	feat(prose-budget): opt-in system-prompt + tool-description 
+minimal-agent-core	tr/join-trial	2	0	0	41	11-17	no	Merge remote-tracking branch 'origin/tr/helen' into tr/join-
+minimal-agent-core	zt/integrate-5	12	9	36	55	11-15	no	chore(merge): merge origin/main (llm codec split, stream blo
+minimal-agent-core	zt/jack-a8	4	4	3	5	11-12	no	test(plugins): the template failure path test reads the type
+minimal-agent-core	zt/jack-s143	12	12	4	18	11-12	no	test: load a fresh net-dbg module in the golden so the reque
+minimal-agent-core	zt/jack-t45	7	7	3	7	11-12	no	style(plugins): sort the imports of the catalog typed warns 
+minimal-agent-core	zt/judith-s13	2	0	3	7	11-11	no	refactor(core): remove session history text and dump from co
+minimal-agent-core	zt/judith-s13.2	8	8	0	12	11-12	no	docs(plugin-api): remove three orphan Char budget doc lines
+minimal-agent-core	zt/judith-s13.2-pre-trailerfix	8	8	0	12	11-12	no	docs(plugin-api): remove three orphan Char budget doc lines
+minimal-agent-core	zt/judith-s13.2-prereword	8	8	0	12	11-12	no	docs(plugin-api): remove three orphan Char budget doc lines
+minimal-agent-core	zt/judith-t44	20	20	1	22	11-12	no	test(plugin-api): pin that host register keeps the model clo
+minimal-agent-core	zt/judith-t44-pre-rebase	10	10	0	15	11-12	no	test(plugin-api): fix the wrapped guard line match and the o
+minimal-agent-core	zt/julia-s0.2	2	0	2	4	11-11	no	test: drop doc-comment prose assertion from claim b
+minimal-agent-core	zt/julia-s0.4d	2	2	2	3	11-11	no	refactor: throw a typed EmbeddableNotBooleanError instead of
+minimal-agent-core	zt/julia-s1.3	7	7	2	9	11-12	no	test: restore an old session with runtime attachments throug
+minimal-agent-core	zt/julia-s2.0	1	0	5	6	11-11	no	feat: let a tool_result block carry sideband metadata throug
+minimal-agent-core	zt/julia-s2.2	10	6	10	16	11-12	no	fix(loops): treat a bad stage return as a failed stage
+minimal-agent-core	zt/petter-s1.3f	1	1	0	1	11-12	no	test: add an old session fixture with runtime attachment blo
+minimal-agent-core	zt/petter-s7.2	5	5	7	19	11-12	no	fix: a throwing compaction recognizer no longer breaks resto
+minimal-agent-core	zt/ricardo-s3.2b	5	5	13	18	11-12	no	feat(plugins): route the approval hook failure text through 
+minimal-agent-core	zt/ronald-s12b	10	10	6	20	11-12	no	docs(changelog): note the optional error field of the error 
+minimal-agent-core	zt/samantha-c3	4	4	26	36	11-12	no	docs(prompt): clean the c3 leftovers (stale TSDoc, README, h
+minimal-agent-core	zt/samantha-s53	6	6	27	39	11-12	no	refactor(prompt): remove the tool output conventions text fr
+minimal-agent-plugins	WT-cloud-plugin	10	1	5	44	06-24	no	minimal-agent-cloud Phase D: per-session relay handler — wri
+minimal-agent-plugins	WT-teams	2	1	9	20	06-24	no	intercom Teams: local primitives (membership, team: scope, c
+minimal-agent-plugins	a5-transport-port	1	1	5	10	06-24	no	intercom A5: introduce Transport port (Ports & Adapters) for
+minimal-agent-plugins	chore/drop-task-schema-additions	1	0	0	1	11-18	no	test(ste): empty the schema-additions allowlist after the Ta
+minimal-agent-plugins	feat/cache-anchor-append-only	2	2	0	30	11-18	no	chore: pin core to 48721c3 (cache anchor, marker cap, append
+minimal-agent-plugins	feat/cache-fixes	4	4	5	21	11-01	no	feat(quota-status): wire the cache-loss watch into the foote
+minimal-agent-plugins	feat/no-direct-writes	1	1	0	33	11-18	yes	refactor(plugins): report config parse errors and refresh tr
+minimal-agent-plugins	feat/per-model-input-formats	6	0	1	47	11-17	no	feat(llm-opencode-go): per-model input formats
+minimal-agent-plugins	feat/per-model-input-formats-chat	8	0	0	45	11-17	no	feat(llm-generic-endpoint): per-model input formats
+minimal-agent-plugins	fix/nullable-optional-tool-fields	1	0	1	60	11-18	no	fix(openai): send strict tools with nullable optional proper
+minimal-agent-plugins	tr/gabriel-w3	1	0	2	5	11-18	no	feat(core-tools): correct Read truncation notice for 3 cases
+minimal-agent-plugins	tr/integrate	1	0	2	5	11-18	no	feat(core-tools): correct Read truncation notice for 3 cases
+minimal-agent-plugins	tr/join-trial	1	0	0	0	11-17	no	Merge remote-tracking branch 'origin/tr/helen' into tr/join-
+minimal-agent-plugins	zt/integrate-1	4	0	26	36	11-11	no	feat(host-text): add ma-host-text-plugin with the dev error 
+minimal-agent-plugins	zt/integrate-5	10	5	3	29	11-15	no	chore(merge): merge origin/main (haiku prompt estimate, core
+minimal-agent-plugins	zt/judith-s13	3	0	3	19	11-11	no	refactor(session-history): use data only, drop host text fal
+minimal-agent-plugins	zt/judith-s13.2	6	6	0	13	11-12	no	style(session-history): drop redundant String() calls in the
+minimal-agent-plugins	zt/judith-s13.2-prereword	5	5	0	13	11-12	no	refactor(plugins): decode and clip blob bytes in the plugin
+minimal-agent-plugins	zt/judith-t44	9	9	0	17	11-12	no	fix(plugins): treat bytes 0xF8-0xFF as plain bytes in the UT
+minimal-agent-plugins	zt/julia-s2.2	2	2	0	16	11-12	no	feat: add the tool-output plugin with the streak note stage
+minimal-agent-plugins	zt/julia-s3.0g	3	0	10	14	11-11	no	test: add request golden scenario for the Grep error site (n
+minimal-agent-plugins	zt/julia-s3.0i	4	0	12	16	11-11	no	test: add request golden scenarios for the empty-response pl
+minimal-agent-plugins	zt/petter-s0.1	1	0	24	28	11-11	no	test: add request golden harness (S0.1)
+minimal-agent-plugins	zt/petter-s0.1b	2	0	24	29	11-11	no	test: strip MINIMAL_AGENT_* env in acp e2e, pin LC_ALL=C in 
+minimal-agent-plugins	zt/petter-s0.1c	3	0	24	30	11-11	no	test: add pluginRoots to the request golden Scenario
+minimal-agent-plugins	zt/petter-s1.2	2	0	0	18	11-11	no	fix: harden ma-sideband-plugin parse, render and scanner
+minimal-agent-plugins	zt/ricardo-s11.1	1	0	2	6	11-11	no	feat(host-text): add ma-host-text-plugin with the dev error 
+minimal-agent-plugins	zt/ricardo-s11.1b	3	0	2	7	11-11	no	test(host-text): ignore no-contributions warnings of sibling
+minimal-agent-plugins	zt/ricardo-s3.2b	4	4	4	4	11-12	no	feat(turn-recovery): own the approval hook failure text
+minimal-agent-plugins	zt/ronald-s12	1	1	4	7	11-12	no	fix(acp): keep the error facts of a failed turn and render t
+minimal-agent-plugins	zt/ronald-s12b	3	3	4	12	11-12	no	docs(usage): say that the CLI keeps its own copy of the peri
+minimal-agent-plugins	zt/samantha-c3	1	1	2	3	11-12	no	feat(base-prompt): embeddable manifest, ACP host byte test, 
+minimal-agent-plugins	zt/samantha-s53	2	2	2	12	11-12	no	feat(tool-output-conventions): add the plugin that gives the
+minimal-agent-cli	feat/no-direct-writes	2	2	0	22	11-18	yes	chore(lint): drop the deleted resume-continue.ts from the no
+minimal-agent-cli	ste/dictionary	2	2	0	3	11-17	yes	fix(ui): tabular display wrap matches the wire tool names
+minimal-agent-cli	tr/join-trial	1	0	0	1	11-17	no	Merge remote-tracking branch 'origin/tr/helen' into tr/join-
+minimal-agent-cli	zt/integrate-5	10	6	3	13	11-15	no	chore(merge): merge origin/main (path-aware tool headers, co
+minimal-agent-cli	zt/jack-a8	1	1	0	2	11-12	no	feat(logging): render prompt.template_load_failed from attrs
+minimal-agent-cli	zt/jack-s143	9	9	1	10	11-12	no	test(ui): one block per request from the tap, byte equal to 
+minimal-agent-cli	zt/jack-t45	2	2	0	4	11-12	no	feat(logging): render the 3 catalog warns from attrs, byte-e
+minimal-agent-cli	zt/judith-s13	1	1	0	9	11-11	no	refactor(cli): build the session dump from records data
+minimal-agent-cli	zt/judith-s13.2	2	2	0	3	11-12	no	test(cli): freeze the snippet outputs of the former core fun
+minimal-agent-cli	zt/judith-s13.2-prereword	2	2	0	3	11-12	no	test(cli): freeze the snippet outputs of the former core fun
+minimal-agent-cli	zt/julia-s0.4	2	0	2	5	11-11	no	feat: let compile honor MA_BUNDLE_PLUGINS_REPO and MA_BUNDLE
+minimal-agent-cli	zt/julia-s0.4d	3	0	6	10	11-11	no	feat: bundle embeddable plugins as transpiled assets in the 
+minimal-agent-cli	zt/julia-s0.6	1	0	2	2	11-11	no	test: add CLI parity snapshot of core-origin user text (S0.6
+minimal-agent-cli	zt/julia-s1.3	1	1	0	1	11-11	no	test: pin that session replay drops sideband tagged blocks
+minimal-agent-cli	zt/petter-cleanenv	1	1	1	4	11-12	no	test: spawn the e2e children with cleanSpawnEnv
+minimal-agent-cli	zt/ronald-s12	1	1	0	1	11-12	no	test(cli): pin the resume and dump failure lines of the real
+minimal-agent-cli	zt/ronald-s12b	6	6	0	13	11-12	no	fix(cli): keep repl-live-area.ts under the line limit
+minimal-agent-cli	zt/samantha-c3	3	3	3	9	11-12	no	fix(startup): count a base prompt provider as a plugin, so t
+minimal-agent-cli	zt/samantha-c3-pre-m4	4	4	3	9	11-12	no	fix(startup): count a base prompt provider as a plugin, so t
+minimal-agent-cli	zt/samantha-s53	4	4	3	9	11-12	no	feat(bundle): bundle ma-tool-output-conventions-plugin (S5.3
+minimal-agent-cli	zt/samantha-s53-pre-m5	3	3	2	4	11-12	no	feat(bundle): bundle ma-tool-output-conventions-plugin (S5.3
+minimal-agent-web	feat/no-direct-writes	1	1	0	4	11-18	yes	test(lint): add the ma/no-direct-stdio allowlist and its rat
+minimal-agent-web	zt/integrate-4	3	0	1	5	11-12	no	fix(web): keep the stored-providers hint and a non-empty 503
+minimal-agent-web	zt/integrate-5	10	7	1	8	11-15	no	chore(merge): merge origin/main (S14.4 stall marker, typed 5
+minimal-agent-web	zt/julia-s0.4	1	0	0	5	11-11	no	feat: add empty embedded plugin bundle slot to the web build
+minimal-agent-web	zt/ricardo-web-diag	1	0	0	3	11-11	no	feat(server): print boot diagnostic code and data when the m
+minimal-agent-web	zt/ronald-s12	2	2	3	9	11-12	no	fix(server): show the text of a core error where the web hos
+minimal-agent-web	zt/ronald-s12b	9	9	4	11	11-12	no	test(web): narrow the stream output with a type guard in the
+minimal-agent-web	zt/samantha-c3-web	2	2	3	9	11-12	no	ci: fetch the plugins repo for the bundled plugins and fail 
+minimal-agent-web	zt/samantha-c3-web-pre-m5	2	2	3	9	11-12	no	ci: fetch the plugins repo for the bundled plugins and fail 
+minimal-agent-web	zt/samantha-s53-web	3	3	3	9	11-12	no	feat(web): bundle ma-tool-output-conventions-plugin (S5.3 c3
+minimal-agent-web	zt/samantha-s53-web-pre-m5	2	2	1	6	11-12	no	feat(web): bundle ma-tool-output-conventions-plugin (S5.3 c3

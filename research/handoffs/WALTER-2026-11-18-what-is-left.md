@@ -5,23 +5,23 @@ Written for the next session. Scott's file `HANDOFFS.md` in this folder covers t
 ## 0. First thing, not git: rotate the exposed token
 Read `HANDOFFS.md` (top). One real-looking Anthropic OAuth token (`sk-ant-oat01-...`) is in the public history of core (`1b320dc`) and plugins (`10c80fb`). Revoke that session first. Rewriting history does not undo copies. I confirmed the two commits and file paths myself, without printing the value. All six repos are public since 11:44 (you asked for it). Nobody has scanned the rest of the history for other secrets.
 
-## 1. State of main (13:15)
+## 1. State of main (13:20, after Matthew's push)
 | repo | main |
 |---|---|
-| umbrella | `cbdbb32` (docs only, on top of `4932c28`) |
-| core | `2c3b308` |
-| plugins | `47626fd` |
-| cli | `e6b5dee` |
-| web | `65fbb30` |
+| umbrella | `db38e54` (Matthew's bump of 4 gitlinks; above my docs commit `f8627c6`) |
+| core | `48721c3` (prompt-cache fix: anchor marker, cap of 4 markers, append-only thinking, 400 fallback; flags OFF by default) |
+| plugins | `e8f1815` |
+| cli | `123e80f` |
+| web | `dc669db` |
 | config | `55623ce` |
 
-- Last complete green push run: `44359890627` on `4932c28`. It covers all five repos at these pins. Attempt 2 of `44354732956` on `9dfce99` was green too. Its attempt 1 failed on a flaky CLI test.
-- The runs on my two docs commits are not a verdict: `edb2e24` was cancelled by my next push, and `44366172302` on `cbdbb32` was still running at 13:15. Both commits change only files under `research/`, no code.
-- The shared checkout `/Users/gaston/Projects/minimal-agent-monorepo` is fast-forwarded to these mains, clean, 0 of 27 pins differ.
+- **CI is NOT verified for these mains.** Matthew pushed on Gaston's "don't wait for CI". Push run `44368143530` on `db38e54` was in progress when I wrote this. Do not call it green before it completes. His local results: core 5555 pass 0 fail, plugins 8543 pass 1 fail (the core-pin test reads an ignored local `bun.lock`, a worktree-layout effect), cli 4641 pass 0 fail, web not checked.
+- Last complete green run: `44359890627` on `4932c28`. Runs on `edb2e24`, `cbdbb32` and `f8627c6` (my docs commits) were cancelled by later pushes.
+- Matthew deleted his three `backup/cache-anchor-append-only` branches. His change is on main.
 
 ## 2. Open work, in priority order
 1. **Carlos's no-direct-stdio guard (lint rule that bans direct stdout/stderr writes).** One backup commit in each repo: core `feat/no-direct-writes` `7163621`, plugins `a61cd90`, cli `1a00389`, web `6614aa4`, umbrella `5659390` (describes the set). Dry-run merge into each main: 0 conflicts (I ran `git merge-tree`, no test run). Not covered by any CI. His plan: core, then cli/plugins/web with the core pin bump (`pins:core`), then umbrella. Ask him or run the full check on each repo first.
-2. **Matthew's cache fix (anchor marker, append-only thinking).** Three backup branches `backup/cache-anchor-append-only`: core `c857ffd`, plugins `f689c66`, cli `92125ca`. They are WIP snapshots of uncommitted worktrees, not mergeable. Work is on disk in `/Users/gaston/Projects/minimal-agent_WT-cache-anchor` (core 22 files, plugins 5, cli 9 uncommitted). It waits for the live test on Haiku and your decision. Default behaviour must stay unchanged.
+2. **Matthew's cache fix: MERGED at 13:24** (core `48721c3`, plugins `e8f1815`, cli `123e80f`, web `dc669db`, umbrella `db38e54`). Open: the live A/B test on Haiku, and the run `44368143530`. His old worktree `/Users/gaston/Projects/minimal-agent_WT-cache-anchor` may still hold uncommitted files. I did not re-check after his push.
 3. **Core event for the per-provider cache design.** Needs your yes. Design: `research/team/walter/2026-11-18-cache-anomaly-per-provider.md`. The plugins-only part is merged (plugins `353ed8f`). Nothing depends on the core event today.
 4. **`ste/dictionary` branches** (2026-11-17): core `d373900` (+4 commits), plugins `906d7d8` (+4), cli `3c17eb9` (+1). Owner not known to me. A dry-run merge of core gives 2 conflicts. I did not test plugins or cli. Decide: finish or drop.
 5. **Helen's reader chain (Cursor, ACP, CLI hosts).** Scott's `HANDOFFS.md` section 3 says it is local only in her worktree. I did not check. Her E8 is already on core main. I deleted the remote branches `tr/helen-w3` and `tr/helen-w3-e8` because their commits are on main (restore info: section 4).
@@ -52,4 +52,10 @@ Git worktrees that lived in `/tmp` are saved separately in `tmp/slash-tmp-202611
 After a restart, run `git worktree prune` in the umbrella and in each sub-repo. The deleted `/tmp` worktree entries stay in the lists until then.
 
 ## 6. Not verified by me
-Whether the CI run on `cbdbb32` ends green (docs only). The 3 missing top-level files. Anything inside the 183 branches, 57 dirty worktrees and 5 stashes. Whether Deborah's CLI process (pid 82815) still runs: `ps` shows no such pid now.
+Whether the CI run on `cbdbb32` ends green (docs only). The 3 missing top-level files. The CI result on `db38e54`. Anything inside the 183 branches, 57 dirty worktrees and 5 stashes. Whether Deborah's CLI process (pid 82815) still runs: `ps` shows no such pid now.
+
+## 7. Branch scan at 13:16 (read only; nothing deleted for this)
+Of 100 local branches that are not merged by commit ID: 28 are already in main by patch content (nothing to merge, deletable); 23 have unique work and merge cleanly (5 are today's: Carlos's `feat/no-direct-writes` in four repos and Matthew's cache branch in plugins, now merged; 17 are old `zt/*` lanes from 11-11/11-12, all local only); 49 conflict with main (28 last touched 11-12, the rest back to May). I checked patch equivalence and a dry-run merge only. I reviewed no code and ran no tests. Raw table: `/tmp/mergeable-scan.tsv` is lost on restart; rerun `git cherry origin/main <branch>` and `git merge-tree --write-tree origin/main <branch>`.
+Proposed, waiting for Gaston: delete the 28 already-in-main branches with a restore log; push `backup/` copies of the old `zt/*` lanes; merge nothing without an owner.
+## 8. Sandra (bba2ddf4), live at 13:16
+Fix for a wrong session identity in multi-session hosts, branches `fix/session-scope-sandra` in core, plugins and web, plus a core pin bump and one umbrella commit. She has NO commits yet (13:16), so the work exists only as uncommitted files in `/Users/gaston/Projects/minimal-agent-monorepo/tmp/sandra-sid` (git-ignored). She will push `backup/session-scope-sandra` and send the commit IDs.
