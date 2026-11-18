@@ -67,6 +67,33 @@ After that, edit a file in `minimal-agent-core/` and run `bun run start` again. 
 
 **Do not run `bun install` inside a submodule** as part of your normal loop. It works and keeps the link, because Bun finds the root workspace and runs the root install. It uses the root lockfile and never reads that submodule's own `bun.lock`, so it does nothing a root install did not already do. It also does not test the repo as a standalone: use `bun run pins:verify` for that (see "Pins").
 
+## Worktrees
+
+To work on a second branch at the same time, make a full worktree:
+
+```bash
+bun run worktree:new my-fix     # ../<this checkout>_WT-my-fix, umbrella branch my-fix, from origin/main
+bun run worktree:rm my-fix      # remove it; stops when work would be lost
+```
+
+`worktree:new` makes the umbrella worktree, checks out every submodule in it
+(from the local objects, with no download), runs the one root install, and
+sets up the commit hooks. Each submodule is on a detached HEAD at the commit
+the umbrella records: run `git -C minimal-agent-core switch -c my-fix` before
+you commit there. `--branch <b>` and `--from <ref>` change the umbrella branch
+name and the start commit.
+
+Use a full worktree, not a folder with only the repos you need. A folder with
+core and plugins side by side and no umbrella root above them is two
+standalone installs: plugins there uses the pinned core, so an edit in the
+core folder does not reach the plugins tests.
+
+`git worktree remove` refuses a worktree that has submodules, and its
+`--force` deletes the submodule repos of that worktree with every commit that
+is only there. `worktree:rm` looks first for uncommitted files and for commits
+that are on no remote, in the umbrella and in each submodule, and stops when
+it finds one.
+
 ## Layout
 
 ```
