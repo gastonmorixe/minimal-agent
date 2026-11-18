@@ -83,15 +83,22 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `f38d9c88d553a6274247b21008fe4fb8f1b42f42` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `bd666f4b5e747e2551ae9260f750f1d738819edf` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `01ec00f094571d9631a5fa0592d19e90feb490a9` (lead, decision 20).
-- Approved: `minimal-agent-web` at `a6848315644fafe4360cc819d0891f4f35ec8cd3` (lead, decision 20).
+- Approved: `minimal-agent-core` at `f705b0f0d969621b5bc4a452d7b7830d1c457ab5` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `92f519a02ba598fa61b9f48314beda53a5d03581` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `5a531dde1314d71f8fd4936744f8cb9508b208b5` (lead, decision 20).
+- Approved: `minimal-agent-web` at `1d102efbc8b4851505c8facd097a6fcf2ceb873f` (lead, decision 20).
 - Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
 
+- 2026-11-18: **The prompt-cache anchor marker is on by default**: core
+  `f705b0f`, plugins `92f519a`, cli `5a531dd`, web `1d102ef`. `cacheAnchor`
+  is on unless something turns it off: `"cacheAnchor": false` in the config,
+  `MINIMAL_AGENT_CACHE_ANCHOR=0`, or `--no-cache-anchor`. Sub-agents inherit
+  an explicit off. `thinkingHistory` stays `"strip"`. With the default system
+  prompt the cap of 4 cache markers drops the anchor, so those requests are
+  unchanged on the wire. 11 request goldens gained the anchor marker only.
 - 2026-11-18: **The cache warning no longer blames the client for a likely
   server-side cache miss**: plugins `617e0a7`. `ma-cache-plugin` fingerprints
   each request prefix. A read of 0 with an unchanged prefix (after a request
