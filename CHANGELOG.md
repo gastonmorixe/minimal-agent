@@ -6,7 +6,7 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-11-15T00:00:00-0500"
+updated-at: "2026-11-18T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
   - id: "2026-11-15-debug-dump-order-pin-sweep"
@@ -83,49 +83,25 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `d0a6462b0053e447a6ec66c4685a16ad643b244c` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `af8b38ff497bc6d61c5a0e8ddee3070bd4511e49` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `ce8726d1b7d75d79a7ebca128ba618ef8c55da2b` (lead, decision 20).
-- Approved: `minimal-agent-web` at `26eea59eb5e88dfd86273f8f97b24fec8f9ac8aa` (lead, decision 20).
+- Approved: `minimal-agent-core` at `40465ca1af091b1acc9040f0db4aac9c76f7c627` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `a1680f7dccf61b349ccc5e2f7fbae6725b9c9f0a` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `c314a865925caeaf2f9e2584efdc826a1af6979f` (lead, decision 20).
+- Approved: `minimal-agent-web` at `aa42a0205b5263b6f287e0d2b096c2baac1ba373` (lead, decision 20).
 - Approved: `minimal-agent-config` at `7b504c37da368afaddf15e8b794898ea9a371375` (lead, decision 20).
 <!-- pin-approvals:end -->
 
 ### Added
 
-- 2026-11-03: `bun run cli:compile:dev` and `bun run cli:compile:release`
-  build a standalone `minimal-agent` binary into `minimal-agent-cli/dist/`.
-  The dev build uses the `./minimal-agent-core` working tree. The release
-  build uses the core commit that `minimal-agent-cli/package.json` pins.
-  `minimal-agent-cli/scripts/compile-e2e.sh` checks each binary before it
-  replaces the old one. README and AGENTS.md list both scripts.
-
-- 2026-11-01: `scripts/pin-mains.ts` (`bun run pins:mains`) sets every gitlink
-  to its submodule's `origin/main`. It prints `old -> new` and updates the pin
-  approval lines. `scripts/check-core-pins.ts` (`bun run pins:check`) fails if
-  a cli, plugins, or web core pin differs from the core gitlink. `bun run
-  check` runs it in report-only mode first.
-
-- 2026-10-31: `minimal-agent-web` joins the umbrella as a fourth submodule
-  (spec S59). `install:all`, `check`, `test`, and `typecheck` run it too, and
-  CI installs and checks it in the same job as core/plugins/cli (its own
-  checkout needs no separate `CORE_DEPLOY_KEY`: the job's existing
-  `SUBMODULES_PAT` rewrite already covers web's `@minimal-agent/core` git+ssh
-  dependency, the same way it now covers plugins' since S42).
-  `scripts/version.ts` has a `web` target (root + `server/` + `app/`
-  `package.json`). `link:dev`/`link:reset`/`link:status`
-  (`scripts/link-dev.ts`) already listed web as a consumer; it now resolves
-  for real. `.gitmodules` tracks `main` for web. Docs now say four
-  submodules.
-
-- 2026-10-31: The umbrella covers `minimal-agent-cli` everywhere. `install:all`,
-  `check`, `test`, and `typecheck` run the CLI too, and CI installs and checks
-  it (with Node set up for its architecture checker). `scripts/version.ts` has
-  a `cli` target and tolerates the missing `plugin-api/package.json` after the
-  `@minimal-agent/core` rename. New `link:dev`, `link:reset`, and `link:status`
-  scripts (`scripts/link-dev.ts`) point each consumer's `@minimal-agent/core`
-  at the local core checkout, or restore the pinned copy, without editing
-  `package.json` or `bun.lock`. `.gitmodules` tracks `main` for the CLI. Docs
-  now say three submodules.
+- 2026-11-18: **Gitlinks bumped to the mains of the day** (`bun run
+  pins:mains`): core `40465ca`, plugins `a1680f7`, cli `c314a86`, web
+  `aa42a02`, config `7b504c3` (unchanged). The details of each change are in
+  the changelog of its repo. CI state: the push runs of the last umbrella
+  commits were cancelled by the next push, so no run covers all of these
+  mains together. The last complete green run is `44359890627` on `4932c28`.
+  Not merged: the no-direct-stdio guard (`feat/no-direct-writes` in five
+  repos) and the `ste/dictionary` branches. An OAuth token in the public
+  history of core (`88af477`) and plugins (`5dc09da`) must be revoked; see
+  `research/handoffs/` (git-ignored, local).
 
 ### Changed
 
