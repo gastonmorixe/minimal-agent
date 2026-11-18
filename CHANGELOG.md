@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-11-18T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-18-worktree-scripts"
+    type: feat
+    status: landed
+    detail: "worktree:new makes a full umbrella worktree with every submodule and one root install. worktree:rm removes one and stops when work would be lost"
   - id: "2026-11-18-workspace-install-contexts"
     type: fix
     status: landed
@@ -96,6 +100,14 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 ### Added
 
+- 2026-11-18: **`bun run worktree:new <name>` and `bun run worktree:rm
+  <name>`.** `worktree:new` makes a full umbrella worktree next to the main
+  checkout: the umbrella on a new branch from `origin/main`, every submodule
+  checked out from the local objects, one root install, and the commit hooks.
+  It ends with a check that the cli uses the core checkout of that worktree.
+  `worktree:rm` removes one, and stops when the umbrella or a submodule has
+  uncommitted files or commits that are on no remote, because
+  `git worktree remove --force` deletes the submodule repos of a worktree.
 - 2026-11-18: **Model registries refreshed from live 2026-11-18 catalogs**:
   plugins `49383be` (lead task, stored auth, no secrets logged). OpenAI
   +`gpt-6.2-astra` / +`gpt-6.2-sol` (Responses + `-chat`); OpenCode Go

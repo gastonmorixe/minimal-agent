@@ -81,6 +81,8 @@ bun run catalogs:check   # fail if a repo declares a tool version that differs f
 bun run pins:core        # move every consumer core pin to core origin/main (or <sha>); --commit --push does the whole refresh
 bun run link:dev         # DEPRECATED: the workspace already links core for dev
 bun run link:status      # linked or pinned, per consumer
+bun run worktree:new <name>   # a full worktree: umbrella + every submodule + one root install
+bun run worktree:rm <name>    # remove it; stops when uncommitted or unpushed work would be lost
 bun run submodules:status
 bun run submodules:init  # git submodule update --init --recursive
 ```
@@ -151,6 +153,14 @@ run in that remote’s tree.
   pin in every consumer `package.json` and `bun.lock`, commits and pushes each
   consumer, then commits and pushes the umbrella after `pins:check` passes. Run
   `bun run check` first. See "Pins" in `README.md`.
+- **Make a worktree with `bun run worktree:new <name>`, and remove it with
+  `bun run worktree:rm <name>`.** A full worktree has its own checkout of
+  every submodule and one root install, so plugins, cli and web use the core
+  of that worktree. A folder with only some repos and no umbrella root is a
+  set of standalone installs: plugins there uses the pinned core, and a core
+  edit next to it is not tested. Do not use `git worktree remove --force` on
+  a worktree with submodules: it deletes the submodule repos of that worktree
+  and every commit that is only there.
 - Nested `.git/` directories inside submodules (not absorbed into
   `.git/modules/`) are intentional when local `git worktree` layouts need a
   stable absolute gitdir path through a sibling symlink.

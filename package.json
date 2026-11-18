@@ -52,6 +52,8 @@
     "pins:core": "bun run scripts/pin-core-everywhere.ts",
     "pins:verify": "bun run scripts/verify-pins.ts",
     "pins:lock": "bun run scripts/lock-submodule.ts",
+    "worktree:new": "bun run scripts/worktree.ts new",
+    "worktree:rm": "bun run scripts/worktree.ts rm",
     "submodules:status": "git submodule status",
     "submodules:update": "git submodule update --remote --merge",
     "submodules:init": "git submodule update --init --recursive",
