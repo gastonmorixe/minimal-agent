@@ -6,9 +6,17 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-11-18T00:00:00-0500"
+updated-at: "2026-11-19T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-19-sessions-catalog-and-titles"
+    type: feat
+    status: landed
+    detail: "Bump core 9379d4d, cli f8d051e, plugins 123df81 and web dab5111. Fast session catalog and new ma sessions list and detail views with a sub-agent tree. New ma-title-plugin: a short AI title for each interactive session (on by default in the REPL; MINIMAL_AGENT_TITLE=0 turns it off). Core pin moved in plugins, cli and web"
+  - id: "2026-11-19-request-inspector"
+    type: refactor
+    status: landed
+    detail: "Bump core 4f60c93 and cli aba21c9. Core publishes a typed llm.requestWillSend event (./host/request-inspector) instead of the text --debug dump, with zero cost and no subscriber. The cli renders the dump from the event. BREAKING in core"
   - id: "2026-11-18-workflow-docs-and-worktree-rm-fix"
     type: fix
     status: landed
@@ -185,6 +193,23 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
   `research/handoffs/` (git-ignored, local).
 
 ### Changed
+
+- 2026-11-19: **Gitlinks move to core `9379d4d`, cli `f8d051e`, plugins
+  `123df81` and web `dab5111` for the session catalog and session titles.**
+  `ma sessions` reads only the index and shows a sub-agent tree, a detail
+  view and saved titles. The new `ma-title-plugin` makes one short title for
+  each interactive session with the cheap model that the provider
+  advertises. The core pin in plugins, cli and web moves to `9379d4d`.
+- 2026-11-19: **Gitlinks move to core `4f60c93` and cli `aba21c9` for the
+  typed request inspector.** Core no longer formats the `--debug` request
+  dump. Before each attempt it publishes a typed `llm.requestWillSend` event
+  on the new subpath `./host/request-inspector`, and builds it only when a
+  host subscribes. The cli subscribes only with `--debug`, renders the REPL
+  block from the typed event, and writes the same plain
+  `transport.request-dump` rows to the session log. `DEBUG` must be `1`.
+  BREAKING in core: `src/llm/transport/debug.ts` and the
+  `RequestDumpRowData` type are removed. The cli `@minimal-agent/core` pin
+  moves with the next `bun run pins:core`.
 
 - 2026-11-18: **The root workspace and the standalone installs are checked
   against each other.** Inside the umbrella, an install in any submodule is
