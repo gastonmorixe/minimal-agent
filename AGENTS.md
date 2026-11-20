@@ -50,7 +50,8 @@ commands, and "Pins" in `README.md` has the reference tables.
    point at a commit that is not on the submodule's remote.
 7. **A core commit needs a core pin refresh** (`bun run pins:core`). It pushes
    to plugins, cli and web. Tell the other active sessions before you run it,
-   and do not run it while another session lands a change.
+   and do not run it while another session lands a change. The umbrella
+   `pre-commit` hook and CI run `pins:check` and stop a stale pin.
 8. **After a dependency change in core, cli or web, run `bun run pins:lock`.**
    The root install never writes a submodule's own `bun.lock`.
 9. **Inside the umbrella you cannot test a standalone install.** Use

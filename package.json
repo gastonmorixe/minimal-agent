@@ -63,7 +63,7 @@
     "version:status": "bun run scripts/version.ts status",
     "commitlint": "commitlint",
     "commitlint:last": "commitlint --last --verbose",
-    "prepare": "husky"
+    "prepare": "husky && (git config submodule.recurse true && git config push.recurseSubmodules check || true)"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",

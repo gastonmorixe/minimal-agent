@@ -173,5 +173,5 @@ jobs:
       - name: Version status (informational)
         run: bun run scripts/version.ts status
 
-      - name: Core pin report (informational)
-        run: bun run scripts/check-core-pins.ts --report-only
+      - name: Core pin check
+        run: bun run scripts/check-core-pins.ts
