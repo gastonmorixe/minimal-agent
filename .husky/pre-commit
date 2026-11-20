@@ -1,0 +1,8 @@
+# Block a commit that moves a submodule gitlink while a core pin is stale.
+# check-core-pins.ts reads the staged gitlinks, so it checks this commit.
+if git diff --cached --name-only | grep -q '^minimal-agent-'; then
+  bun run scripts/check-core-pins.ts || {
+    echo "pre-commit: core pins are stale. Run 'bun run pins:core' first." >&2
+    exit 1
+  }
+fi
