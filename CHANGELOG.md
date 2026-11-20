@@ -9,6 +9,10 @@ created-at: "2026-07-12T20:53:58-0400"
 updated-at: "2026-11-19T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-19-intercom-footer-title"
+    type: feat
+    status: landed
+    detail: "Bump core 51acc12, plugins 3656c18, cli 8ebc01a and web 64c40fe. The Intercom footer shows the saved title of this session after the roster counts, also when no peer is online. New sessions:read method title(sid) in core. The title is never written to the presence record and never goes to a peer. Core pin moved in plugins, cli and web"
   - id: "2026-11-19-sessions-catalog-and-titles"
     type: feat
     status: landed
@@ -194,6 +198,13 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 ### Changed
 
+- 2026-11-19: **Gitlinks move to core `51acc12`, plugins `3656c18`, cli
+  `8ebc01a` and web `64c40fe` for the session title in the Intercom footer.**
+  The Intercom footer line now ends with the saved title of this session
+  (`⇆ intercom · 2 online · 1 busy · <title>`), also when no peer is online.
+  Core adds `title(sid)` to `sessions:read`: a fast read of the saved title
+  that does not parse the whole index. The title is never written to the
+  presence record. The core pin in plugins, cli and web moves to `51acc12`.
 - 2026-11-19: **Gitlinks move to core `ff236d8`, cli `4a0eaec`, plugins
   `991a552` and web `bc40dbf` for the session catalog and session titles.**
   `ma sessions` reads only the index and shows a sub-agent tree, a detail
