@@ -1,0 +1,8 @@
+# Shared git settings for this clone. scripts/git-setup.sh includes this file
+# from .git/config one time (bun install runs it through "prepare").
+[submodule]
+	# pull, checkout and switch also update the submodules
+	recurse = true
+[push]
+	# stop a push when a gitlink points at an unpushed submodule commit
+	recurseSubmodules = check
