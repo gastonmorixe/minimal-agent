@@ -29,6 +29,9 @@
  * commit or in a consumer. `pins:check` rejects that, and it runs only after
  * the consumer commits are pushed.
  *
+ * Each commit header is at most 100 characters (commitlint
+ * header-max-length): a long core subject is cut with `...` (`fitHeader`).
+ *
  * Resumable: if a run stops after the consumer pushes (for example on a
  * commit-msg hook), run it again. Consumers already on the SHA are skipped.
  * With `--commit`, the gitlink of such a consumer is staged too when it is
@@ -37,7 +40,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { git, gitlink, gitPinsAt, lockfileProblems, root, submodulePaths } from "./pins-lib.ts";
+import { fitHeader, git, gitlink, gitPinsAt, lockfileProblems, root, submodulePaths } from "./pins-lib.ts";
 
 const CORE = "minimal-agent-core";
 const PIN_RE = /minimal-agent-core\.git#([0-9a-f]{7,40})/g;
@@ -190,7 +193,7 @@ for (const path of changed) {
   const cwd = join(root, path);
   if (commit) {
     git(["add", "-u"], cwd);
-    const head = commitAll(cwd, `chore: pin core to ${short} (${subject})`);
+    const head = commitAll(cwd, fitHeader(`chore: pin core to ${short} (${subject}`, ")"));
     console.log(`${path}: committed ${head.slice(0, 7)}`);
     if (push) {
       git(["push", "--quiet", "origin", "HEAD:main"], cwd);
@@ -224,7 +227,7 @@ if (moved.length === 0 && gitlink(CORE) === git(["rev-parse", `HEAD:${CORE}`])) 
 const list = moved.map((p) => p.replace("minimal-agent-", "")).join(", ") || "core only";
 const head = commitAll(
   root,
-  `chore: bump ${list} for the core pin refresh (${oldCore.slice(0, 7)} to ${short})`,
+  fitHeader(`chore: bump ${list} for the core pin refresh`, ` (${oldCore.slice(0, 7)} to ${short})`),
   `Every consumer now pins core ${short} (${subject}), the core gitlink. ${report}`,
 );
 console.log(`umbrella: committed ${head.slice(0, 7)} (${report})`);
