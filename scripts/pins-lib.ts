@@ -80,6 +80,30 @@ export function shortShas(shas: Iterable<string>): string {
     .join(", ");
 }
 
+/** commitlint `header-max-length` of `@commitlint/config-conventional` (all repos). */
+export const HEADER_MAX = 100;
+
+/** Marker of a cut header. */
+const CUT = "...";
+
+/**
+ * A commit header of at most {@link HEADER_MAX} code points: `head + tail`,
+ * with `head` cut (at a word end when one is near) and `...` added when the
+ * whole text is too long. `tail` always stays (for example `)` or a SHA
+ * range). A pin header names the core subject, which can be long, and the
+ * commit-msg hook stops a longer header after the pin edits are written.
+ */
+export function fitHeader(head: string, tail = ""): string {
+  const h = [...head];
+  const t = [...tail];
+  if (h.length + t.length <= HEADER_MAX) return head + tail;
+  const room = HEADER_MAX - t.length - CUT.length;
+  let cut = h.slice(0, Math.max(0, room)).join("");
+  const space = cut.lastIndexOf(" ");
+  if (space >= room - 20) cut = cut.slice(0, space);
+  return `${cut.replace(/[\s,(:]+$/, "")}${CUT}${tail}`;
+}
+
 /**
  * One line for each git dependency that `bun.lock` and `package.json` pin to
  * different SHAs. `bun install --frozen-lockfile` stops on such a difference
