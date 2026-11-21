@@ -156,6 +156,10 @@ jobs:
 
       - name: Check core
         working-directory: minimal-agent-core
+        env:
+          # The plugins sibling is checked out: a missing codec fails the
+          # sideband byte tests, it does not skip them.
+          MA_REQUIRE_PLUGINS: "1"
         run: bun run check
 
       - name: Check plugins
@@ -164,10 +168,18 @@ jobs:
 
       - name: Check cli
         working-directory: minimal-agent-cli
+        env:
+          # The plugins sibling is checked out: a missing codec fails the
+          # sideband byte tests, it does not skip them.
+          MA_REQUIRE_PLUGINS: "1"
         run: bun run check
 
       - name: Check web
         working-directory: minimal-agent-web
+        env:
+          # The plugins sibling is checked out: a missing codec fails the
+          # sideband byte tests, it does not skip them.
+          MA_REQUIRE_PLUGINS: "1"
         run: bun run check
 
       - name: Version status (informational)
