@@ -68,7 +68,7 @@ jobs:
           app-id: ${{ vars.MA_APP_ID }}
           private-key: ${{ secrets.MA_APP_PRIVATE_KEY }}
           owner: gastonmorixe
-          repositories: minimal-agent-core,minimal-agent-config,minimal-agent-plugins,minimal-agent-cli,minimal-agent-web
+          repositories: minimal-agent,minimal-agent-core,minimal-agent-config,minimal-agent-plugins,minimal-agent-cli,minimal-agent-web
 
       # Checkout without submodules first, then init with retries. Pin bumps that
       # race a sibling push otherwise fail with "not our ref" / upload-pack.
