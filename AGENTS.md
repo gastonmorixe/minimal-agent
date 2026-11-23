@@ -450,12 +450,12 @@ Co-authored-by: {Name} <{short-sid}@minimal-agent>
 - `{Name}` — session name (`MINIMAL_AGENT_AGENT_NAME` / `SessionInfo` / TUI),
   e.g. `Veronica`
 - `{short-sid}` — first 8 hex characters of `MINIMAL_AGENT_SESSION_ID`, e.g.
-  `9b615852` from `9b615852-…`
+  `1a2b3c4d` from `1a2b3c4d-…`
 
 Example:
 
 ```
-Co-authored-by: Veronica <a26a1e75@minimal-agent>
+Co-authored-by: Veronica <1a2b3c4d@minimal-agent>
 ```
 
 Put the trailer on its own line at the end of the commit message with a blank
@@ -465,7 +465,7 @@ line before it. Prefer a HEREDOC so git keeps the trailer:
 git commit -m "$(cat <<'EOF'
 fix: explain the change briefly.
 
-Co-authored-by: Veronica <a26a1e75@minimal-agent>
+Co-authored-by: Veronica <1a2b3c4d@minimal-agent>
 EOF
 )"
 ```
@@ -474,7 +474,7 @@ Or append with Git's native flag:
 
 ```bash
 git commit -m "fix: explain the change briefly." \
-  --trailer "Co-authored-by: Veronica <a26a1e75@minimal-agent>"
+  --trailer "Co-authored-by: Veronica <1a2b3c4d@minimal-agent>"
 ```
 
 **Enforcement:** when `MINIMAL_AGENT_SESSION_ID` is set, `.husky/commit-msg`
