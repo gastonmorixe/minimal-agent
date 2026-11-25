@@ -11,6 +11,12 @@
 
 ---
 
+<p align="center" style="vertical-align: middle;">
+   <a href="https://github.com/user-attachments/assets/c0db7d63-c9c6-4a46-9de6-bebcaf6cbf22" target="_blank"><img width="33%" alt="minimal-agent cli splash" src="https://github.com/user-attachments/assets/c0db7d63-c9c6-4a46-9de6-bebcaf6cbf22" /></a>
+   <a href="https://github.com/user-attachments/assets/4ebd15ec-1277-45fd-ad7a-5a2687d22446"><img width="33%" alt="minimal-agent tasks" src="https://github.com/user-attachments/assets/4ebd15ec-1277-45fd-ad7a-5a2687d22446" /></a>
+   <a href="https://github.com/user-attachments/assets/e724a2d9-a92a-4053-a2e5-ee40c3d4c8f6"><img width="33%" alt="minimal-agent parallel tools web search" src="https://github.com/user-attachments/assets/e724a2d9-a92a-4053-a2e5-ee40c3d4c8f6" /></a>
+</p>
+
 Umbrella repository for five first-party trees: four product repos plus a shared config repo. They are pinned together with **git submodules**, and one Bun workspace runs over them.
 
 | Path                                                  | Repository                                                                                    | Branch |
