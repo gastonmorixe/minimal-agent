@@ -16,7 +16,11 @@ export function submodulePaths(): string[] {
 
 /** Run git and return trimmed stdout. Throw on a non-zero exit. */
 export function git(args: string[], cwd = root): string {
-  const res = Bun.spawnSync(["git", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
+  // Git exports these vars to hooks. A hook runs in a worktree with GIT_DIR set, so a git call
+  // with another cwd (a submodule) would read the umbrella object database. Drop them.
+  const env = { ...process.env };
+  for (const key of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY"]) delete env[key];
+  const res = Bun.spawnSync(["git", ...args], { cwd, env, stdout: "pipe", stderr: "pipe" });
   if (res.exitCode !== 0) {
     throw new Error(`git ${args.join(" ")} (in ${cwd}) failed: ${res.stderr.toString().trim()}`);
   }
