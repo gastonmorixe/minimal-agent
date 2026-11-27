@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-11-27T00:00:00-0500"
+updated-at: "2026-11-27T18:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-27-subagents-improvements"
+    type: feat
+    status: landed
+    detail: "Bump plugins 2302ac1 (ed00a76, cd3b3f9, 2302ac1 on c829e5e). Core does not move. ma-sub-agents-plugin: the supervisor no longer leaks 2 file handles per spawn, keeps its stream cache across ticks, skips stream lines over 4 MiB, and stops a stalled worker after 5 min. StopAgent updates linked tasks and never kills a reused pid. The 6 lead-only tools are hidden in a worker, and fresh workers get only their role tools. A lead mailbox message reaches a running worker after each tool step, and ReportResult waits for an unread lead message. New Mailbox kind continue starts a stopped worker again in its own session. Workers that end in the same tick give one lead message. A fallback timer runs the supervisor in headless leads. The SubAgentsMailbox text changed in every request golden. Deferred: fork prompt-cache parity (needs env-info and core). Research: research/2026-11-27-subagents-improvements/REPORT.md (local only)"
   - id: "2026-11-27-plugin-prompt-diet"
     type: feat
     status: landed
@@ -112,7 +116,7 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 
 <!-- pin-approvals:start -->
 - Approved: `minimal-agent-core` at `f3c4f73bbd4e65f6ea96b902401e211820938a9c` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `2fcfefd886cedf2787d655a1e4aba6b0d970c57c` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `2302ac19a42001dd701041ebe29fa159e9eba1bb` (lead, decision 20).
 - Approved: `minimal-agent-cli` at `833796f8a520378dc5c16d8231f85ef3cac6e39f` (lead, decision 20).
 - Approved: `minimal-agent-web` at `1b4971597ad3764dd67bb9df54d6e336f34a2f5d` (lead, decision 20).
 - Approved: `minimal-agent-config` at `f5d11c0f9b5f95f5bdc9d50b6cfd8bc32f9a74eb` (lead, decision 20).
