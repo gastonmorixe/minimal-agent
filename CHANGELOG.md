@@ -6,9 +6,13 @@ status: living
 scope: monorepo
 working-dir: "."
 created-at: "2026-07-12T20:53:58-0400"
-updated-at: "2026-11-19T00:00:00-0500"
+updated-at: "2026-11-27T00:00:00-0500"
 format: "Keep a Changelog (pragmatic, date-stamped) + YAML frontmatter audit trail"
 latest-unreleased:
+  - id: "2026-11-27-plugin-prompt-diet"
+    type: feat
+    status: landed
+    detail: "Bump core 337dde3, plugins 94f0edd + 2b2fe55, cli a8b16a8 and web 3f778d1 (umbrella 1449c06), then plugins 98c8e0a (umbrella f991e84). BREAKING in plugins: 13 plugins with tools (background, chrome-cdp, computer-use, diff-view, fetch, intercom, prompts, schedule, speak, sub-agents, tasks, web-search, agent-cloud) no longer add a system prompt section. Their usage text is in their tool and param descriptions. Skills, memory, ask mode, env-info, identity and emit-output add less. The system prompt is about 7,600 tokens smaller (31,412 to 23,813, in-repo estimate). The STE gate now reads the prose of each prompt fragment handler. A live A/B probe (12 scenarios, 4 of them safety) gives 12 of 12 OK. 98c8e0a fixes the per golden removals test, which failed on main after the land. Then changelog entries: core f3c4f73, plugins a835ea8, and the core pin in plugins 2fcfefd, cli 833796f and web 1b49715. Core pin moved in plugins, cli and web. Research and the scan and probe scripts: research/2026-11-27-plugin-prompt-diet (local only)"
   - id: "2026-11-19-intercom-footer-title"
     type: feat
     status: landed
@@ -107,10 +111,10 @@ Each gitlink is the full 40-character SHA of that repo's `main`.
 `bun run pins:mains` rewrites only the SHAs on these lines.
 
 <!-- pin-approvals:start -->
-- Approved: `minimal-agent-core` at `b17961ef43a969acd9543a8bab2657afb8afe535` (lead, decision 20).
-- Approved: `minimal-agent-plugins` at `d8ac2391ebb72d28c5774152ab259ad392a5edfd` (lead, decision 20).
-- Approved: `minimal-agent-cli` at `0b5867126e84867cc2e6a456517ab67a52a013ed` (lead, decision 20).
-- Approved: `minimal-agent-web` at `2ae82ce47835805b0e5c74a1ac77f444d181bb66` (lead, decision 20).
+- Approved: `minimal-agent-core` at `f3c4f73bbd4e65f6ea96b902401e211820938a9c` (lead, decision 20).
+- Approved: `minimal-agent-plugins` at `2fcfefd886cedf2787d655a1e4aba6b0d970c57c` (lead, decision 20).
+- Approved: `minimal-agent-cli` at `833796f8a520378dc5c16d8231f85ef3cac6e39f` (lead, decision 20).
+- Approved: `minimal-agent-web` at `1b4971597ad3764dd67bb9df54d6e336f34a2f5d` (lead, decision 20).
 - Approved: `minimal-agent-config` at `f5d11c0f9b5f95f5bdc9d50b6cfd8bc32f9a74eb` (lead, decision 20).
 <!-- pin-approvals:end -->
 
